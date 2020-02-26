@@ -1,0 +1,76 @@
+.fs-12 {
+    font-size: 12px;
+}
+
+.text-center{ text-align: center !important;}
+.text-justify{ text-align: justify !important;}
+.text-bolder{font-weight: 800;}
+.color-blue {color: #007bff;}
+
+
+.btn-padrao{
+    padding-top: 7px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-left: 5px;
+    margin-bottom:5px;
+    color: white !important;
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.form-control{
+    margin-bottom: 5px; 
+}
+
+table {
+    width: 100%;
+    margin: 0 auto; 
+}
+
+.input-group-append {
+    align-items: unset;
+}
+
+
+.table-content{
+    margin-top: 10px;
+    position: relative;
+}
+
+#checkbox{
+    margin-top: 30px !important;
+}
+
+mat-form-field {
+    margin-top: -8px;
+}
+
+mat-paginator{
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+.disabled{
+    background-color: #e9ecef;
+}
+
+/*ICONES DE AGENDAMENTO*/
+.fa-exclamation{
+    color: #ff4081;
+}
+
+.fa-trash-o{
+    color: red;
+    cursor: pointer;
+}
+
+.fa-calendar-times-o{
+    color: red;
+}
+
+.fa-calendar-minus-o{
+    color: orange;
+}
+/*FIM ICONES DE AGENDAMENTO*/

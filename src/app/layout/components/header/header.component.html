@@ -1,0 +1,82 @@
+<nav class="navbar navbar-expand-lg fixed-top">
+    <a class="navbar-brand" href="#">Organize Rooms</a>
+    <div class="navbar-toggler nav-item dropdown no-arrow ml-auto" ngbDropdown (click)="carregarNotificacoes()">
+        <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+            <i class="fa fa-bell fa-fw"></i>
+            <span *ngIf="contNotificacoes != 0" class="badge badge-danger badge-counter">{{contNotificacoes}}</span>
+        </a>
+        <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" ngbDropdownMenu>
+            <h6 class="dropdown-header">
+                Notificações
+            </h6>
+            <div *ngIf="listNotificacoes">
+                <a *ngFor="let noti of listNotificacoes" class="dropdown-item d-flex align-items-center"
+                    (click)="desativarNotificacao(noti)">
+                    <div>
+                        <div class="small text-gray-500">{{noti.notDtCadastro | date: 'd MMMM y': 'pt'}}</div>
+                        <span class="font-weight-bold">{{noti.notDescricao}}</span>
+                    </div>
+                </a>
+            </div>
+
+            <a *ngIf="!listNotificacoes" class="dropdown-item d-flex align-items-center">
+                <div>
+                    <span class="font-weight-bold">Você não possui Novas Notificações!</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <button class="navbar-toggler" type="button" (click)="toggleSidebar()">
+        <i class="fa fa-bars text-muted" aria-hidden="true"></i>
+    </button>
+
+    <div class="collapse navbar-collapse">
+
+        <ul class="navbar-nav ml-auto">
+
+            <li class="nav-item dropdown no-arrow" ngbDropdown (click)="carregarNotificacoes()">
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+                    <i class="fa fa-bell fa-fw"></i>
+                    <span *ngIf="contNotificacoes != 0"
+                        class="badge badge-danger badge-counter">{{contNotificacoes}}</span>
+                </a>
+                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" ngbDropdownMenu>
+                    <h6 class="dropdown-header">
+                        Notificações
+                    </h6>
+                    <div *ngIf="listNotificacoes">
+                        <a *ngFor="let noti of listNotificacoes" class="dropdown-item d-flex align-items-center"
+                            (click)="desativarNotificacao(noti)">
+                            <div>
+                                <div class="small text-gray-500">{{noti.notDtCadastro | date: 'd MMMM y': 'pt'}}</div>
+                                <span class="font-weight-bold">{{noti.notDescricao}}</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <a *ngIf="!listNotificacoes" class="dropdown-item d-flex align-items-center">
+                        <div>
+                            <span class="font-weight-bold">Você não possui Novas Notificações!</span>
+                        </div>
+                    </a>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown" ngbDropdown>
+                <a href="javascript:void(0)" class="nav-link" ngbDropdownToggle>
+                    <i class="fa fa-user"></i>
+                    <span> {{currentPessoa.pesNome}} </span>
+                    <b class="caret"></b>
+                </a>
+                <div class="dropdown-menu-right" ngbDropdownMenu>
+                    <a class="dropdown-item" (click)="resetarSenha()">
+                        <i class="fa fa-fw fa-power-off"></i> Resetar Senha
+                    </a>
+                    <a class="dropdown-item" [routerLink]="['/login']" (click)="logout()">
+                        <i class="fa fa-fw fa-power-off"></i> Sair
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

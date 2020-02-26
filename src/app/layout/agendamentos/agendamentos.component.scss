@@ -1,0 +1,28 @@
+ 
+
+  .datepicker-home{
+    //margin-top: 24px;
+    max-width: 220px;
+}
+
+.btn-filtrar{
+    margin-top: 24px;
+    width: 100px;
+}
+
+td.mat-column-detalhes {
+  width: 20px;
+  padding-right: 8px;
+}
+
+th.mat-column-position, td.mat-column-position {
+  padding-left: 8px;
+}
+
+.mat-table-sticky:first-child {
+  border-right: 1px solid #e0e0e0;
+}
+
+.mat-table-sticky:last-child {
+  border-left: 1px solid #e0e0e0;
+}

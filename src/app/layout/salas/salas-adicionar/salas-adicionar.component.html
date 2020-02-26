@@ -1,0 +1,82 @@
+<div>
+    <app-page-header *ngIf="selSala != null" [heading]="'Salas - Detalhes da Sala'"></app-page-header>
+    <app-page-header *ngIf="selSala == null" [heading]="'Salas - Adicionar Sala'"></app-page-header>
+
+    <div class="row ml-auto justify-content-sm-center">
+        <div class="col-10 col-sm-10 col-md-8 col-lg-8 col-xl-6">
+            <form [formGroup]="formAddSala">
+                <div class="row">
+                    <div class="col-4 col-sm-4 col-md-4 col-lg-3 col-xl-2">
+                        <span>Código</span>
+                        <input type="text" class="form-control" formControlName="salaId" disabled>
+                    </div>
+                    <div class="col-6 col-sm-6 col-md-4 col-lg-5 col-xl-5">
+                        <span>Data Cadastro</span>
+                        <span class="form-control disabled">
+                            {{formAddSala.value.salaDtCadastro | date: 'dd/MM/yyyy'}}
+                        </span>
+                    </div>
+                    <div *ngIf="permissao == 'ROLE_ADMIN'" id="checkbox"
+                        class="col-2 col-sm-2 col-md-4 col-lg-3 col-xl-5">
+                        <mat-checkbox formControlName="salaAtiva" checked="formAddSala.salaAtiva"
+                            [labelPosition]='labelPosition'>
+                            Ativa?</mat-checkbox>
+                    </div>
+                    <div *ngIf="permissao != 'ROLE_ADMIN'" id="checkbox"
+                        class="col-2 col-sm-2 col-md-4 col-lg-3 col-xl-5">
+                        <mat-checkbox [disabled]="true" formControlName="salaAtiva" checked="formAddSala.salaAtiva"
+                            [labelPosition]='labelPosition'>
+                            Ativa?</mat-checkbox>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-11 col-lg-11 col-xl-9">
+                        <span>Nome <span style="color: red;">*</span></span>
+                        <input type="text" class="form-control" formControlName="salaNome" autofocus required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-6">
+                        <span>Unidade <span style="color: red;">*</span></span>
+                        <mat-select class="form-control" [formControl]="selUnidade">
+                            <mat-option *ngFor="let unidade of listUnidades" [value]="unidade.uniId">
+                                {{unidade.uniNome}}
+                            </mat-option>
+                        </mat-select>
+                        <!--<mat-error *ngIf="selUnidade.hasError('required')">Escolha uma Unidade!</mat-error>-->
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-8 col-sm-8 col-md-6 col-lg-6 col-xl-7">
+                            <span>Lotação <span style="color: red;">*</span></span>
+                            <input type="text" class="form-control" formControlName="salaLotacao" required>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="col-12 col-sm-12 col-md-10 col-lg-8 col-xl-10">
+                    <div class="row">
+                        <a class="col-5 col-sm-5 col-md-3 col-lg-5 col-xl-3 btn btn-padrao" [routerLink]="['/salas']"
+                            [routerLinkActive]="['router-link-active']">
+                            Voltar
+                        </a>
+                        <button *ngIf="permissao == 'ROLE_ADMIN'" [disabled]="!formAddSala.valid"
+                            class="col-5 col-sm-5 col-md-3 col-lg-5 col-xl-3 btn btn-padrao" (click)="adicionarSala()">
+                            Salvar
+                        </button>
+                        <a *ngIf="permissao == 'ROLE_ADMIN' && selSala != null"
+                            class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3 btn btn-padrao" (click)="excluir()">
+                            Excluir
+                        </a>
+                    </div>
+                </div>
+                <!--<br>
+                <div *ngIf="selSala != null" class="row text-muted ml-auto">
+                    <span>Última Atualização por <span class="text-bolder">{{salaPesAtualizacao | uppercase}}</span>
+                        no dia <span class="text-bolder">{{salaDtAtualizacao | date: "dd/MM/yyyy"}}</span></span>
+                </div>-->
+            </form>
+        </div>
+    </div>
+</div>

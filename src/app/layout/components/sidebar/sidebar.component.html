@@ -1,0 +1,61 @@
+<nav class="sidebar" [ngClass]="{sidebarPushRight: isActive, collapsed: collapsed}">
+    <div class="list-group">
+        <a routerLink="/home" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-home"></i>&nbsp;
+            <span>Home</span>
+        </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN' || permissao == 'ROLE_USUARIO'" [routerLink]="['/reservar']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-calendar-o"></i>&nbsp;
+            <span>Reserva de Sala</span>
+        </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN' || permissao == 'ROLE_USUARIO'" [routerLink]="['/agendamentos']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-calendar-check-o"></i>&nbsp;
+            <span>Minhas Reservas</span>
+        </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN' || permissao == 'ROLE_USUARIO'" [routerLink]="['/pessoas']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-users"></i>&nbsp;
+            <span>Pessoas</span>
+        </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN' || permissao == 'ROLE_USUARIO'" [routerLink]="['/salas']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-window-restore"></i>&nbsp;
+            <span>Salas</span>
+        </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN' || permissao == 'ROLE_USUARIO'" [routerLink]="['/equipamentos']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-desktop"></i>&nbsp;
+            <span>Equipamentos</span>
+        </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN' || permissao == 'ROLE_USUARIO'" [routerLink]="['/unidades']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-map-marker"></i>&nbsp;
+            <span>Unidades</span>
+        </a>
+        <div class="header-fields">
+            <div class="nested-menu">
+                <a class="list-group-item" (click)="addExpandClass('profile')">
+                    <span><i class="fa fa-user"></i>&nbsp; {{currentPessoa.pesNome}}</span>
+                </a>
+                <li class="nested" [class.expand]="showMenu === 'profile'">
+                    <ul class="submenu">
+                        <li>
+                            <a class="dropdown-item" (click)="resetarSenha()">
+                                <i class="fa fa-fw fa-power-off"></i> Resetar Senha
+                            </a>
+                            <a [routerLink]="['/login']" (click)="logout()">
+                                <span><i class="fa fa-fw fa-power-off"></i> Sair</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </div>
+        </div>
+    </div>
+    <!--<div class="toggle-button" [ngClass]="{collapsed: collapsed}" (click)="toggleCollapsed()">
+        <i class="fa fa-fw fa-angle-double-{{collapsed?'right':'left'}}"></i>
+        <span>{{ 'Collapse Sidebar'}}</span>
+    </div>-->
+</nav>

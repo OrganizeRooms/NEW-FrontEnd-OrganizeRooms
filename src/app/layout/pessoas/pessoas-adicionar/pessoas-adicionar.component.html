@@ -1,0 +1,88 @@
+<div>
+    <app-page-header *ngIf="selPessoa != null" [heading]="'Pessoas - Detalhes da Pessoa'"></app-page-header>
+    <app-page-header *ngIf="selPessoa == null" [heading]="'Pessoas - Adicionar Pessoa'"></app-page-header>
+
+    <br />
+    <div class="row justify-content-center">
+        <div class="col-10 col-sm-10 col-md-8 col-lg-8 col-xl-7">
+            <form [formGroup]="formAddPessoa">
+                <div class="row">
+                    <div class="col-5 col-sm-3 col-md-3 col-lg-3 col-xl-2">
+                        <span>Código</span>
+                        <input type="text" class="form-control text-center" formControlName="pesId" disabled>
+                    </div>
+                    <div class="col-7 col-sm-4 col-md-4 col-lg-3 col-xl-3">
+                        <span>Data Cadastro</span>
+                        <span class="form-control disabled text-center">
+                            {{formAddPessoa.value.pesDtCadastro | date: 'dd/MM/yyyy'}}
+                        </span>
+                    </div>
+                    <div class="col-12 col-sm-5 col-md-4 col-lg-4 col-xl-3">
+                        <span>Permissão <span style="color: red;">*</span></span>
+                        <mat-select class="form-control" [(value)]="selPermissao">
+                            <mat-option value="ROLE_USUARIO">Usuario</mat-option>
+                            <mat-option value="ROLE_ADMIN">Administrador</mat-option>
+                            <mat-option value="ROLE_TABLET">Tablet</mat-option>
+                        </mat-select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-7 col-md-7 col-lg-6 col-xl-5">
+                        <span>Nome <span style="color: red;">*</span></span>
+                        <input type="text" class="form-control" formControlName="pesNome" required>
+                    </div>
+                    <div class="col-12 col-sm-5 col-md-4 col-lg-4 col-xl-3">
+                        <span>Unidade <span style="color: red;">*</span></span>
+                        <mat-select class="form-control" [formControl]="selUnidade">
+                            <mat-option *ngFor="let unidade of listUnidades" [value]="unidade.uniId">
+                                {{unidade.uniNome}}
+                            </mat-option>
+                        </mat-select>
+                        <!--<mat-error *ngIf="selUnidade.hasError('required')">Escolha uma Unidade!</mat-error>-->
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-11 col-lg-10 col-xl-8">
+                        <span>E-mail <span style="color: red;">*</span></span>
+                        <input type="email" class="form-control" formControlName="pesEmail" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4 col-sm-3 col-md-2 col-lg-2 col-xl-2">
+                        <span>DDD</span>
+                        <input type="text" class="form-control" formControlName="pesDDD">
+                    </div>
+                    <div class="col-8 col-sm-5 col-md-4 col-lg-4 col-xl-3">
+                        <span>Telefone</span>
+                        <input type="text" class="form-control" formControlName="pesTelefone">
+                    </div>
+                </div>
+                <br>
+                <div class="col-12 col-sm-12 col-md-11 col-lg-12 col-xl-10">
+                    <div class="row">
+                        <a class="col-6 col-sm-3 col-md-3 col-lg-2 col-xl-2 btn btn-padrao" [routerLink]="['/pessoas']"
+                            [routerLinkActive]="['router-link-active']">
+                            Voltar
+                        </a>
+                        <button *ngIf="permissao == 'ROLE_ADMIN'" [disabled]="!formAddPessoa.valid"
+                            class="col-5 col-sm-4 col-md-3 col-lg-3 col-xl-2 btn btn-padrao"
+                            (click)="adicionarPessoa()">
+                            Salvar
+                        </button>
+                        <a *ngIf="permissao == 'ROLE_ADMIN' && selPessoa != null"
+                            class="col-6 col-sm-4 col-md-4 col-lg-3 col-xl-3 btn btn-padrao" (click)="resetarSenha()">
+                            Resetar Senha
+                        </a>
+                        <a *ngIf="permissao == 'ROLE_ADMIN' && selPessoa != null"
+                            class="col-5 col-sm-4 col-md-3 col-lg-2 col-xl-2 btn btn-padrao" (click)="excluir()">
+                            Excluir
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

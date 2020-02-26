@@ -1,0 +1,405 @@
+<div>
+    <app-page-header [heading]="'Minhas Reservas - Detalhes da Reserva'"></app-page-header>
+
+    <div class="row ml-auto justify-content-md-center">
+        <div class="col-12 col-sm-8 col-md-8 col-lg-8 col-xl-7">
+            <form [formGroup]="formAgendamento">
+                <div class="row ml-auto">
+                    <div class="col-5 col-sm-4 col-md-3 col-lg-3 col-xl-2">
+                        <span>Código</span>
+                        <input type="text" class="form-control text-center" formControlName="ageId" disabled>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-3">
+                        <span>Data Cadastro</span>
+                        <span class="form-control disabled text-center">
+                            {{formAgendamento.value.ageDtCadastro | date: 'dd/MM/yyyy'}}
+                        </span>
+                    </div>
+                    <div class="col-11 col-sm-4 col-md-5 col-lg-5 col-xl-3">
+                        <span>Status</span>
+                        <span class="form-control text-center bg-{{corStatus(selAgeStatus)}}">
+                            {{selAgeStatus}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row ml-auto">
+                    <div class="col-11 col-sm-11 col-md-12 col-lg-12 col-xl-8">
+                        <span>Sala</span>
+                        <span class="form-control">
+                            {{selAgendamento.ageSala.salaNome}}
+                        </span>
+                    </div>
+                </div>
+                <div class="row ml-auto">
+                    <div class="col-11 col-sm-6 col-md-5 col-lg-5 col-xl-3">
+                        <span>Unidade</span>
+                        <span class="form-control disabled text-center">
+                            {{selAgendamento.ageSala.salaUnidade.uniNome}}
+                        </span>
+                    </div>
+                    <div class="col-4 col-sm-6 col-md-3 col-lg-3 col-xl-2">
+                        <span>Lotação</span>
+                        <span class="form-control disabled text-center">
+                            {{selAgendamento.ageSala.salaLotacao}}
+                        </span>
+                    </div>
+                    <div class="col-7 col-sm-6 col-md-4 col-lg-4 col-xl-3">
+                        <span>Data</span>
+                        <span class="form-control disabled text-center">
+                            {{formAgendamento.value.ageData | date: 'dd/MM/yyyy'}}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row ml-auto">
+                    <div class="col-11 col-sm-6 col-md-7 col-lg-7 col-xl-5">
+                        <span>Responsável</span>
+                        <span class="form-control disabled">
+                            {{selAgendamento.agePesResponsavel.pesNome}}
+                        </span>
+                    </div>
+                    <div class="col-11 col-sm-6 col-md-5 col-lg-5 col-xl-3">
+                        <span>Período</span>
+                        <span class="form-control disabled text-center">
+                            {{selAgendamento.ageHoraInicio | date: 'HH:mm'}} às
+                            {{selAgendamento.ageHoraFim | date: 'HH:mm'}}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row ml-auto">
+                    <div *ngIf="selAgendamento.ageStatus == 'EM ANDAMENTO' || selAgendamento.ageStatus == 'AGENDADO'"
+                        class="col-11 col-sm-11 col-md-12 col-lg-12 col-xl-8">
+                        <span>Assunto<span style="color: red;"> *</span></span>
+                        <input type="text" class="form-control" required autofocus formControlName="ageAssunto">
+                    </div>
+                    <div *ngIf="selAgendamento.ageStatus == 'CONCLUIDO' || selAgendamento.ageStatus == 'CANCELADO'"
+                        class="col-11 col-sm-11 col-md-12 col-lg-12 col-xl-8">
+                        <span>Assunto</span>
+                        <input type="text" class="form-control" disabled="true" formControlName="ageAssunto">
+                    </div>
+                </div>
+                <div class="row ml-auto">
+                    <div *ngIf="selAgendamento.ageStatus == 'EM ANDAMENTO' || selAgendamento.ageStatus == 'AGENDADO'"
+                        class="col-11 col-sm-11 col-md-12 col-lg-12 col-xl-8">
+                        <span>Descrição</span>
+                        <textarea class="form-control" formControlName="ageDescricao">
+                        </textarea>
+                    </div>
+                    <div *ngIf="selAgendamento.ageStatus == 'CONCLUIDO' || selAgendamento.ageStatus == 'CANCELADO'"
+                        class="col-11 col-sm-6 col-md-12 col-lg-12 col-xl-8">
+                        <span>Descrição</span>
+                        <textarea class="form-control" disabled="true" formControlName="ageDescricao">
+                        </textarea>
+                    </div>
+                </div>
+                <br />
+
+                <!-- INICIO - PARTICIPANTES (PESSOAS) -->
+                <div class="row ml-auto">
+                    <div class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-5">
+                        <h4 class="card-title">
+                            <i class="fa fa-users"></i>&nbsp;
+                            Participantes
+                        </h4>
+                    </div>
+                    <div class="col-5 col-sm-4 col-md-4 col-lg-4 col-xl-1">
+                        <a *ngIf="verificarStatus()" class="btn btn-padrao btn-selecionar"
+                            (click)="abrirModal(modalParticipantes)">
+                            Selecionar
+                        </a>
+                    </div>
+                </div>
+                <div class="row ml-auto">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8">
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let participante of ageParticipantes">
+                                <div class="row">
+                                    <div class="col-8 col-sm-8 col-md-9 col-lg-9 col-xl-8">
+                                        {{participante.parPessoa.pesNome}}
+                                    </div>
+                                    <div class="row">
+
+                                        <!-- APARECE SE O PARTICIPANTE FOR IMPORTANTE -->
+                                        <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                            <i *ngIf="participante.parTipo == 2" class="fa fa-exclamation"
+                                                title="Obrigatório"></i>
+                                        </div>
+
+                                        <!--- ESPERANDO RESPOSTA -->
+                                        <div *ngIf="participante.parConfirmado == null"
+                                            class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                            <i class="fa fa-calendar-minus-o" title="Aguardando Resposta"></i>
+                                        </div>
+
+                                        <!--- ACEITOU REUNIÃO -->
+                                        <div *ngIf="participante.parConfirmado == true"
+                                            class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                            <i class="fa fa-calendar-check-o" title="Reunião Aceita"></i>
+                                        </div>
+
+                                        <!--- NÃO ACEITOU REUNIÃO -->
+                                        <div *ngIf="participante.parConfirmado == false"
+                                            class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                            <i class="fa fa-calendar-times-o" title="Reunião Negada"></i>
+                                        </div>
+
+                                        <!-- EXCLUIR PARTICIPANTE -->
+                                        <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1"
+                                            aria-placeholder="Excluir Participante">
+                                            <a *ngIf="pessoaLogada.pesId != participante.parPessoa.pesId && (verificarStatus())"
+                                                (click)="excluirParticipante(participante)">
+                                                <i class="fa fa-trash-o" title="Excluir Participante"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <!-- NOVOS PARTICIPANTES -->
+                        <div class="divNews" *ngIf="pessoasSelecionadas.hasValue()">
+                            <span class="color-blue">Novos Participantes:</span>
+                            <ul class="list-group">
+                                <li class="list-group-item" *ngFor="let pessoaSel of pessoasSelecionadas.selected">
+                                    <div class="row">
+                                        <div class="col-6 col-sm-3 col-md-3 col-lg-10 col-xl-10">
+                                            {{pessoaSel.pesNome}}
+                                        </div>
+                                        <div class="col-6 col-sm-3 col-md-3 col-lg-1 col-xl-1">
+                                            <i *ngIf="pessoaSel.participanteObrigatorio" class="fa fa-exclamation"></i>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <!-- FIM - PARTICIPANTES (PESSOAS) -->
+
+                <!-- INICIO - EQUIPAMENTOS -->
+                <div class="row ml-auto">
+                    <div class="col-7 col-sm-7 col-md-8 col-lg-8 col-xl-5">
+                        <h4 class="card-title">
+                            <i class="fa fa-desktop"></i>&nbsp;
+                            Equipamentos
+                        </h4>
+                    </div>
+                    <div class="col-4 col-sm-3 col-md-4 col-lg-4 col-xl-1">
+                        <a *ngIf="verificarStatus()" class="btn btn-padrao btn-selecionar"
+                            (click)="abrirModal(modalEquipamentos)">
+                            Selecionar
+                        </a>
+                    </div>
+                </div>
+                <div class="row ml-auto">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8">
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let reserva of ageEquipamentos">
+                                <div class="row">
+                                    <div class="col-9 col-sm-9 col-md-10 col-lg-10 col-xl-8">
+                                        {{reserva.equipamento.equNome}}
+                                    </div>
+                                    <div class="row">
+                                        <!-- EXCLUIR EQUIPAMENTO -->
+                                        <div class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
+                                            <a *ngIf="verificarStatus()" (click)="excluirEquipamento(reserva)">
+                                                <i class="fa fa-trash-o" title="Excluir Equipamento"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="divNews" *ngIf="equipamentosSelecionados.hasValue()">
+                            <span class="color-blue">Novos Equipamentos:</span>
+                            <ul class="list-group">
+                                <li class="list-group-item"
+                                    *ngFor="let equipamentoSel of equipamentosSelecionados.selected">
+                                    {{equipamentoSel.equNome}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- FIM - EQUIPAMENTOS -->
+
+                <br>
+                <div class="col-12 col-sm-12 col-md-10 col-lg-12 col-xl-8">
+                    <div class="row justify-content-center">
+                        <a class="col-5 col-sm-5 col-md-5 col-lg-4 col-xl-2 btn btn-padrao"
+                            [routerLink]="['/agendamentos']" [routerLinkActive]="['router-link-active']">
+                            Voltar
+                        </a>
+                        <button
+                            *ngIf="selAgendamento.ageStatus == 'EM ANDAMENTO' || selAgendamento.ageStatus == 'AGENDADO'"
+                            [disabled]="!formAgendamento.valid"
+                            class="col-5 col-sm-5 col-md-5 col-lg-4 col-xl-3 btn btn-padrao"
+                            (click)="atualizarReserva('')">
+                            Salvar
+                        </button>
+                        <button
+                            *ngIf="selAgendamento.ageStatus == 'EM ANDAMENTO' || selAgendamento.ageStatus == 'AGENDADO'"
+                            class="col-5 col-sm-5 col-md-5 col-lg-4 col-xl-3 btn btn-padrao"
+                            (click)="atualizarReserva('CANCELADO')">
+                            Cancelar
+                        </button>
+                        <button
+                            *ngIf="selAgendamento.ageStatus == 'EM ANDAMENTO' || selAgendamento.ageStatus == 'AGENDADO'"
+                            class="col-5 col-sm-5 col-md-5 col-lg-4 col-xl-3 btn btn-padrao"
+                            (click)="atualizarReserva('CONCLUIDO')">
+                            Concluir
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- INICIO MODAL PARTICIPANTES (PESSOAS) -->
+<ng-template #modalParticipantes let-modal>
+    <div class="modal-header">
+        <h4 class="color-blue">
+            Selecione os Novos Participantes
+        </h4>
+        <a class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </a>
+    </div>
+
+    <div class="modal-body">
+        <div class="page-text">
+            <div class="row justify-content-center">
+                <div class="col-7 col-sm-9 col-md-6 col-lg-5 col-xl-6">
+                    <input class="form-control text-center" matInput (keyup)="aplicarFiltroPart($event.target.value)"
+                        placeholder="Pesquisar">
+                </div>
+            </div>
+            <br />
+            <table mat-table [dataSource]="listPessoas" class="mat-elevation-z8">
+
+                <!-- Checkbox -->
+                <ng-container matColumnDef="selecionar">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? masterTogglePart() : null"
+                            [checked]="pessoasSelecionadas.hasValue() && isAllSelectedPart()"
+                            [indeterminate]="pessoasSelecionadas.hasValue() && !isAllSelectedPart()"
+                            [aria-label]="checkboxLabelPart()">
+                        </mat-checkbox>
+
+                    </th>
+                    <td mat-cell *matCellDef="let rowPart">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? pessoasSelecionadas.toggle(rowPart) : null"
+                            [checked]="pessoasSelecionadas.isSelected(rowPart)"
+                            [aria-label]="checkboxLabelPart(rowPart)">
+                        </mat-checkbox>
+                    </td>
+                </ng-container>
+
+                <!-- Nome -->
+                <ng-container matColumnDef="pesNome">
+                    <th mat-header-cell *matHeaderCellDef>Nome</th>
+                    <td mat-cell *matCellDef="let pessoa">{{pessoa.pesNome}}</td>
+                </ng-container>
+
+                <!-- Unidade -->
+                <ng-container matColumnDef="pesUnidade">
+                    <th mat-header-cell *matHeaderCellDef>Unidade</th>
+                    <td mat-cell *matCellDef="let pessoa">{{pessoa.pesUnidade.uniNome}}</td>
+                </ng-container>
+
+                <!-- Obrigatorio -->
+                <ng-container matColumnDef="obrigatorio">
+                    <th mat-header-cell *matHeaderCellDef>Obrigatório?</th>
+                    <td mat-cell *matCellDef="let pessoa">
+                        <mat-checkbox [(ngModel)]="pessoa.participanteObrigatorio"
+                            checked="pessoa.participanteObrigatorio">
+                        </mat-checkbox>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsParticipantes"></tr>
+                <tr mat-row *matRowDef="let rowPart; columns: displayedColumnsParticipantes;">
+                    <!--(click)="pessoasSelecionadas.toggle(rowPart)">-->
+                </tr>
+            </table>
+            <div>
+            </div>
+        </div>
+        <br />
+        <div class="row ml-auto">
+            <a class="btn btn-padrao" (click)="modal.dismiss()">Fechar</a>
+        </div>
+    </div>
+</ng-template>
+<!-- FIM MODAL PARTICIPANTES (PESSOAS) -->
+
+<!-- INICIO MODAL EQUIPAMENTOS -->
+<ng-template #modalEquipamentos let-modal>
+    <div class="modal-header">
+        <h4 class="color-blue">
+            Selecione os Equipamentos
+        </h4>
+        <a class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </a>
+    </div>
+
+    <div class="modal-body">
+        <div class="page-text">
+            <div class="row justify-content-center">
+                <div class="col-7 col-sm-9 col-md-6 col-lg-5 col-xl-6">
+                    <input class="form-control text-center" matInput (keyup)="aplicarFiltroEquip($event.target.value)"
+                        placeholder="Pesquisar">
+                </div>
+            </div>
+            <br />
+            <table mat-table [dataSource]="listEquipamentos" class="mat-elevation-z8">
+
+                <!-- Checkbox -->
+                <ng-container matColumnDef="selecionar">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? masterToggleEquip() : null"
+                            [checked]="equipamentosSelecionados.hasValue() && isAllSelectedEquip()"
+                            [indeterminate]="equipamentosSelecionados.hasValue() && !isAllSelectedEquip()"
+                            [aria-label]="checkboxLabelEquip()">
+                        </mat-checkbox>
+
+                    </th>
+                    <td mat-cell *matCellDef="let rowEquip">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? equipamentosSelecionados.toggle(rowEquip) : null"
+                            [checked]="equipamentosSelecionados.isSelected(rowEquip)"
+                            [aria-label]="checkboxLabelEquip(rowEquip)">
+                        </mat-checkbox>
+                    </td>
+                </ng-container>
+
+                <!-- Nome -->
+                <ng-container matColumnDef="equNome">
+                    <th mat-header-cell *matHeaderCellDef>Nome</th>
+                    <td mat-cell *matCellDef="let equipamento">{{equipamento.equNome}}</td>
+                </ng-container>
+
+                <!-- Descrição -->
+                <ng-container matColumnDef="equDescricao">
+                    <th mat-header-cell *matHeaderCellDef>Descrição</th>
+                    <td mat-cell *matCellDef="let equipamento">{{equipamento.equDescricao}}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumnsEquipamentos"></tr>
+                <tr mat-row *matRowDef="let rowEquip; columns: displayedColumnsEquipamentos;"
+                    (click)="equipamentosSelecionados.toggle(rowEquip)">
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="row ml-auto">
+            <a class="btn btn-padrao" (click)="modal.dismiss()">Fechar</a>
+        </div>
+    </div>
+</ng-template>
+<!-- FIM MODAL EQUIPAMENTOS -->

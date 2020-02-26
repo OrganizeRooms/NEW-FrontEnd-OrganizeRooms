@@ -1,0 +1,53 @@
+<div class="login-page" [@routerTransition]>
+    <br />
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <img id="imagem" src="assets/images/logo_organizerooms_branco.png" />
+            <form [formGroup]="loginForm" (ngSubmit)="verificarCredenciais(modalNovaSenha)">
+                <!-- <form [formGroup]="loginForm" (ngSubmit)="logar()">-->
+                <div class="form-group">
+                    <input type="text" formControlName="pesEmail" autofocus
+                        class="form-control input-lg input-underline text-center" placeholder="E-mail" />
+                </div>
+                <div class="form-group">
+                    <input type="password" formControlName="pesSenha"
+                        class="form-control input-lg input-underline text-center" placeholder="Senha" />
+                </div>
+                <button class="btn rounded-btn btn-padrao">
+                    <!-- <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>-->
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<ng-template #modalNovaSenha let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title ml-auto">Nova Senha</h4>
+        <a class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </a>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="modalNovaSenhaForm" (ngSubmit)="verificarNovaSenha()">
+            <div class="form-group">
+                <input type="password" formControlName="senhaAtual" class="form-control" placeholder="Senha Atual" />
+            </div>
+            <div class="form-group">
+                <input type="password" formControlName="novaPesSenha" class="form-control" placeholder="Nova Senha" />
+            </div>
+            <div class="form-group">
+                <input type="password" formControlName="novaPesSenhaRepetir" class="form-control "
+                    placeholder="Repita a Nova Senha" />
+            </div>
+            <div class="row justify-content-center modal-footer">
+                <button class="btn rounded-btn btn-padrao">
+                    <!-- <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>-->
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</ng-template>
