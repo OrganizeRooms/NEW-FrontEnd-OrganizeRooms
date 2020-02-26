@@ -1,0 +1,64 @@
+h2{
+  margin-right: -50px; 
+}
+
+.card-divider{
+  margin-left: -24px; 
+  margin-right: -20px; 
+}
+
+.color-blue{
+  color: #007bff;
+}
+
+.card-agendamento {
+  box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+  padding: 12px; 
+  padding-left: 24px; 
+  padding-right: 20px;
+  margin-bottom: 20px;
+}
+
+.card-titulo{
+  font-size: 110%;
+  font-weight: bolder;
+}
+
+.list-group-item{
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+}
+
+.text-area{
+  border: 1px solid;
+  padding: 8px;
+  text-align: justify;
+  margin: 0 auto;
+}
+
+.datepicker-home{
+  max-width: 220px;
+  padding-bottom: 10px;
+}
+
+#botoes-bottom{
+  margin-bottom: -5px;
+}
+
+.btn-home{
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+}
+
+.btn-aceitar{
+  background-color: green !important;
+  border-color: green !important;
+}
+
+.color-white{
+  color: white !important;
+}
+
+.fa-calendar-check-o{
+  color: green;
+}

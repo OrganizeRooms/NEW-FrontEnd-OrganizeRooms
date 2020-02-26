@@ -1,0 +1,51 @@
+.list-group-item{
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+}
+
+.btn-selecionar{
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+.divNews{
+    margin-top: 5px;
+}
+
+.fa-calendar-check-o{
+    color: green;
+}
+
+.page-text{
+    font-size: 110%;
+  }
+
+.form-control{
+    display: block;
+    margin-top: 2px;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.bg-green {
+    background-color: green;
+    color: white;
+}
+
+.bg-red {
+    background-color: red;
+    color: white;
+}
+
+.bg-blue {
+    background-color: #007bff;
+    color: white;
+}
