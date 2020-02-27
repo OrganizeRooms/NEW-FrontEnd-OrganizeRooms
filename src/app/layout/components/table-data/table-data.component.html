@@ -36,7 +36,7 @@
                     </a>
                     -->
                     &nbsp;
-                    <a *ngIf="_localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" (click)="excluir(unidade)">
+                    <a *ngIf="localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" (click)="excluir(unidade)">
                         <i class="fa fa-trash-o"></i>
                     </a>
                 </td>

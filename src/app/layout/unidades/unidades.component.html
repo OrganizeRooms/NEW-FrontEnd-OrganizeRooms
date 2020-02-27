@@ -12,7 +12,7 @@
                     <div class="col-4 col-sm-2 col-md-5 col-lg-6 col-xl-7">
                         <div class="row justify-content-end">
                             <div class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3">
-                                <a *ngIf="_localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" class="btn btn-padrao"
+                                <a *ngIf="localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" class="btn btn-padrao"
                                     [routerLink]="['/unidades-adicionar']" [routerLinkActive]="['router-link-active']">
                                     Adicionar
                                 </a>
@@ -61,7 +61,7 @@
                         </a>
                         -->
                         &nbsp;
-                        <a *ngIf="_localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" (click)="excluir(unidade)">
+                        <a *ngIf="localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" (click)="excluir(unidade)">
                             <i class="fa fa-trash-o"></i>
                         </a>
                     </td>

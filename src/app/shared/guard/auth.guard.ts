@@ -7,14 +7,14 @@ export class AuthGuard implements CanActivate {
     
     constructor(
         private router: Router,
-        private sessionService: SessionStorageService
+        
     ) { }
 
     canActivate() {
        // if (localStorage.getItem('localUser')) {
        //     return true;
        // }
-        if (this.sessionService.getSessionUser()) {
+        if (SessionStorageService.getSessionUser()) {
             return true;
         }
 

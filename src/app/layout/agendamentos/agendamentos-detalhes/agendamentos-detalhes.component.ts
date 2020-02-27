@@ -52,13 +52,13 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         private modal: NgbModal,
         // Services
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService,
-        private pessoaService: PessoaService,
+        
+        private PessoaService: PessoaService,
         private equipamentoService: EquipamentoService,
         private agendamentoService: AgendamentoService,
         private participanteService: ParticipanteService,
         private reservaEquipamentoService: ReservaEquipamentoService,
-        private notificacaoService: NotificacaoService
+        private NotificacaoService: NotificacaoService
     ) { }
 
     ngOnInit() {
@@ -70,8 +70,8 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             this.carregarPessoas();
             this.carregarEquipamentos();
 
-            this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
-            this.pessoaLogada = this.sessionService.getSessionUser().pessoa
+            this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
+            this.pessoaLogada = SessionStorageService.getSessionUser().pessoa
         }
     }
 
@@ -104,7 +104,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
     // temporario
     carregarPessoas() {
-        this.pessoaService.buscarTodasPessoas().subscribe(ret => {
+        this.PessoaService.buscarTodasPessoas().subscribe(ret => {
             this.listPessoas.data = ret.data
         });
     }
@@ -121,7 +121,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
         var agendamentoContext: AgendamentoContext = {
             idUnidade: this.selAgendamento.ageSala.salaUnidade.uniId,
-            lotacao: '0',
+            lotacao: 0,
             dataAgendamento: this.montarStringDataEng(new Date(this.selAgendamento.ageHoraFim)),
             dataInicial: dataHoraInicio,
             dataFinal: dataHoraFim,
@@ -177,7 +177,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             ageAssunto: this.formAgendamento.value.ageAssunto,
             ageDescricao: this.formAgendamento.value.ageDescricao,
             ageStatus: nAgeStatus,
-            agePesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             // Atributos que não são alterados e possuem trava no BackEnd
             ageDtCadastro: null,
@@ -354,9 +354,9 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
                 notDescricao: mensagem,            /// mensagem enviada por e-mail
                 notAtiva: true,
                 notPessoa: part.parPessoa,                   // participante
-                notPesCadastro: this.sessionService.getSessionUser().pessoa.pesId,
+                notPesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
                 notDtCadastro: new Date(),
-                notPesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+                notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
                 notDtAtualizacao: new Date(),
                 notEnviado: false,
                 enviaEmail: enviaEmail
@@ -367,7 +367,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
         console.log(notificacoes)
 
-        this.notificacaoService.enviarEmail(notificacoes).subscribe(ret => {
+        this.NotificacaoService.enviarEmail(notificacoes).subscribe(ret => {
             console.log(ret.data)
             if (ret.data != null) {
                 //
@@ -417,9 +417,9 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             notDescricao: nMensagemExcluido,            // mensagem enviada por e-mail
             notAtiva: true,
             notPessoa: part.parPessoa,                   // participante
-            notPesCadastro: this.sessionService.getSessionUser().pessoa.pesId,
+            notPesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
             notDtCadastro: new Date(),
-            notPesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             notDtAtualizacao: new Date(),
             notEnviado: false,
             enviaEmail: enviaEmail
@@ -428,7 +428,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
         console.log(notificacoes)
 
-        this.notificacaoService.enviarEmail(notificacoes).subscribe(ret => {
+        this.NotificacaoService.enviarEmail(notificacoes).subscribe(ret => {
             console.log(ret.data)
             if (ret.data != null) {
                 //

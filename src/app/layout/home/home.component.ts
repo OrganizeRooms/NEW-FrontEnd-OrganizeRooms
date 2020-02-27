@@ -28,17 +28,17 @@ export class HomeComponent implements OnInit {
     constructor(
         private modal: NgbModal,
         private calendar: NgbCalendar,
-        private sessionService: SessionStorageService,
+        
         private agendamentoService: AgendamentoService,
         private participanteService: ParticipanteService,        
-        private notificacaoService: NotificacaoService
+        private NotificacaoService: NotificacaoService
     ) { }
 
     ngOnInit() {
         var today = this.calendar.getToday()
         this.data = today;
 
-        this.pessoaLogada = this.sessionService.getSessionUser().pessoa;
+        this.pessoaLogada = SessionStorageService.getSessionUser().pessoa;
         this.filtro();
     }
 
@@ -146,7 +146,7 @@ export class HomeComponent implements OnInit {
             ageAssunto: agend.ageAssunto,
             ageDescricao: agend.ageDescricao,
             ageStatus: 'CONCLUIDO',
-            agePesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             ageEquipamentos: agend.ageEquipamentos,
             // Atributos que não são alterados e possuem trava no BackEnd
@@ -191,9 +191,9 @@ export class HomeComponent implements OnInit {
             notDescricao: nMensagem,                     // mensagem enviada por e-mail
             notAtiva: true,
             notPessoa: agend.agePesResponsavel, // participante
-            notPesCadastro: this.sessionService.getSessionUser().pessoa.pesId,
+            notPesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
             notDtCadastro: new Date(),
-            notPesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             notDtAtualizacao: new Date(),
             notEnviado: false,
             enviaEmail: enviaEmail
@@ -202,7 +202,7 @@ export class HomeComponent implements OnInit {
 
         console.log(notificacoes)
 
-        this.notificacaoService.enviarEmail(notificacoes).subscribe(ret => {
+        this.NotificacaoService.enviarEmail(notificacoes).subscribe(ret => {
             console.log(ret.data)
             if (ret.data != null) {
                 //

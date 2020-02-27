@@ -12,9 +12,9 @@ export class HeaderTabletComponent implements OnInit {
     public pushRightClass: string;
     currentPessoa;
 
-    constructor(public router: Router,
-        private sessionService: SessionStorageService,
-        private authenticationService: AuthenticationService) {
+    constructor(private router: Router,
+        
+        private AuthenticationService: AuthenticationService) {
 
         this.router.events.subscribe(val => {
             if (
@@ -47,7 +47,7 @@ export class HeaderTabletComponent implements OnInit {
     }
 
     logout() {
-        this.authenticationService.noSuccessfulLogin();//DESLOGAR
+        this.AuthenticationService.noSuccessfulLogin();//DESLOGAR
         this.router.navigate(['/login']);
     }
 }

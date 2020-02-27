@@ -10,20 +10,21 @@ import { Pessoa } from '../../../shared/_models';
     styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-    
+
     isActive: boolean;
     collapsed: boolean;
     showMenu: string;
     pushRightClass: string;
-    private _localUser = SessionStorageService.getSessionUser();
+    localUser = SessionStorageService.getSessionUser();
 
-    private _permissao = this._localUser.pessoa.pesPermissao;
+    permissao = this.localUser.pessoa.pesPermissao;
 
     @Output() collapsedEvent = new EventEmitter<boolean>();
 
-    constructor(public router: Router,
-        private authenticationService: AuthenticationService,
-        private pessoaService: PessoaService
+    constructor(
+        private router: Router,
+        private AuthenticationService: AuthenticationService,
+        private PessoaService: PessoaService,
     ) {
 
         this.router.events.subscribe(val => {
@@ -45,7 +46,7 @@ export class SidebarComponent implements OnInit {
     }
 
     resetarSenha() {
-        this.pessoaService.resetarSenha(this._localUser.pessoa).subscribe(ret => {
+        this.PessoaService.resetarSenha(this.localUser.pessoa).subscribe(ret => {
             if (ret.data != 'false') {
                 alert("Senha Resetada com Sucesso!")
             } else {
@@ -66,7 +67,7 @@ export class SidebarComponent implements OnInit {
         }
     }
 
-    toggleCollapsed() {
+    togglecollapsed() {
         this.collapsed = !this.collapsed;
         this.collapsedEvent.emit(this.collapsed);
     }
@@ -87,7 +88,7 @@ export class SidebarComponent implements OnInit {
     }
 
     logout() {
-        this.authenticationService.noSuccessfulLogin();//DESLOGAR
+        this.AuthenticationService.noSuccessfulLogin();//DESLOGAR
         this.router.navigate(['/login']);
     }
 }

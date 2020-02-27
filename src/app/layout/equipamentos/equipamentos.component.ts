@@ -26,14 +26,14 @@ export class EquipamentosComponent implements OnInit {
     constructor(
         private equipamentoService: EquipamentoService,
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService
+        
     ) { }
 
     ngOnInit() {
         this.carregarEquipamentos();
         this.configurarPaginador();
 
-        this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
     }
 
     carregarEquipamentos() {

@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { TableDataComponent } from './table-data.component';
+import { TableDataComponent } from "./table-data.component";
 import { LayoutModule } from '../../layout.module';
 
 describe('TableDataComponent', () => {
-  let component: TableDataComponent;
-  let fixture: ComponentFixture<TableDataComponent>;
+  let component: TableDataComponent<Object>;
+  let fixture: ComponentFixture<TableDataComponent<Object>>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

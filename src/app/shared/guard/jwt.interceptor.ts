@@ -15,7 +15,7 @@ export class JwtInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
         //const localUser = this.storage.getLocalUser();
-        const localUser = this.sessionStorage.getSessionUser();
+        const localUser = SessionStorageService.getSessionUser();
 
         const N = API_CONFIG.baseUrl.length;
         const requestToAPI = req.url.substring(0, N) === API_CONFIG.baseUrl;

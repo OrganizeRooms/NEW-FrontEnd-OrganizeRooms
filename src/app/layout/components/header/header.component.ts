@@ -10,19 +10,19 @@ import { Notificacao } from 'src/app/shared';
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-    public pushRightClass: string;
-    currentPessoa;
+
+    pushRightClass: string;
+    localUser = SessionStorageService.getSessionUser();
 
     listNotificacoes;
     contNotificacoes;
 
-    constructor(public router: Router,
-        private sessionService: SessionStorageService,
-        private authenticationService: AuthenticationService,
-        private pessoaService: PessoaService,
-        private notificacaoService: NotificacaoService) {
-
-        this.currentPessoa = this.sessionService.getSessionUser().pessoa;
+    constructor(
+        private router: Router,
+        private AuthenticationService: AuthenticationService,
+        private PessoaService: PessoaService,
+        private NotificacaoService: NotificacaoService
+    ) {
 
         this.router.events.subscribe(val => {
             if (
@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit {
     }
 
     carregarNotificacoes() {
-        this.notificacaoService.buscarPorPessoa(this.currentPessoa.pesId).subscribe(ret => {
+        this.NotificacaoService.buscarPorPessoa(this.localUser.pessoa.pesId.toString()).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.listNotificacoes = ret.data;
             } else {
@@ -52,7 +52,7 @@ export class HeaderComponent implements OnInit {
     }
 
     contador() {
-        this.notificacaoService.buscarPorPessoa(this.currentPessoa.pesId).subscribe(ret => {
+        this.NotificacaoService.buscarPorPessoa(this.localUser.pessoa.pesId.toString()).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 var list: any[] = ret.data;
 
@@ -68,7 +68,7 @@ export class HeaderComponent implements OnInit {
         var notificacao: Notificacao = {
             notId: registro.notId,
             notAtiva: false,
-            notPesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             notDtAtualizacao: new Date(),
             notDescricao: null,         // não é alterado
             notPessoa: null,            // não é alterado
@@ -78,7 +78,7 @@ export class HeaderComponent implements OnInit {
             enviaEmail: null,
         }
 
-        this.notificacaoService.atualizarNotificacao(notificacao).subscribe(ret => {
+        this.NotificacaoService.atualizarNotificacao(notificacao).subscribe(ret => {
             //
         });
 
@@ -86,7 +86,7 @@ export class HeaderComponent implements OnInit {
     }
 
     resetarSenha() {
-        this.pessoaService.resetarSenha(this.currentPessoa).subscribe(ret => {
+        this.PessoaService.resetarSenha(this.localUser.pessoa).subscribe(ret => {
             if (ret.data != 'false') {
                 alert("Senha Resetada com Sucesso!")
             } else {
@@ -111,7 +111,7 @@ export class HeaderComponent implements OnInit {
     }
 
     logout() {
-        this.authenticationService.noSuccessfulLogin();//DESLOGAR
+        this.AuthenticationService.noSuccessfulLogin();//DESLOGAR
         this.router.navigate(['/login']);
     }
 }

@@ -27,7 +27,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
 
     constructor(
         private sessionStorage: SessionStorageService,
-        private pessoaService: PessoaService
+        private PessoaService: PessoaService
     ) { }
 
     csvRecords: Pessoa[] = [];
@@ -74,7 +74,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
     }
 
     importarPessoas() {
-        this.pessoaService.importarPessoas(this.csvRecords).subscribe(ret => {
+        this.PessoaService.importarPessoas(this.csvRecords).subscribe(ret => {
             if (ret.data != null || ret.data != '') {
                 this.inconsistencias = ret.data
             } else {
@@ -119,10 +119,10 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
                     // IMP = Por Importação
                     pesTipoInclusao: 'IMP',
 
-                    pesCadastro: this.sessionStorage.getSessionUser().pessoa.pesId,
+                    pesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
                     pesDtCadastro: new Date(),
 
-                    pesAtualizacao: this.sessionStorage.getSessionUser().pessoa.pesId,
+                    pesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
                     pesDtAtualizacao: new Date(),
                     /// SOMENTE FRONT
                     participanteObrigatorio: null
