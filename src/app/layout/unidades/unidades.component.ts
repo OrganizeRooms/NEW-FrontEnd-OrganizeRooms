@@ -7,6 +7,7 @@ import { rangeLabel } from '../../shared/utils/range-label';
 import { UnidadeService, OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
 import { Unidade, LocalUser } from 'src/app/shared/_models';
 import { Router, NavigationExtras } from '@angular/router';
+import { TableDataColums } from 'src/app/shared/_models/table-data-colums';
 
 @Component({
     selector: 'app-unidades',
@@ -16,7 +17,8 @@ import { Router, NavigationExtras } from '@angular/router';
 })
 export class UnidadesComponent implements OnInit {
 
-    localUser = SessionStorageService.getSessionUser();
+    localUser: LocalUser;
+    tableDataColums: TableDataColums[];
 
     displayedColumns: string[] = ['uniId', 'uniNome', 'uniAtiva', 'detalhes'];
     tableData = new MatTableDataSource<any>();
@@ -31,6 +33,7 @@ export class UnidadesComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.localUser = SessionStorageService.getSessionUser();
         this.carregarUnidades();
         this.configurarPaginador();
     }
@@ -44,14 +47,6 @@ export class UnidadesComponent implements OnInit {
     }
 
     editarUnidade(registro: Unidade) {
-
-        let navigationExtras: NavigationExtras = {
-            state: {
-                unidade: registro
-            }
-        };
-        this.router.navigate(['/unidades-adicionar'], navigationExtras);
-
         this.OrganizeRoomsService.setValue(registro);
     }
 

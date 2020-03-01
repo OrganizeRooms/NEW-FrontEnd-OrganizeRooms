@@ -23,6 +23,7 @@
             </form>
         </div>
     </div>
+
     <div class="row justify-content-center table-content">
         <!-- Table -->
         <div class="col-12 col-sm-12 col-md-12 col-lg-11 col-xl-8">
@@ -51,15 +52,10 @@
                 <ng-container matColumnDef="detalhes">
                     <th mat-header-cell *matHeaderCellDef> </th>
                     <td mat-cell *matCellDef="let unidade">
-                        <a [routerLinkActive]="['router-link-active']" (click)="editarUnidade(unidade)">
-                            <i class="fa fa-fw fa-pencil"></i>
-                        </a>
-                        <!--
-                            <a [routerLink]="['/unidades-adicionar']" [routerLinkActive]="['router-link-active']"
+                        <a [routerLink]="['/unidades-adicionar']" [routerLinkActive]="['router-link-active']"
                             (click)="editarUnidade(unidade)">
                             <i class="fa fa-fw fa-pencil"></i>
                         </a>
-                        -->
                         &nbsp;
                         <a *ngIf="localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" (click)="excluir(unidade)">
                             <i class="fa fa-trash-o"></i>

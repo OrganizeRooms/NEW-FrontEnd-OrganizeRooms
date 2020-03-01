@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { routerTransition } from '../../../router.animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Unidade, UnidadeService, OrganizeRoomsService, SessionStorageService } from 'src/app/shared/';
+import { Unidade, UnidadeService, OrganizeRoomsService, SessionStorageService, LocalUser } from 'src/app/shared/';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -13,36 +13,25 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
-    private _formBuilder: FormBuilder;
-
-    _labelPosition = 'before';
-    localUser = SessionStorageService.getSessionUser();
-    permissao = this.localUser.pessoa.pesPermissao
+    labelPosition = 'before';
+    localUser: LocalUser;
+    permissao: string;
 
     selUnidade: Unidade;
-    selUnidade2: Unidade; // teste
     formAddUnidade: FormGroup;
 
     constructor(
-        private ActivatedRoute: ActivatedRoute,
         private router: Router,
         private UnidadeService: UnidadeService,
-        private OrganizeRoomsService: OrganizeRoomsService
+        private OrganizeRoomsService: OrganizeRoomsService,
+        private formBuilder: FormBuilder
     ) { }
 
     ngOnInit() {
+        this.localUser = SessionStorageService.getSessionUser();
+        this.permissao = this.localUser.pessoa.pesPermissao;
 
         this.selUnidade = this.OrganizeRoomsService.getValue()
-
-        this.ActivatedRoute.queryParams.subscribe(() => {
-            let getNav = this.router.getCurrentNavigation();
-            if (getNav.extras.state) {
-                this.selUnidade2 = getNav.extras.state.unidade;
-            }
-        });
-
-        console.log('this.selUnidade2 = ' + this.selUnidade2)
-
         this.criarFormulario();
     }
 
@@ -52,14 +41,14 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
     criarFormulario() {
         if (this.selUnidade != null) {
-            this.formAddUnidade = this._formBuilder.group({
+            this.formAddUnidade = this.formBuilder.group({
                 uniId: [this.selUnidade.uniId],
                 uniNome: [this.selUnidade.uniNome, Validators.compose([Validators.required])],
                 uniAtiva: [this.selUnidade.uniAtiva],
                 uniDtCadastro: [this.selUnidade.uniDtCadastro]
             });
         } else {
-            this.formAddUnidade = this._formBuilder.group({
+            this.formAddUnidade = this.formBuilder.group({
                 uniId: [0],
                 uniNome: [null, Validators.compose([Validators.required])],
                 uniAtiva: [true],
