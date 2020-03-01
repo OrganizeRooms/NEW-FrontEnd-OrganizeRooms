@@ -13,24 +13,22 @@ import { Router } from '@angular/router';
 
 export class PessoasAdicionarComponent implements OnInit, OnDestroy {
     labelPosition = 'before';
-    permissao;
-
+    
+    permissao: string;
+    localUser = SessionStorageService.getSessionUser();
     formAddPessoa: FormGroup;
-    listUnidades;
+    listUnidades: Unidade[];
 
-    selPessoa;
+    selPessoa: Pessoa;
     selUnidade = new FormControl();
-    selPermissao;
-
-    pesDtAtualizacao;
-    pesAtualizacao;
+    selPermissao: string;
 
     constructor(
         private router: Router,
         private formBuilder: FormBuilder,
         private PessoaService: PessoaService,
         private unidadeService: UnidadeService,
-        private organizeRoomsService: OrganizeRoomsService,
+        private organizeRoomsService: OrganizeRoomsService<Pessoa>,
         
     ) { }
 
@@ -38,7 +36,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         this.selPessoa = this.organizeRoomsService.getValue();
         this.carregarUnidades();
         this.criarFormulario();
-        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = this.localUser.pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
@@ -46,7 +44,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
     }
 
     carregarUnidades() {
-        this.unidadeService.buscarUnidadesAtivas().subscribe(ret => {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
             this.listUnidades = ret.data;
         });
     }
@@ -76,7 +74,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
                 pesTipoInclusao: ['SIS'],
                 pesDtCadastro: [new Date()],
             });
-            this.selUnidade = new FormControl(SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId)
+            this.selUnidade = new FormControl(this.localUser.pessoa.pesUnidade.uniId)
             this.selPermissao = 'ROLE_USUARIO';
         }
     }
@@ -89,7 +87,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
             pesTipoInclusao = null
             pesCadastro = null
         } else {
-            pesCadastro = SessionStorageService.getSessionUser().pessoa.pesId
+            pesCadastro = this.localUser.pessoa.pesId
             pesTipoInclusao = 'SIS'
         }
 
@@ -112,7 +110,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
             pesUnidade: unidade,
             pesDdd: this.formAddPessoa.value.pesDDD,
             pesTelefone: this.formAddPessoa.value.pesTelefone,
-            pesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            pesAtualizacao: this.localUser.pessoa.pesId,
             pesDtAtualizacao: new Date(),
             // NÃO É ATUALIZADO 
             pesCadastro: pesCadastro,
@@ -122,7 +120,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
             // somente front
             participanteObrigatorio: null,
         };
-        this.PessoaService.adicionarAtualizarPessoa(pessoa).subscribe(ret => {
+        this.PessoaService.adicionar(pessoa).subscribe(ret => {
             if (ret.data != null) {
                 if (this.selPessoa != null) {
                     alert('Pessoa ' + ret.data.pesNome + ' Atualizada com Sucesso!');
@@ -136,7 +134,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
     }
 
     excluir() {
-        this.PessoaService.deletar(this.selPessoa.pesId).subscribe(ret => {
+        this.PessoaService.deletar(this.selPessoa.pesId.toString()).subscribe(ret => {
             if (ret.data == true) {
                 alert('Pessoa ' + this.selPessoa.pesNome + ' Deletada com Sucesso!');
                 this.router.navigate(['/pessoas']);

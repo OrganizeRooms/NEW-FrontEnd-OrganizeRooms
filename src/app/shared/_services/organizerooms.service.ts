@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
+import { ServiceInternal } from '../_models/service-internal';
 
 @Injectable()
-export class OrganizeRoomsService {
+export class OrganizeRoomsService<T> extends ServiceInternal<T> {
 
-    private _value: any;
+    private _value: T;
 
-    constructor() { }
-
-    setValue(value: any) {
+    setValue(value: T) {
         this._value = value;
     }
 
-    getValue(): any {
+    getValue(): T {
         return this._value;
     }
-
+    
 }

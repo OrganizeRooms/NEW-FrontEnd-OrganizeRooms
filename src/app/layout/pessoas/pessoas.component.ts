@@ -5,6 +5,7 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { rangeLabel } from '../../shared/utils/range-label';
 
 import { PessoaService, OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
+import { Pessoa } from 'src/app/shared';
 
 @Component({
     selector: 'app-pessoas',
@@ -13,42 +14,43 @@ import { PessoaService, OrganizeRoomsService, SessionStorageService } from '../.
     animations: [routerTransition()]
 })
 export class PessoasComponent implements OnInit {
-    permissao;
-    listPessoas;
+    
+    localUser = SessionStorageService.getSessionUser();
+    permissao: string;
 
+    listPessoas: Pessoa[];
     displayedColumns: string[] = ['pesId', 'pesNome', 'pesDescricaoPermissao', 'pesUnidade', 'detalhes'];
-    tableData = new MatTableDataSource<any>();
+    tableData = new MatTableDataSource<Pessoa>();
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
         private PessoaService: PessoaService,
-        private organizeRoomsService: OrganizeRoomsService,
-        
+        private organizeRoomsService: OrganizeRoomsService<Pessoa>,
     ) { }
 
     ngOnInit() {
         this.carregarPessoas();
         this.configurarPaginador();
 
-        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = this.localUser.pessoa.pesPermissao;
     }
 
     carregarPessoas() {
-        this.PessoaService.buscarTodasPessoas().subscribe(ret => {
+        this.PessoaService.buscarTodos().subscribe(ret => {
             this.tableData.data = ret.data;
             this.tableData.paginator = this.paginator;
             this.tableData.sort = this.sort;
         });
     }
 
-    editarPessoa(registro) {
+    editarPessoa(registro: Pessoa) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    excluir(pessoa) {
-        this.PessoaService.deletar(pessoa.pesId).subscribe(ret => {
+    excluir(pessoa: Pessoa) {
+        this.PessoaService.deletar(pessoa.pesId.toString()).subscribe(ret => {
             if (ret.data == true) {
                 alert('Pessoa ' + pessoa.pesNome + ' Deletada com Sucesso!');
                 location.reload()

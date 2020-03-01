@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit {
             dataAgendamento: nData,
             idParticipante: this.pessoaLogada.pesId,
         }
-        this.agendamentoService.buscarAgendamentoDoUsuarioPorDia(agendamentoContext).subscribe(ret => {
+        this.agendamentoService.buscarPorParticipanteEDia(agendamentoContext).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.listAgendamentos = ret.data
             } else {
@@ -112,7 +112,7 @@ export class HomeComponent implements OnInit {
         }
 
         var msg = "Aceito"
-        this.alterarParticipante(part, msg)
+        this.atualizar(part, msg)
         location.reload();
     }
 
@@ -129,7 +129,7 @@ export class HomeComponent implements OnInit {
         }
 
         var msg = "Recusado"
-        this.alterarParticipante(part, msg)
+        this.atualizar(part, msg)
        
 
         if (this.participante.parTipo = 2) {
@@ -160,7 +160,7 @@ export class HomeComponent implements OnInit {
             ageParticipantes: null
         }
 
-        this.agendamentoService.atualizarAgendamento(agendamento).subscribe(ret => {
+        this.agendamentoService.atualizar(agendamento).subscribe(ret => {
             if (ret.data != null) {
                 alert('Agendamento Concluido com Sucesso!');
                 location.reload();
@@ -210,8 +210,8 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    alterarParticipante(participante, msg) {
-        this.participanteService.alterarParticipante(participante).subscribe(ret => {
+    atualizar(participante, msg) {
+        this.participanteService.atualizar(participante).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 alert("Agendamento " + msg + " com Sucesso!")
             } else {

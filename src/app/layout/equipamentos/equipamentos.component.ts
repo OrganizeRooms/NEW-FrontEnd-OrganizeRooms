@@ -5,6 +5,7 @@ import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { rangeLabel } from '../../shared/utils/range-label';
 
 import { EquipamentoService, OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
+import { Equipamento } from 'src/app/shared';
 
 @Component({
     selector: 'app-equipamentos',
@@ -13,19 +14,21 @@ import { EquipamentoService, OrganizeRoomsService, SessionStorageService } from 
     animations: [routerTransition()]
 })
 export class EquipamentosComponent implements OnInit {
-    permissao;
+    
+    localUser = SessionStorageService.getSessionUser();
+    permissao: string;
 
-    listEquipamentos: any[];
+    listEquipamentos: Equipamento[];
 
     displayedColumns: string[] = ['equId', 'equNome', 'equUnidade', 'equAtiva', 'detalhes'];
-    tableData = new MatTableDataSource<any>();
+    tableData = new MatTableDataSource<Equipamento>();
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
         private equipamentoService: EquipamentoService,
-        private organizeRoomsService: OrganizeRoomsService,
+        private organizeRoomsService: OrganizeRoomsService<Equipamento>,
         
     ) { }
 
@@ -33,23 +36,23 @@ export class EquipamentosComponent implements OnInit {
         this.carregarEquipamentos();
         this.configurarPaginador();
 
-        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = this.localUser.pessoa.pesPermissao;
     }
 
     carregarEquipamentos() {
-        this.equipamentoService.buscarTodosEquipamentos().subscribe(ret => {
+        this.equipamentoService.buscarTodos().subscribe(ret => {
             this.tableData.data = ret.data;
             this.tableData.paginator = this.paginator;
             this.tableData.sort = this.sort;
         });
     }
 
-    editarEquipamento(registro) {
+    editarEquipamento(registro: Equipamento) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    excluir(equipamento) {
-        this.equipamentoService.deletarEquipamento(equipamento.equId).subscribe(ret => {
+    excluir(equipamento: Equipamento) {
+        this.equipamentoService.deletar(equipamento.equId.toString()).subscribe(ret => {
             if (ret.data == true) {
                 alert('Equipamento ' + equipamento.equNome + ' Deletada com Sucesso!');
                 location.reload()

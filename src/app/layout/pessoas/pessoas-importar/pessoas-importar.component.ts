@@ -3,20 +3,6 @@ import { routerTransition } from '../../../router.animations';
 import { Pessoa, Unidade, SessionStorageService, PessoaService } from 'src/app/shared';
 import { toInteger } from 'src/app/shared/utils/util';
 
-export class CSVRecord {
-
-    public firstName: any;
-    public lastName: any;
-    public email: any;
-    public phoneNumber: any;
-    public title: any;
-    public occupation: any;
-
-    constructor() {
-
-    }
-}
-
 @Component({
     selector: 'app-pessoas-importar',
     templateUrl: './pessoas-importar.component.html',
@@ -74,7 +60,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
     }
 
     importarPessoas() {
-        this.PessoaService.importarPessoas(this.csvRecords).subscribe(ret => {
+        this.PessoaService.adicionarLista(this.csvRecords).subscribe(ret => {
             if (ret.data != null || ret.data != '') {
                 this.inconsistencias = ret.data
             } else {

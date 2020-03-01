@@ -1,29 +1,23 @@
-﻿import { Injectable, EventEmitter } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+﻿import { Injectable } from '@angular/core';
 
 import { API_CONFIG } from '../../shared/_config';
-import { LocalUser, JwtAuthentication, Response } from '../_models';
+import { LocalUser, JwtAuthentication, Response, Service } from '../_models';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SessionStorageService } from './sessionStorage.service';
-import { PessoaService } from './pessoa.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthenticationService {
+export class AuthenticationService extends Service {
 
-  pessoaLogada: EventEmitter<Boolean> = new EventEmitter();
-
-  constructor(private http: HttpClient,
-    
-    private router: Router) { }
+  //pessoaLogada: EventEmitter<Boolean> = new EventEmitter();
+  private router: Router
 
   authenticate(creds: JwtAuthentication) {
+
     return this.http.post(
       `${API_CONFIG.baseUrl}/login`,
-      creds, {
-      observe: 'response',
-      responseType: 'text'
-    }
+      creds,
+      { observe: 'response', responseType: 'text' }
     );
   }
 
@@ -35,17 +29,17 @@ export class AuthenticationService {
     return this.http.post<Response>(`${API_CONFIG.baseUrl}/login/novaSenha`, novaSenha);
   }
 
-
   successfulLogin(ret) {
+
     const user: LocalUser = {
       token: ret.data.token,
       pesEmail: ret.pessoa.pesEmail,
       logado: true,
       pessoa: ret.pessoa
     };
-    //this.storageService.setLocalUser(user);
+
     SessionStorageService.setSessionUser(user);
-    this.pessoaLogada.emit(true);
+    // this.pessoaLogada.emit(true);
     if (ret.pessoa.pesPermissao == 'ROLE_TABLET') {
       this.router.navigate(['/tablet']);
     } else {
@@ -60,8 +54,8 @@ export class AuthenticationService {
       logado: false,
       pessoa: null
     };
-    //this.storageService.setLocalUser(null);
+
     SessionStorageService.setSessionUser(null);
-    this.pessoaLogada.emit(false);
+    //this.pessoaLogada.emit(false);
   }
 }

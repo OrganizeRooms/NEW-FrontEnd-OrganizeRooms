@@ -11,7 +11,7 @@ import {
 import {
     Agendamento, Pessoa, Equipamento, Participante, AgendamentoContext, Notificacao, EnviaEmail
 } from 'src/app/shared/_models';
-import { ReservaEquipamento } from 'src/app/shared/_models/reservaEquipamento';
+import { ReservaEquipamento } from 'src/app/shared/_models/interfaces/reservaEquipamento';
 import { ReservaEquipamentoService } from 'src/app/shared/_services/reservaEquipamento.service';
 
 @Component({
@@ -51,8 +51,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private modal: NgbModal,
         // Services
-        private organizeRoomsService: OrganizeRoomsService,
-        
+        private organizeRoomsService: OrganizeRoomsService<Agendamento>,
         private PessoaService: PessoaService,
         private equipamentoService: EquipamentoService,
         private agendamentoService: AgendamentoService,
@@ -104,7 +103,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
     // temporario
     carregarPessoas() {
-        this.PessoaService.buscarTodasPessoas().subscribe(ret => {
+        this.PessoaService.buscarTodos().subscribe(ret => {
             this.listPessoas.data = ret.data
         });
     }
@@ -129,7 +128,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             idSala: null
         }
 
-        this.equipamentoService.buscarEquipamentosDisponiveis(agendamentoContext).subscribe(ret => {
+        this.equipamentoService.buscarDisponiveis(agendamentoContext).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.listEquipamentos.data = ret.data;
             }
@@ -191,7 +190,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             ageParticipantes: null
         }
 
-        this.agendamentoService.atualizarAgendamento(agendamento).subscribe(ret => {
+        this.agendamentoService.atualizar(agendamento).subscribe(ret => {
             if (ret.data != null) {
                 alert('Agendamento Alterado com Sucesso!');
             } else {
@@ -263,7 +262,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
     }
 
     inserirNovosParticipantes(participantes) {
-        this.participanteService.adicionarListaParticipantes(participantes).subscribe(ret => {
+        this.participanteService.adicionarLista(participantes).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.notificarParticipantes(participantes)
 
@@ -308,7 +307,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
     }
 
     inserirNovasReservasEquipamento(equipametos) {
-        this.reservaEquipamentoService.adicionarListaReservas(equipametos).subscribe(ret => {
+        this.reservaEquipamentoService.adicionarLista(equipametos).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 //
             } else {
@@ -376,7 +375,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
     }
 
     excluirParticipante(participante) {
-        this.participanteService.deletarParticipante(participante.parId).subscribe(ret => {
+        this.participanteService.deletar(participante.parId).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 alert('Participante ' + participante.parPessoa.pesNome + " retirado da Reunião com Sucesso!\nRecarregue a página. ")
                 this.notificarPartExcluido(participante);
@@ -387,7 +386,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
     }
 
     excluirEquipamento(reserva) {
-        this.reservaEquipamentoService.deletarReserva(reserva.resId).subscribe(ret => {
+        this.reservaEquipamentoService.deletar(reserva.resId).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 alert('Equipamento ' + reserva.equipamento.equNome + " Removido com Sucesso!\nRecarregue a página. ")
             } else {
