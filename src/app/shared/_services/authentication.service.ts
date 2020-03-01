@@ -6,6 +6,7 @@ import { LocalUser, JwtAuthentication, Response } from '../_models';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SessionStorageService } from './sessionStorage.service';
+import { PessoaService } from './pessoa.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
@@ -13,7 +14,7 @@ export class AuthenticationService {
   pessoaLogada: EventEmitter<Boolean> = new EventEmitter();
 
   constructor(private http: HttpClient,
-    private sessionService: SessionStorageService,
+    
     private router: Router) { }
 
   authenticate(creds: JwtAuthentication) {
@@ -43,7 +44,7 @@ export class AuthenticationService {
       pessoa: ret.pessoa
     };
     //this.storageService.setLocalUser(user);
-    this.sessionService.setSessionUser(user);
+    SessionStorageService.setSessionUser(user);
     this.pessoaLogada.emit(true);
     if (ret.pessoa.pesPermissao == 'ROLE_TABLET') {
       this.router.navigate(['/tablet']);
@@ -57,23 +58,10 @@ export class AuthenticationService {
       token: '',
       pesEmail: '',
       logado: false,
-      pessoa: ''
+      pessoa: null
     };
     //this.storageService.setLocalUser(null);
-    this.sessionService.setSessionUser(null);
+    SessionStorageService.setSessionUser(null);
     this.pessoaLogada.emit(false);
-  }
-
-  // Logar sem utilizar o WebService
-  fakelogin() {
-    const user: LocalUser = {
-      token: '234',
-      pesEmail: 'admin@admin.com',
-      logado: true,
-      pessoa: 'Administrador'
-    };
-    //this.storageService.setLocalUser(user);
-    this.sessionService.setSessionUser(user);
-    this.pessoaLogada.emit(true);
   }
 }

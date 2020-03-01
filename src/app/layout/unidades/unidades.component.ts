@@ -7,6 +7,7 @@ import { rangeLabel } from '../../shared/utils/range-label';
 import { UnidadeService, OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
 import { Unidade, LocalUser } from 'src/app/shared/_models';
 import { Router, NavigationExtras } from '@angular/router';
+import { TableDataColums } from 'src/app/shared/_models/table-data-colums';
 
 @Component({
     selector: 'app-unidades',
@@ -16,28 +17,29 @@ import { Router, NavigationExtras } from '@angular/router';
 })
 export class UnidadesComponent implements OnInit {
 
-    private router: Router
-    // Services
-    private _unidadeService: UnidadeService;
-    private _organizeRoomsService = new OrganizeRoomsService
-    //
-    private _localUser = SessionStorageService.getSessionUser();
+    localUser: LocalUser;
+    tableDataColums: TableDataColums[];
 
-    private displayedColumns: string[] = ['uniId', 'uniNome', 'uniAtiva', 'detalhes'];
-    private tableData = new MatTableDataSource<any>();
+    displayedColumns: string[] = ['uniId', 'uniNome', 'uniAtiva', 'detalhes'];
+    tableData = new MatTableDataSource<any>();
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor() { }
+    constructor(
+        private router: Router,
+        private UnidadeService: UnidadeService,
+        private OrganizeRoomsService: OrganizeRoomsService
+    ) { }
 
     ngOnInit() {
+        this.localUser = SessionStorageService.getSessionUser();
         this.carregarUnidades();
         this.configurarPaginador();
     }
 
     carregarUnidades() {
-        this._unidadeService.buscarTodasUnidades().subscribe(ret => {
+        this.UnidadeService.buscarTodasUnidades().subscribe((ret: any) => {
             this.tableData.data = ret.data;
             this.tableData.paginator = this.paginator;
             this.tableData.sort = this.sort;
@@ -45,19 +47,11 @@ export class UnidadesComponent implements OnInit {
     }
 
     editarUnidade(registro: Unidade) {
-
-        let navigationExtras: NavigationExtras = {
-            state: {
-                unidade: registro
-            }
-        };
-        this.router.navigate(['/unidades-adicionar'], navigationExtras);
-
-        this._organizeRoomsService.setValue(registro);
+        this.OrganizeRoomsService.setValue(registro);
     }
 
     excluir(unidade: Unidade) {
-        this._unidadeService.deletarUnidade(unidade.uniId.toString()).subscribe(ret => {
+        this.UnidadeService.deletarUnidade(unidade.uniId.toString()).subscribe(ret => {
             if (ret.data == true) {
                 alert('Unidade ' + unidade.uniNome + ' Deletada com Sucesso!');
                 location.reload();

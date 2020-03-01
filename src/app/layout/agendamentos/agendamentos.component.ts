@@ -45,15 +45,15 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
         private calendar: NgbCalendar,
         private unidadeService: UnidadeService,
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService
+        
     ) { }
 
     ngOnInit() {
         // this.carregarAgendamentos();
         this.carregarUnidades();
-        this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
         this.selAgeStatus = 'AGENDADO';
-        this.selUnidade = this.sessionService.getSessionUser().pessoa.pesUnidade.uniId;
+        this.selUnidade = SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId;
 
         var today = this.calendar.getToday()
 
@@ -82,7 +82,7 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
 
         if (this.filtrarValido) {
 
-            var idResponsavel = this.sessionService.getSessionUser().pessoa.pesId
+            var idResponsavel = SessionStorageService.getSessionUser().pessoa.pesId
 
             var nDataInicial = this.montarStringData(this.dataInicial)
             var nDataFinal = this.montarStringData(this.dataFinal)

@@ -13,8 +13,8 @@ export interface Agendamento {
     ageData: Date;
     ageHoraInicio: Date;
     ageHoraFim: Date;
-    agePesCadastro: Pessoa;
-    agePesAtualizacao: Pessoa;
+    agePesCadastro: number;
+    agePesAtualizacao: number;
     ageDtCadastro: Date;
     ageDtAtualizacao: Date;
     ageEquipamentos: Array<ReservaEquipamento>;

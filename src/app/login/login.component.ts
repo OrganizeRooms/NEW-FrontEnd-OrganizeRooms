@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
 
     constructor(private router: Router,
         private formBuilder: FormBuilder,
-        private authenticationService: AuthenticationService,
+        private AuthenticationService: AuthenticationService,
         private modalService: NgbModal
     ) { }
 
@@ -81,7 +81,7 @@ export class LoginComponent implements OnInit {
         } else {
             // Verificar se email existe
             this.novaSenha.pesEmail = this.loginForm.value.pesEmail
-            this.authenticationService.verificarEmail(this.novaSenha).subscribe(response => {
+            this.AuthenticationService.verificarEmail(this.novaSenha).subscribe(response => {
 
                 const existeEmail = response.data;
                 if (existeEmail) {
@@ -90,7 +90,7 @@ export class LoginComponent implements OnInit {
                     this.novaSenha.pesSenha = this.modalNovaSenhaForm.value.senhaAtual
                     this.novaSenha.pesNovaSenha = this.modalNovaSenhaForm.value.novaPesSenha
 
-                    this.authenticationService.novaSenha(this.novaSenha).subscribe(ret =>{
+                    this.AuthenticationService.novaSenha(this.novaSenha).subscribe(ret =>{
                         if(ret.data != false){
                             alert("Senha alterada com sucesso! \n Realize o Login novamente com sua Nova senha");
                             this.loginForm = this.formBuilder.group({
@@ -111,11 +111,11 @@ export class LoginComponent implements OnInit {
 
     onSubmit() {
         this.loading = true;
-        this.authenticationService.authenticate(this.creds).subscribe(response => {
+        this.AuthenticationService.authenticate(this.creds).subscribe(response => {
             const aux = JSON.parse(response.body);
-            this.authenticationService.successfulLogin(aux);
+            this.AuthenticationService.successfulLogin(aux);
         }, error => {
-            this.authenticationService.noSuccessfulLogin();
+            this.AuthenticationService.noSuccessfulLogin();
             this.showError();
         });
     }
@@ -125,13 +125,8 @@ export class LoginComponent implements OnInit {
     }
 
     deslogar() {
-        this.authenticationService.noSuccessfulLogin();
+        this.AuthenticationService.noSuccessfulLogin();
         this.router.navigate(['/login']);
-    }
-
-    logar() {
-        this.authenticationService.fakelogin();
-        this.router.navigate(['/home']);
     }
 
     openModalNovaSenha(modalNovaSenha) {

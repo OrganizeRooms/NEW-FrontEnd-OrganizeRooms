@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 
 @Injectable()
-export class OrganizeRoomsService<T> {
+export class OrganizeRoomsService {
 
-    private _value: T;
+    private _value: any;
 
     constructor() { }
 
-    setValue(value: T) {
+    setValue(value: any) {
         this._value = value;
     }
 
-    getValue(): T {
+    getValue(): any {
         return this._value;
     }
 

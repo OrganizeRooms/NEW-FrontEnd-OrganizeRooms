@@ -75,11 +75,11 @@ export class ReservarComponent implements OnInit, OnDestroy {
         private modal: NgbModal,
         private router: Router,
         private unidadeService: UnidadeService,
-        private sessionService: SessionStorageService,
+        
         private salaService: SalaService,
         private agendamentoService: AgendamentoService,
-        private notificacaoService: NotificacaoService,
-        private pessoaService: PessoaService,
+        private NotificacaoService: NotificacaoService,
+        private PessoaService: PessoaService,
         private equipamentoService: EquipamentoService
     ) { }
 
@@ -87,10 +87,10 @@ export class ReservarComponent implements OnInit, OnDestroy {
         //  this.carregarSalas();
         this.today = this.calendar.getToday()
         this.data = this.today;
-        this.responsavel = this.sessionService.getSessionUser().pessoa;
+        this.responsavel = SessionStorageService.getSessionUser().pessoa;
 
         this.carregarUnidades();
-        this.selUnidade = this.sessionService.getSessionUser().pessoa.pesUnidade.uniId
+        this.selUnidade = SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId
         this.criarFormularioAgendamento();
     }
 
@@ -225,7 +225,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
 
     // temporario
     carregarPessoas() {
-        this.pessoaService.buscarTodasPessoas().subscribe(ret => {
+        this.PessoaService.buscarTodasPessoas().subscribe(ret => {
             this.listPessoas.data = ret.data
         });
     }
@@ -236,7 +236,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
 
         var agendamentoContext: AgendamentoContext = {
             idUnidade: this.selUnidade,
-            lotacao: '0',
+            lotacao: 0,
             dataAgendamento: this.montarStringDataEng(this.data),
             dataInicial: dataHoraInicio,
             dataFinal: dataHoraFim,
@@ -281,8 +281,8 @@ export class ReservarComponent implements OnInit, OnDestroy {
             ageData: new Date(nAgeData),
             ageHoraInicio: dataHoraInicio,
             ageHoraFim: dataHoraFim,
-            agePesCadastro: this.sessionService.getSessionUser().pessoa.pesId,
-            agePesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            agePesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             ageDtCadastro: new Date(),
             ageDtAtualizacao: new Date(),
             ageEquipamentos: nAgeEquipamentos,
@@ -401,7 +401,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
             notificacoes.push(notificacao);
         });
 
-        this.notificacaoService.enviarEmail(notificacoes).subscribe(ret => {
+        this.NotificacaoService.enviarEmail(notificacoes).subscribe(ret => {
             if (ret.data != null) {
                 //
             }

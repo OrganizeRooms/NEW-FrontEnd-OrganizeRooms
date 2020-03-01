@@ -23,20 +23,20 @@ export class PessoasComponent implements OnInit {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
-        private pessoaService: PessoaService,
+        private PessoaService: PessoaService,
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService
+        
     ) { }
 
     ngOnInit() {
         this.carregarPessoas();
         this.configurarPaginador();
 
-        this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
     }
 
     carregarPessoas() {
-        this.pessoaService.buscarTodasPessoas().subscribe(ret => {
+        this.PessoaService.buscarTodasPessoas().subscribe(ret => {
             this.tableData.data = ret.data;
             this.tableData.paginator = this.paginator;
             this.tableData.sort = this.sort;
@@ -48,7 +48,7 @@ export class PessoasComponent implements OnInit {
     }
 
     excluir(pessoa) {
-        this.pessoaService.deletar(pessoa.pesId).subscribe(ret => {
+        this.PessoaService.deletar(pessoa.pesId).subscribe(ret => {
             if (ret.data == true) {
                 alert('Pessoa ' + pessoa.pesNome + ' Deletada com Sucesso!');
                 location.reload()

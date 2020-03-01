@@ -26,14 +26,14 @@ export class SalasComponent implements OnInit {
     constructor(
         private salaService: SalaService,
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService
+        
     ) { }
 
     ngOnInit() {
         this.carregarSalas();
         this.configurarPaginador();
 
-        this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
     }
 
     carregarSalas() {

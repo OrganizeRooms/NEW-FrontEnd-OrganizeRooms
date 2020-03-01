@@ -30,7 +30,7 @@ export class HomeTabletComponent implements OnInit {
     constructor(
         private modal: NgbModal,
         private calendar: NgbCalendar,
-        private sessionService: SessionStorageService,
+        
         private agendamentoService: AgendamentoService,
         private salaService: SalaService,
     ) { }
@@ -39,7 +39,7 @@ export class HomeTabletComponent implements OnInit {
         var today = this.calendar.getToday()
         this.data = today;
 
-        this.pessoaLogada = this.sessionService.getSessionUser().pessoa;
+        this.pessoaLogada = SessionStorageService.getSessionUser().pessoa;
         this.carregarTodasSalas();
 
         this.selSala = new FormControl(1)
@@ -93,7 +93,7 @@ export class HomeTabletComponent implements OnInit {
             ageAssunto: agend.ageAssunto,
             ageDescricao: agend.ageDescricao,
             ageStatus: 'CONCLUIDO',
-            agePesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             ageEquipamentos: agend.ageEquipamentos,
             // Atributos que não são alterados e possuem trava no BackEnd

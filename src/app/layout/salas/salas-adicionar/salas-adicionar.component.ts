@@ -25,12 +25,12 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
     salaPesAtualizacao;
 
     constructor(
-        public router: Router,
+        private router: Router,
         private formBuilder: FormBuilder,
         private salaService: SalaService,
         private unidadeService: UnidadeService,
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService
+        
     ) { }
 
     ngOnInit() {
@@ -38,7 +38,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
 
         this.carregarUnidades();
         this.criarFormulario();
-        this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
@@ -69,7 +69,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
                 salaAtiva: [true],
                 salaDtCadastro: [new Date()]
             });
-            this.selUnidade = new FormControl(this.sessionService.getSessionUser().pessoa.pesUnidade.uniId);
+            this.selUnidade = new FormControl(SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId);
         }
     }
 
@@ -79,7 +79,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         if (this.selSala != null) {
             salaPesCadastro = null
         } else {
-            salaPesCadastro = this.sessionService.getSessionUser().pessoa.pesId
+            salaPesCadastro = SessionStorageService.getSessionUser().pessoa.pesId
         }
 
         const unidade: Unidade = {
@@ -97,7 +97,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
             salaNome: this.formAddSala.value.salaNome,
             salaLotacao: this.formAddSala.value.salaLotacao,
             salaAtiva: this.formAddSala.value.salaAtiva,
-            salaPesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            salaPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             salaDtAtualizacao: new Date(),
             salaUnidade: unidade,
             salaPesCadastro: salaPesCadastro,

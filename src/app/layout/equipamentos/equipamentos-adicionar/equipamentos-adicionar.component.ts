@@ -27,12 +27,12 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
     equPesAtualizacao;
 
     constructor(
-        public router: Router,
+        private router: Router,
         private formBuilder: FormBuilder,
         private equipamentoService: EquipamentoService,
         private unidadeService: UnidadeService,
         private organizeRoomsService: OrganizeRoomsService,
-        private sessionService: SessionStorageService,
+        
     ) { }
 
     ngOnInit() {
@@ -46,7 +46,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
         this.carregarUnidades();
         this.criarFormulario();
 
-        this.permissao = this.sessionService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
@@ -78,7 +78,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
                 equAtiva: [true],
                 equDtCadastro: [new Date()]
             });
-            this.selUnidade = new FormControl(this.sessionService.getSessionUser().pessoa.pesUnidade.uniId)
+            this.selUnidade = new FormControl(SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId)
         }
     }
 
@@ -88,7 +88,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
         if (this.selEquipamento != null) {
             equPesCadastro = null
         } else {
-            equPesCadastro = this.sessionService.getSessionUser().pessoa.pesId
+            equPesCadastro = SessionStorageService.getSessionUser().pessoa.pesId
         }
 
         const unidade: Unidade = {
@@ -107,7 +107,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
             equDescricao: this.formAddEquipamento.value.equDescricao,
             equAtiva: this.formAddEquipamento.value.equAtiva,
             equUnidade: unidade,
-            equPesAtualizacao: this.sessionService.getSessionUser().pessoa.pesId,
+            equPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
             equDtAtualizacao: new Date(),
             // NÃO É ATUALIZADO 
             equPesCadastro: equPesCadastro,

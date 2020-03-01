@@ -6,9 +6,9 @@ export interface Notificacao {
     notDescricao: string;
     notAtiva: boolean;
     notPessoa: Pessoa;
-    notPesCadastro: Pessoa;
+    notPesCadastro: number;
     notDtCadastro: Date;
-    notPesAtualizacao: Pessoa;
+    notPesAtualizacao: number;
     notDtAtualizacao: Date;
     notEnviado: Boolean;
     enviaEmail: EnviaEmail;

@@ -1,10 +1,10 @@
 <div>
-    <app-page-header *ngIf="_selUnidade != null" [heading]="'Unidades - Detalhes da Unidade'"></app-page-header>
-    <app-page-header *ngIf="_selUnidade == null" [heading]="'Unidades - Adicionar Unidade'"></app-page-header>
+    <app-page-header *ngIf="selUnidade != null" [heading]="'Unidades - Detalhes da Unidade'"></app-page-header>
+    <app-page-header *ngIf="selUnidade == null" [heading]="'Unidades - Adicionar Unidade'"></app-page-header>
 
     <div class="row ml-auto justify-content-md-center">
         <div class="col-10 col-sm-8 col-md-8 col-lg-8 col-xl-5">
-            <form [formGroup]="_formAddUnidade">
+            <form [formGroup]="formAddUnidade">
                 <div class="row">
                     <div class="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-2">
                         <span>Código</span>
@@ -13,18 +13,18 @@
                     <div class="col-6 col-sm-4 col-md-4 col-lg-4 col-xl-4">
                         <span>Data Cadastro</span>
                         <span
-                            class="form-control disabled">{{_formAddUnidade.value.uniDtCadastro | date: 'dd/MM/yyyy'}}</span>
+                            class="form-control disabled">{{formAddUnidade.value.uniDtCadastro | date: 'dd/MM/yyyy'}}</span>
                     </div>
-                    <div *ngIf="_localUser == 'ROLE_ADMIN'" id="checkbox"
+                    <div *ngIf="permissao == 'ROLE_ADMIN'" id="checkbox"
                         class="col-2 col-sm-4 col-md-4 col-lg-3 col-xl-1">
-                        <mat-checkbox formControlName="uniAtiva" checked="_formAddUnidade.uniAtiva"
-                            [labelPosition]='_labelPosition'>
+                        <mat-checkbox formControlName="uniAtiva" checked="formAddUnidade.uniAtiva"
+                            [labelPosition]='labelPosition'>
                             Ativa?</mat-checkbox>
                     </div>
-                    <div *ngIf="_localUser.pessoa.pesPermissao != 'ROLE_ADMIN'" id="checkbox"
+                    <div *ngIf="permissao != 'ROLE_ADMIN'" id="checkbox"
                         class="col-2 col-sm-4 col-md-4 col-lg-3 col-xl-1">
-                        <mat-checkbox [disabled]="true" formControlName="uniAtiva" checked="_formAddUnidade.uniAtiva"
-                            [labelPosition]='_labelPosition'>
+                        <mat-checkbox [disabled]="true" formControlName="uniAtiva" checked="formAddUnidade.uniAtiva"
+                            [labelPosition]='labelPosition'>
                             Ativa?</mat-checkbox>
                     </div>
                 </div>
@@ -42,12 +42,12 @@
                             [routerLinkActive]="['router-link-active']">
                             Voltar
                         </a>
-                        <button *ngIf="_localUser.pessoa.pesPermissao == 'ROLE_ADMIN'" [disabled]="!_formAddUnidade.valid"
+                        <button *ngIf="permissao == 'ROLE_ADMIN'" [disabled]="!formAddUnidade.valid"
                             class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3 btn btn-padrao"
                             (click)="adicionarUnidade()">
                             Salvar
                         </button>
-                        <a *ngIf="_localUser.pessoa.pesPermissao == 'ROLE_ADMIN' && _selUnidade != null"
+                        <a *ngIf="permissao == 'ROLE_ADMIN' && selUnidade != null"
                             class="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-3 btn btn-padrao" (click)="excluir()">
                             Excluir
                         </a>
