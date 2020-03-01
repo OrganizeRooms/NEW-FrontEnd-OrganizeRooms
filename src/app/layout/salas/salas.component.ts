@@ -37,7 +37,7 @@ export class SalasComponent implements OnInit {
     }
 
     carregarSalas() {
-        this.salaService.buscarTodasSalas().subscribe(ret => {
+        this.salaService.buscarTodos().subscribe(ret => {
             this.tableData.data = ret.data;
             this.tableData.paginator = this.paginator;
             this.tableData.sort = this.sort;
@@ -49,7 +49,7 @@ export class SalasComponent implements OnInit {
     }
 
     excluir(sala) {
-        this.salaService.deletarSala(sala.salaId).subscribe(ret => {
+        this.salaService.deletar(sala.salaId).subscribe(ret => {
             if (ret.data == true) {
                 alert(sala.salaNome + ' Deletada com Sucesso!');
                 location.reload()

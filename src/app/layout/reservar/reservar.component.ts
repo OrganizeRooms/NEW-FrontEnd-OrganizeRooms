@@ -16,7 +16,7 @@ import {
     Agendamento, Pessoa, Equipamento, Participante, AgendamentoContext, Notificacao, EnviaEmail
 } from 'src/app/shared/_models';
 import { Router } from '@angular/router';
-import { ReservaEquipamento } from 'src/app/shared/_models/reservaEquipamento';
+import { ReservaEquipamento } from 'src/app/shared/_models/interfaces/reservaEquipamento';
 
 // Metodos
 //import { montarStringDataHora, montarStringDataEng, montarDataHora } from 'src/app/shared/utils';
@@ -104,7 +104,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
 
     // Inicio Métodos Passo 1 - Verificação
     carregarUnidades() {
-        this.unidadeService.buscarUnidadesAtivas().subscribe(ret => {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
             this.listUnidades = ret.data;
         });
     }
@@ -134,7 +134,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
                 idSala: null
             }
 
-            this.salaService.buscarSalasDisponiveis(agendamentoContext).subscribe(ret => {
+            this.salaService.buscarDisponiveis(agendamentoContext).subscribe(ret => {
                 if (ret.data != null && ret.data != '') {
                     this.listSalas = ret.data;
                 } else {
@@ -225,7 +225,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
 
     // temporario
     carregarPessoas() {
-        this.PessoaService.buscarTodasPessoas().subscribe(ret => {
+        this.PessoaService.buscarTodos().subscribe(ret => {
             this.listPessoas.data = ret.data
         });
     }
@@ -244,7 +244,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
             idSala: null
         }
 
-        this.equipamentoService.buscarEquipamentosDisponiveis(agendamentoContext).subscribe(ret => {
+        this.equipamentoService.buscarDisponiveis(agendamentoContext).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.listEquipamentos.data = ret.data;
             }
@@ -290,7 +290,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
             ageParticipantes: nAgeParticipantes
         }
 
-        this.agendamentoService.addAgendamento(agendamento).subscribe(ret => {
+        this.agendamentoService.adicionar(agendamento).subscribe(ret => {
             if (ret.data != null) {
                 // Completa o Passo
                 stepper.selected.completed = true;

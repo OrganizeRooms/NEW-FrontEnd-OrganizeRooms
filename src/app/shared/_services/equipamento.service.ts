@@ -1,28 +1,30 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 import { API_CONFIG } from '../../shared/_config';
-import { Equipamento, Response, Unidade, AgendamentoContext } from '../_models';
+import { Equipamento, Response, AgendamentoContext, ServiceWS } from '../_models';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class EquipamentoService {
-    constructor(private http: HttpClient) { }
+export class EquipamentoService extends ServiceWS<Equipamento>{
 
-    buscarTodosEquipamentos(): Observable<Response> {
+    buscarTodos(): Observable<Response> {
         return this.http.get<Response>(`${API_CONFIG.baseUrl}/equipamentos`);
     }
 
-    // Equipamentos Disponiveis
-    buscarEquipamentosDisponiveis(agendamentoContext: AgendamentoContext): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/equipamentos/equidisp`, agendamentoContext);
+    adicionar(objeto: Equipamento): Observable<Response> {
+        return this.http.post<Response>(`${API_CONFIG.baseUrl}/equipamentos`, objeto);
     }
 
-    adicionarAtualizarEquipamento(equipamento: Equipamento): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/equipamentos`, equipamento);
+    atualizar(objeto: Equipamento): Observable<Response> {
+        return this.adicionar(objeto);
     }
 
-    deletarEquipamento(id: String): Observable<Response> {
+    deletar(id: String): Observable<Response> {
         return this.http.delete<Response>(`${API_CONFIG.baseUrl}/equipamentos/` + id);
+    }
+
+    // Equipamentos Disponiveis
+    buscarDisponiveis(agendamentoContext: AgendamentoContext): Observable<Response> {
+        return this.http.post<Response>(`${API_CONFIG.baseUrl}/equipamentos/equidisp`, agendamentoContext);
     }
 }

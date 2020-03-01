@@ -71,7 +71,7 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
     }
 
     carregarUnidades() {
-        this.unidadeService.buscarUnidadesAtivas().subscribe(ret => {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
             this.listUnidades = ret.data;
             this.tableData.paginator = this.paginator;
         });

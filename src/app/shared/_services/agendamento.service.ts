@@ -1,24 +1,34 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 import { API_CONFIG } from '../../shared/_config';
-import { Agendamento, Unidade, Response, AgendamentoContext } from '../_models';
+import { Agendamento, Response, AgendamentoContext, ServiceWS } from '../_models';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class AgendamentoService {
-    constructor(private http: HttpClient) { }
+export class AgendamentoService extends ServiceWS<Agendamento>{
 
 
-    buscarTodosAgendamentos(): Observable<Response> {
+    buscarTodos(): Observable<Response> {
         return this.http.get<Response>(`${API_CONFIG.baseUrl}/agendamentos`);
     }
 
-    buscarAgendamentoDoUsuarioPorDia(agendamentoContext: AgendamentoContext): Observable<Response> {
+    adicionar(objeto: Agendamento): Observable<Response> {
+        return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos`, objeto);
+    }
+
+    atualizar(objeto: Agendamento): Observable<Response> {
+        return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos/atualizar`, objeto);
+    }
+
+    deletar(id: string): Observable<Response> {
+        throw new Error("Este metodo não é utilizado!.");
+    }
+
+    buscarPorParticipanteEDia(agendamentoContext: AgendamentoContext): Observable<Response> {
         return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos/participante`, agendamentoContext);
     }
 
-    buscarAgendamentoPorSalaEData(agendamentoContext: AgendamentoContext): Observable<Response> {
+    buscarPorSalaEData(agendamentoContext: AgendamentoContext): Observable<Response> {
         return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos/salas`, agendamentoContext);
     }
 
@@ -28,13 +38,5 @@ export class AgendamentoService {
 
     buscarPorResponsavel(agendamentoContext: AgendamentoContext): Observable<Response> {
         return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos/responsavel`, agendamentoContext);
-    }
-
-    addAgendamento(agendamento: Agendamento): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos`, agendamento);
-    }
-
-    atualizarAgendamento(agendamento: Agendamento): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/agendamentos/atualizar`, agendamento);
     }
 }

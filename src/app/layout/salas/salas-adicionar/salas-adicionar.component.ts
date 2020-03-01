@@ -29,7 +29,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private salaService: SalaService,
         private unidadeService: UnidadeService,
-        private organizeRoomsService: OrganizeRoomsService,
+        private organizeRoomsService: OrganizeRoomsService<Sala>,
         
     ) { }
 
@@ -46,7 +46,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
     }
 
     carregarUnidades() {
-        this.unidadeService.buscarUnidadesAtivas().subscribe(ret => {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
             this.listUnidades = ret.data;
         });
     }
@@ -105,7 +105,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
             salaDtCadastro: null,
         };
 
-        this.salaService.adicionarAtualizarSala(sala).subscribe(ret => {
+        this.salaService.adicionar(sala).subscribe(ret => {
             if (ret.data != null) {
                 if (this.selSala != null) {
                     alert('Sala ' + ret.data.salaNome + ' Atualizada com Sucesso!');
@@ -119,7 +119,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
     }
 
     excluir() {
-        this.salaService.deletarSala(this.selSala.salaId).subscribe(ret => {
+        this.salaService.deletar(this.selSala.salaId).subscribe(ret => {
             if (ret.data == true) {
                 alert(this.selSala.salaNome + ' Deletada com Sucesso!');
                 this.router.navigate(['/salas']);

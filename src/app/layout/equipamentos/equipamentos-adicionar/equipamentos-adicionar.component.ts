@@ -54,7 +54,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
     }
 
     carregarUnidades() {
-        this.unidadeService.buscarUnidadesAtivas().subscribe(ret => {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
             this.listUnidades = ret.data;
         });
     }
@@ -114,7 +114,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
             equDtCadastro: null,
         };
 
-        this.equipamentoService.adicionarAtualizarEquipamento(equipamento).subscribe(ret => {
+        this.equipamentoService.adicionar(equipamento).subscribe(ret => {
             if (ret.data != null) {
                 if (this.selEquipamento != null) {
                     alert('Equipamento ' + ret.data.equNome + ' Atualizada com Sucesso!');
@@ -128,7 +128,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
     }
 
     excluir() {
-        this.equipamentoService.deletarEquipamento(this.selEquipamento.equId).subscribe(ret => {
+        this.equipamentoService.deletar(this.selEquipamento.equId).subscribe(ret => {
             if (ret.data == true) {
                 alert('Equipamento ' + this.selEquipamento.equNome + ' Deletada com Sucesso!');
                 this.router.navigate(['/equipamentos']);

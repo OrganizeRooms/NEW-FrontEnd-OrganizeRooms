@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
 
     loading = false;
 
-    @Input() pessoaLogada: boolean;
+    //@Input() pessoaLogada: boolean;
 
     creds: JwtAuthentication = {
         pesEmail: '',

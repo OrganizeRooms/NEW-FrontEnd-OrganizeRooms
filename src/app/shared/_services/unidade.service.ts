@@ -1,32 +1,34 @@
 ﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 import { API_CONFIG } from '../../shared/_config';
-import { Response, Unidade } from '../_models';
+import { Response, Unidade, ServiceWS } from '../_models';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class UnidadeService {
-    constructor(private http: HttpClient) { }
+export class UnidadeService extends ServiceWS<Unidade>{
 
-    buscarTodasUnidades(): Observable<Response> {
+    buscarTodos(): Observable<Response> {
         return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades`);
     }
 
-    buscarUnidadesAtivas(): Observable<Response> {
-        return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades/ativo`);
+    adicionar(objeto: Unidade): Observable<Response> {
+        return this.http.post<Response>(`${API_CONFIG.baseUrl}/unidades`, objeto);
     }
 
-    buscarUnidadePorId(id: String): Observable<Response> {
-        return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades/` + id);
+    atualizar(objeto: Unidade): Observable<Response> {
+        return this.adicionar(objeto);
     }
 
-    deletarUnidade(id: String): Observable<Response> {
+    deletar(id: string): Observable<Response> {
         return this.http.delete<Response>(`${API_CONFIG.baseUrl}/unidades/` + id);
     }
 
-    adicionarAtualizarUnidade(unidade: Unidade): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/unidades`, unidade);
+    buscarAtivas(): Observable<Response> {
+        return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades/ativo`);
+    }
+
+    buscarPorId(id: String): Observable<Response> {
+        return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades/` + id);
     }
 
 }
