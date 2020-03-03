@@ -1,19 +1,22 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { routerTransition } from '../../../router.animations';
-import { Pessoa, Unidade, SessionStorageService, PessoaService } from 'src/app/shared';
+
 import { toInteger } from 'src/app/shared/utils/util';
+import { SessionStorageService } from 'src/app/shared/_services';
+import { Pessoa, Unidade } from 'src/app/shared/_models';
+import { PessoaController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-pessoas-importar',
     templateUrl: './pessoas-importar.component.html',
     styleUrls: ['./pessoas-importar.component.scss'],
-    //animations: [routerTransition()]
+    animations: [routerTransition()]
 })
 export class PessoasImportarComponent implements OnInit, OnDestroy {
 
     constructor(
-        private sessionStorage: SessionStorageService,
-        private PessoaService: PessoaService
+        private sessionStorageService: SessionStorageService,
+        private pessoaController: PessoaController
     ) { }
 
     csvRecords: Pessoa[] = [];
@@ -60,14 +63,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
     }
 
     importarPessoas() {
-        this.PessoaService.adicionarLista(this.csvRecords).subscribe(ret => {
-            if (ret.data != null || ret.data != '') {
-                this.inconsistencias = ret.data
-            } else {
-                this.inconsistencias = ''
-            }
-        });
-        return false;
+        this.inconsistencias = this.pessoaController.adicionarLista(this.csvRecords);
     }
 
     getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any) {
@@ -105,10 +101,10 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
                     // IMP = Por Importação
                     pesTipoInclusao: 'IMP',
 
-                    pesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
+                    pesCadastro: this.sessionStorageService.getValue().pessoa.pesId,
                     pesDtCadastro: new Date(),
 
-                    pesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+                    pesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
                     pesDtAtualizacao: new Date(),
                     /// SOMENTE FRONT
                     participanteObrigatorio: null

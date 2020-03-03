@@ -51,15 +51,10 @@
                 <ng-container matColumnDef="detalhes">
                     <th mat-header-cell *matHeaderCellDef> </th>
                     <td mat-cell *matCellDef="let unidade">
-                        <a [routerLinkActive]="['router-link-active']" (click)="editarUnidade(unidade)">
+                        <a [routerLink]="['/unidades-adicionar']" [routerLinkActive]="['router-link-active']"
+                            (click)="editar(unidade)">
                             <i class="fa fa-fw fa-pencil"></i>
                         </a>
-                        <!--
-                            <a [routerLink]="['/unidades-adicionar']" [routerLinkActive]="['router-link-active']"
-                            (click)="editarUnidade(unidade)">
-                            <i class="fa fa-fw fa-pencil"></i>
-                        </a>
-                        -->
                         &nbsp;
                         <a *ngIf="permissao == 'ROLE_ADMIN'" (click)="excluir(unidade)">
                             <i class="fa fa-trash-o"></i>

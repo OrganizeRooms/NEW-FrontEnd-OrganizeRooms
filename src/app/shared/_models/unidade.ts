@@ -1,15 +1,12 @@
-import { Pessoa } from './pessoa';
+import { UnidadeService } from '../_services';
 
-export class Unidade {
+export interface Unidade {
 
-    constructor(){}
-
-    uniId: number;
-    uniNome: string;
-    uniAtiva: boolean;
-    uniPesCadastro: Number;
-    uniDtCadastro: Date;
-    uniPesAtualizacao: Number;
-    uniDtAtualizacao: Date;
-
+    uniId: number,
+    uniNome: string,
+    uniAtiva: boolean,
+    uniPesCadastro: number,
+    uniDtCadastro: Date,
+    uniPesAtualizacao: number,
+    uniDtAtualizacao: Date
 }

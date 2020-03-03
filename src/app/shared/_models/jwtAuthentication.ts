@@ -1,5 +1,6 @@
 export interface JwtAuthentication {
-    pesEmail: String;
-    pesSenha: String;
-    pesNovaSenha: String;
+
+    pesEmail: string;
+    pesSenha: string;
+    pesNovaSenha: string;
 }

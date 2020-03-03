@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { routerTransition } from '../../../router.animations';
+import { routerTransition } from 'src/app/router.animations';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Sala, OrganizeRoomsService, SalaService, UnidadeService, SessionStorageService, Unidade } from 'src/app/shared';
 import { Router } from '@angular/router';
@@ -30,7 +30,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         private salaService: SalaService,
         private unidadeService: UnidadeService,
         private organizeRoomsService: OrganizeRoomsService<Sala>,
-        
+        private sessionStorageService: SessionStorageService
     ) { }
 
     ngOnInit() {
@@ -38,7 +38,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
 
         this.carregarUnidades();
         this.criarFormulario();
-        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
+        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
@@ -69,7 +69,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
                 salaAtiva: [true],
                 salaDtCadastro: [new Date()]
             });
-            this.selUnidade = new FormControl(SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId);
+            this.selUnidade = new FormControl(this.sessionStorageService.getValue().pessoa.pesUnidade.uniId);
         }
     }
 
@@ -79,7 +79,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         if (this.selSala != null) {
             salaPesCadastro = null
         } else {
-            salaPesCadastro = SessionStorageService.getSessionUser().pessoa.pesId
+            salaPesCadastro = this.sessionStorageService.getValue().pessoa.pesId
         }
 
         const unidade: Unidade = {
@@ -97,7 +97,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
             salaNome: this.formAddSala.value.salaNome,
             salaLotacao: this.formAddSala.value.salaLotacao,
             salaAtiva: this.formAddSala.value.salaAtiva,
-            salaPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            salaPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             salaDtAtualizacao: new Date(),
             salaUnidade: unidade,
             salaPesCadastro: salaPesCadastro,

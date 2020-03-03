@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Service } from './service';
+import { Router } from '@angular/router';
 
-@Injectable({ providedIn: 'root' })
-export abstract class ServiceInternal<T> extends Service{
+export abstract class ServiceInternal<T>{
+
+    constructor(
+        protected router: Router
+    ) { };
 
     abstract getValue(): T;
     abstract setValue(objeto: T);

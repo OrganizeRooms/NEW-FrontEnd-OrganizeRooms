@@ -1,24 +1,19 @@
 ﻿import { Injectable } from '@angular/core';
-
 import { API_CONFIG } from '../../shared/_config';
-import { LocalUser, JwtAuthentication, Response, Service } from '../_models';
-import { Router } from '@angular/router';
+import { JwtAuthentication, Response } from 'src/app/shared/_models';
 import { Observable } from 'rxjs';
-import { SessionStorageService } from './sessionStorage.service';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
-export class AuthenticationService extends Service {
+export class AuthenticationService {
 
-  //pessoaLogada: EventEmitter<Boolean> = new EventEmitter();
-  private router: Router
+  constructor(private http: HttpClient) { }
 
-  authenticate(creds: JwtAuthentication) {
-
+  authenticate(creds: JwtAuthentication): Observable<HttpResponse<string>> {
     return this.http.post(
       `${API_CONFIG.baseUrl}/login`,
       creds,
-      { observe: 'response', responseType: 'text' }
-    );
+      { observe: 'response', responseType: 'text' });
   }
 
   verificarEmail(email: JwtAuthentication): Observable<Response> {
@@ -29,33 +24,4 @@ export class AuthenticationService extends Service {
     return this.http.post<Response>(`${API_CONFIG.baseUrl}/login/novaSenha`, novaSenha);
   }
 
-  successfulLogin(ret) {
-
-    const user: LocalUser = {
-      token: ret.data.token,
-      pesEmail: ret.pessoa.pesEmail,
-      logado: true,
-      pessoa: ret.pessoa
-    };
-
-    SessionStorageService.setSessionUser(user);
-    // this.pessoaLogada.emit(true);
-    if (ret.pessoa.pesPermissao == 'ROLE_TABLET') {
-      this.router.navigate(['/tablet']);
-    } else {
-      this.router.navigate(['/home']);
-    }
-  }
-
-  noSuccessfulLogin() {
-    const user: LocalUser = {
-      token: '',
-      pesEmail: '',
-      logado: false,
-      pessoa: null
-    };
-
-    SessionStorageService.setSessionUser(null);
-    //this.pessoaLogada.emit(false);
-  }
 }

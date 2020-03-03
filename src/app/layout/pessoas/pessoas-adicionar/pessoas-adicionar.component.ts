@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { routerTransition } from '../../../router.animations';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { PessoaService, OrganizeRoomsService, UnidadeService, Pessoa, SessionStorageService, Unidade } from 'src/app/shared';
 import { Router } from '@angular/router';
+import { routerTransition } from 'src/app/router.animations';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+
+import { Pessoa, Unidade, LocalUser } from 'src/app/shared/_models';
+import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
+import { PessoaController, UnidadeController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-pessoas-adicionar',
@@ -12,13 +15,12 @@ import { Router } from '@angular/router';
 })
 
 export class PessoasAdicionarComponent implements OnInit, OnDestroy {
+
     labelPosition = 'before';
-    
     permissao: string;
-    localUser = SessionStorageService.getSessionUser();
+    localUser: LocalUser;
     formAddPessoa: FormGroup;
     listUnidades: Unidade[];
-
     selPessoa: Pessoa;
     selUnidade = new FormControl();
     selPermissao: string;
@@ -26,27 +28,27 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
     constructor(
         private router: Router,
         private formBuilder: FormBuilder,
-        private PessoaService: PessoaService,
-        private unidadeService: UnidadeService,
         private organizeRoomsService: OrganizeRoomsService<Pessoa>,
-        
+        private sessionStorageService: SessionStorageService,
+        private pessoaController: PessoaController,
+        private unidadeController: UnidadeController
     ) { }
 
     ngOnInit() {
         this.selPessoa = this.organizeRoomsService.getValue();
+        this.localUser = this.sessionStorageService.getValue();
+        this.permissao = this.localUser.pessoa.pesPermissao;
+
         this.carregarUnidades();
         this.criarFormulario();
-        this.permissao = this.localUser.pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
         this.organizeRoomsService.setValue(null)
     }
 
-    carregarUnidades() {
-        this.unidadeService.buscarAtivas().subscribe(ret => {
-            this.listUnidades = ret.data;
-        });
+    async carregarUnidades() {
+        this.listUnidades = await this.unidadeController.buscarAtivas();
     }
 
     criarFormulario() {
@@ -79,7 +81,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         }
     }
 
-    adicionarPessoa() {
+    async adicionarPessoa() {
 
         var pesTipoInclusao;
         var pesCadastro;
@@ -99,9 +101,9 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
             uniDtCadastro: null,
             uniPesAtualizacao: null,
             uniDtAtualizacao: null
-        }
+        };
 
-        const pessoa: Pessoa = {
+        const newPessoa: Pessoa = {
             pesId: this.formAddPessoa.value.pesId,
             pesNome: this.formAddPessoa.value.pesNome,
             pesEmail: this.formAddPessoa.value.pesEmail,
@@ -120,39 +122,43 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
             // somente front
             participanteObrigatorio: null,
         };
-        this.PessoaService.adicionar(pessoa).subscribe(ret => {
-            if (ret.data != null) {
-                if (this.selPessoa != null) {
-                    alert('Pessoa ' + ret.data.pesNome + ' Atualizada com Sucesso!');
-                    this.router.navigate(['/pessoas']);
-                } else {
-                    alert('Pessoa ' + ret.data.pesNome + ' Adiconada com Sucesso!');
-                    this.router.navigate(['/pessoas']);
-                }
-            }
-        });
-    }
 
-    excluir() {
-        this.PessoaService.deletar(this.selPessoa.pesId.toString()).subscribe(ret => {
-            if (ret.data == true) {
-                alert('Pessoa ' + this.selPessoa.pesNome + ' Deletada com Sucesso!');
-                this.router.navigate(['/pessoas']);
-            }
-            if (ret.data == false) {
-                alert('Não foi possível Deletar a Pessoa ' + this.selPessoa.pesNome + ' !');
-            }
-        })
-    }
+        let retPessoa = await this.pessoaController.adicionar(newPessoa);
 
-    resetarSenha() {
-        this.PessoaService.resetarSenha(this.selPessoa).subscribe(ret => {
-            if (ret.data != 'false') {
-                alert("Senha Resetada com Sucesso!")
+        if (retPessoa != null) {
+            if (this.selPessoa != null) {
+                alert(`Pessoa ${retPessoa.pesNome} Atualizada com Sucesso!`);
             } else {
-                alert("Erro ao Resetar Senha!")
+                alert(`Pessoa ${retPessoa.pesNome} Adiconada com Sucesso!`);
             }
-        });
 
+            this.router.navigate(['/pessoas']);
+        } else {
+            alert('Não foi possível realizar a ação! Tente Novamente.');
+        }
+    }
+
+    async excluir() {
+
+        let retorno = await this.pessoaController.deletar(this.selPessoa.pesId);
+        if (retorno == true) {
+            alert(`Pessoa ${this.selPessoa.pesNome} Deletada com Sucesso!`);
+            this.router.navigate(['/pessoas']);
+
+        } else {
+
+            alert(`Não foi possível Deletar a Pessoa ${this.selPessoa.pesNome} !`);
+        }
+    }
+
+    async resetarSenha() {
+
+        let retorno = await this.pessoaController.resetarSenha(this.selPessoa);
+
+        if (retorno) {
+            alert("Senha Resetada com Sucesso!")
+        } else {
+            alert("Erro ao Resetar Senha!")
+        }
     }
 }

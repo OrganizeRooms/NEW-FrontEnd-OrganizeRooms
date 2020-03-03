@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { AuthenticationService, SessionStorageService } from '../../../shared/_services';
+import { SessionStorageService } from '../../../shared/_services';
+import { AuthenticationController, Pessoa } from 'src/app/shared';
 
 @Component({
     selector: 'app-header-tablet',
@@ -10,11 +11,11 @@ import { AuthenticationService, SessionStorageService } from '../../../shared/_s
 })
 export class HeaderTabletComponent implements OnInit {
     public pushRightClass: string;
-    currentPessoa;
+    currentPessoa: Pessoa;
 
     constructor(private router: Router,
-        
-        private AuthenticationService: AuthenticationService) {
+        private authenticationController: AuthenticationController
+    ) {
 
         this.router.events.subscribe(val => {
             if (
@@ -46,8 +47,7 @@ export class HeaderTabletComponent implements OnInit {
         dom.classList.toggle('rtl');
     }
 
-    logout() {
-        this.AuthenticationService.noSuccessfulLogin();//DESLOGAR
-        this.router.navigate(['/login']);
+    deslogar() {
+        this.authenticationController.deslogar();
     }
 }

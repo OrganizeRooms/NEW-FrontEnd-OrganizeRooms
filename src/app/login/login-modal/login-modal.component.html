@@ -1,0 +1,29 @@
+<div>
+    <div class="modal-header">
+        <h4 class="modal-title ml-auto">Nova Senha</h4>
+        <a class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </a>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="modalNovaSenhaForm" (ngSubmit)="validarNovaSenha()">
+            <div class="form-group">
+                <input type="password" formControlName="senhaAtual" class="form-control" required
+                    placeholder="Senha Atual" />
+            </div>
+            <div class="form-group">
+                <input type="password" formControlName="novaPesSenha" class="form-control" required
+                    placeholder="Nova Senha" />
+            </div>
+            <div class="form-group">
+                <input type="password" formControlName="novaPesSenhaRepetir" class="form-control" required
+                    placeholder="Repita a Nova Senha" />
+            </div>
+            <div class="row justify-content-center modal-footer">
+                <button class="btn rounded-btn btn-padrao">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

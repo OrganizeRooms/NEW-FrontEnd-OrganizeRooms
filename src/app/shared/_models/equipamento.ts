@@ -1,14 +1,14 @@
-import { Pessoa } from './pessoa';
 import { Unidade } from './unidade';
 
 export interface Equipamento {
+
     equId: number;
     equNome: string;
     equDescricao: string;
-    equAtiva: String;
+    equAtiva: string;
     equUnidade: Unidade;
-    equPesCadastro: Number;
+    equPesCadastro: number;
     equDtCadastro: Date;
-    equPesAtualizacao: Number;
+    equPesAtualizacao: number;
     equDtAtualizacao: Date;
 }

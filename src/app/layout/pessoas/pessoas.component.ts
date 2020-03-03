@@ -3,9 +3,9 @@ import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
 import { rangeLabel } from '../../shared/utils/range-label';
-
-import { PessoaService, OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
-import { Pessoa } from 'src/app/shared';
+import { OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
+import { Pessoa } from 'src/app/shared/_models';
+import { PessoaController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-pessoas',
@@ -14,51 +14,46 @@ import { Pessoa } from 'src/app/shared';
     animations: [routerTransition()]
 })
 export class PessoasComponent implements OnInit {
-    
-    localUser = SessionStorageService.getSessionUser();
-    permissao: string;
 
+    permissao: string;
     listPessoas: Pessoa[];
-    displayedColumns: string[] = ['pesId', 'pesNome', 'pesDescricaoPermissao', 'pesUnidade', 'detalhes'];
+    displayedColumns = ['pesId', 'pesNome', 'pesDescricaoPermissao', 'pesUnidade', 'detalhes'];
     tableData = new MatTableDataSource<Pessoa>();
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
-        private PessoaService: PessoaService,
         private organizeRoomsService: OrganizeRoomsService<Pessoa>,
+        private sessionStorageService: SessionStorageService,
+        private pessoaController: PessoaController
     ) { }
 
     ngOnInit() {
-        this.carregarPessoas();
+        this.carregarDados();
         this.configurarPaginador();
 
-        this.permissao = this.localUser.pessoa.pesPermissao;
+        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
     }
 
-    carregarPessoas() {
-        this.PessoaService.buscarTodos().subscribe(ret => {
-            this.tableData.data = ret.data;
-            this.tableData.paginator = this.paginator;
-            this.tableData.sort = this.sort;
-        });
+    async carregarDados() {
+        this.tableData.data = await this.pessoaController.buscarTodos();
     }
 
-    editarPessoa(registro: Pessoa) {
+    editar(registro: Pessoa) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    excluir(pessoa: Pessoa) {
-        this.PessoaService.deletar(pessoa.pesId.toString()).subscribe(ret => {
-            if (ret.data == true) {
-                alert('Pessoa ' + pessoa.pesNome + ' Deletada com Sucesso!');
-                location.reload()
-            }
-            if (ret.data == false) {
-                alert('Não foi possível Deletar a Pessoa ' + pessoa.pesNome + ' !');
-            }
-        })
+    async excluir(pessoa: Pessoa) {
+
+        let retorno = await this.pessoaController.deletar(pessoa.pesId);
+        if (retorno) {
+            alert(`Pessoa ${pessoa.pesNome} Deletada com Sucesso!`);
+            location.reload();
+
+        } else {
+            alert(`Não foi possível Deletar a Pessoa ${pessoa.pesNome} !`);
+        }
     }
 
     aplicarFiltro(valor: string) {
@@ -66,6 +61,9 @@ export class PessoasComponent implements OnInit {
     }
 
     configurarPaginador() {
+        this.tableData.paginator = this.paginator;
+        this.tableData.sort = this.sort;
+
         this.paginator._intl.itemsPerPageLabel = 'Itens por Página';
         this.paginator._intl.getRangeLabel = rangeLabel;
         this.paginator.showFirstLastButtons = true;

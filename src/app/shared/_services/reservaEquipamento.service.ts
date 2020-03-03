@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../_config';
 import { Response, Participante, ServiceWS } from '../_models';
 import { Observable } from 'rxjs';
-import { ReservaEquipamento } from '../_models/interfaces/reservaEquipamento';
+import { ReservaEquipamento } from '../_models/reservaEquipamento';
 
 @Injectable({ providedIn: 'root' })
 export class ReservaEquipamentoService extends ServiceWS<ReservaEquipamento> {
