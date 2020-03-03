@@ -3,10 +3,10 @@ import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
 import { rangeLabel } from '../../shared/utils/range-label';
+import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
+import { Unidade } from 'src/app/shared/_models';
+import { UnidadeController } from 'src/app/shared/_controllers';
 
-import { UnidadeService, OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
-import { Unidade, LocalUser } from 'src/app/shared/_models';
-import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
     selector: 'app-unidades',
@@ -16,7 +16,6 @@ import { Router, NavigationExtras } from '@angular/router';
 })
 export class UnidadesComponent implements OnInit {
 
-    localUser = SessionStorageService.getSessionUser();
     permissao: string;
     displayedColumns: string[] = ['uniId', 'uniNome', 'uniAtiva', 'detalhes'];
     tableData = new MatTableDataSource<Unidade>();
@@ -25,48 +24,35 @@ export class UnidadesComponent implements OnInit {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
-        private router: Router,
-        private UnidadeService: UnidadeService,
-        private OrganizeRoomsService: OrganizeRoomsService<Unidade>
+        private OrganizeRoomsService: OrganizeRoomsService<Unidade>,
+        private sessionStorageService: SessionStorageService,
+        private unidadeController: UnidadeController
     ) { }
 
     ngOnInit() {
+        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
 
-        this.permissao = this.localUser.pessoa.pesPermissao
-        this.carregarUnidades();
+        this.carregarDados();
         this.configurarPaginador();
     }
 
-    carregarUnidades() {
-        this.UnidadeService.buscarTodos().subscribe((ret: any) => {
-            this.tableData.data = ret.data;
-            this.tableData.paginator = this.paginator;
-            this.tableData.sort = this.sort;
-        });
+    async carregarDados() {
+        this.tableData.data = await this.unidadeController.buscarTodos();
     }
 
-    editarUnidade(registro: Unidade) {
-
-        let navigationExtras: NavigationExtras = {
-            state: {
-                unidade: registro
-            }
-        };
-        this.router.navigate(['/unidades-adicionar'], navigationExtras);
-
+    editar(registro: Unidade) {
         this.OrganizeRoomsService.setValue(registro);
     }
 
     excluir(unidade: Unidade) {
-        this.UnidadeService.deletar(unidade.uniId.toString()).subscribe(ret => {
-            if (ret.data == true) {
-                alert('Unidade ' + unidade.uniNome + ' Deletada com Sucesso!');
-                location.reload();
-            };
-            if (ret.data == false) {
-                alert('Não foi possível Deletar a Unidade ' + unidade.uniNome + ' !');
-            };
-        });
+        let retorno = this.unidadeController.deletar(unidade.uniId);
+
+        if (retorno) {
+            alert(`Unidade ${unidade.uniNome} Deletada com Sucesso!`);
+            location.reload();
+        } else {
+            alert(`Não foi possível Deletar a Unidade ${unidade.uniNome}!`);
+        };
     }
 
     aplicarFiltro(valor: string) {
@@ -74,6 +60,9 @@ export class UnidadesComponent implements OnInit {
     }
 
     configurarPaginador() {
+        this.tableData.paginator = this.paginator;
+        this.tableData.sort = this.sort;
+
         this.paginator._intl.itemsPerPageLabel = 'Itens por Página';
         this.paginator._intl.getRangeLabel = rangeLabel;
         this.paginator.showFirstLastButtons = true;

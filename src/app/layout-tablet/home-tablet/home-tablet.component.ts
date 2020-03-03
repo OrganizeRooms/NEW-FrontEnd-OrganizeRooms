@@ -30,7 +30,7 @@ export class HomeTabletComponent implements OnInit {
     constructor(
         private modal: NgbModal,
         private calendar: NgbCalendar,
-        
+        private sessionStorageService: SessionStorageService,
         private agendamentoService: AgendamentoService,
         private salaService: SalaService,
     ) { }
@@ -39,7 +39,7 @@ export class HomeTabletComponent implements OnInit {
         var today = this.calendar.getToday()
         this.data = today;
 
-        this.pessoaLogada = SessionStorageService.getSessionUser().pessoa;
+        this.pessoaLogada = this.sessionStorageService.getValue().pessoa;
         this.carregarTodasSalas();
 
         this.selSala = new FormControl(1)
@@ -47,7 +47,7 @@ export class HomeTabletComponent implements OnInit {
     }
 
     carregarTodasSalas() {
-        this.salaService.buscarTodasSalas().subscribe(ret => {
+        this.salaService.buscarTodos().subscribe(ret => {
             if (ret.data != null || ret.data != '') {
                 this.listSalas = ret.data;
             } else {
@@ -70,7 +70,7 @@ export class HomeTabletComponent implements OnInit {
             idSala: this.selSala.value,
         }
         console.log(agendamentoContext)
-        this.agendamentoService.buscarAgendamentoPorSalaEData(agendamentoContext).subscribe(ret => {
+        this.agendamentoService.buscarPorSalaEData(agendamentoContext).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.listAgendamentos = ret.data
             } else {
@@ -93,7 +93,7 @@ export class HomeTabletComponent implements OnInit {
             ageAssunto: agend.ageAssunto,
             ageDescricao: agend.ageDescricao,
             ageStatus: 'CONCLUIDO',
-            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             ageEquipamentos: agend.ageEquipamentos,
             // Atributos que não são alterados e possuem trava no BackEnd
@@ -108,7 +108,7 @@ export class HomeTabletComponent implements OnInit {
         }
         console.log(agendamento)
 
-        this.agendamentoService.atualizarAgendamento(agendamento).subscribe(ret => {
+        this.agendamentoService.atualizar(agendamento).subscribe(ret => {
             if (ret.data != null) {
                 alert('Agendamento Concluido com Sucesso!');
                 location.reload();

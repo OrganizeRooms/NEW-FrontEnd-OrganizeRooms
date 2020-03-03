@@ -9,13 +9,13 @@ import { API_CONFIG } from '../_config';
 export class JwtInterceptor implements HttpInterceptor {
 
     constructor(
-        public sessionStorage: SessionStorageService
+        private sessionStorageService: SessionStorageService
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
         //const localUser = this.storage.getLocalUser();
-        const localUser = SessionStorageService.getSessionUser();
+        const localUser = this.sessionStorageService.getValue();
 
         const N = API_CONFIG.baseUrl.length;
         const requestToAPI = req.url.substring(0, N) === API_CONFIG.baseUrl;

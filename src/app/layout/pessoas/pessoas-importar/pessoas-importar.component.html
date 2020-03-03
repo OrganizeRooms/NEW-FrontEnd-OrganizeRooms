@@ -25,7 +25,8 @@
                             </h4>
                         </div>
                     </div>
-                    <div *ngIf="inconsistencias != ''" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div *ngIf="inconsistencias != '' || inconsistencias != null"
+                        class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <ul class="list-group">
                             <li class="list-group-item" *ngFor="let inc of inconsistencias">
                                 {{inc}}

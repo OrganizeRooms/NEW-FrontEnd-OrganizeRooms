@@ -16,7 +16,7 @@ import {
     Agendamento, Pessoa, Equipamento, Participante, AgendamentoContext, Notificacao, EnviaEmail
 } from 'src/app/shared/_models';
 import { Router } from '@angular/router';
-import { ReservaEquipamento } from 'src/app/shared/_models/interfaces/reservaEquipamento';
+import { ReservaEquipamento } from 'src/app/shared/_models/reservaEquipamento';
 
 // Metodos
 //import { montarStringDataHora, montarStringDataEng, montarDataHora } from 'src/app/shared/utils';
@@ -75,7 +75,7 @@ export class ReservarComponent implements OnInit, OnDestroy {
         private modal: NgbModal,
         private router: Router,
         private unidadeService: UnidadeService,
-        
+        private sessionStorageService: SessionStorageService,
         private salaService: SalaService,
         private agendamentoService: AgendamentoService,
         private NotificacaoService: NotificacaoService,
@@ -87,10 +87,10 @@ export class ReservarComponent implements OnInit, OnDestroy {
         //  this.carregarSalas();
         this.today = this.calendar.getToday()
         this.data = this.today;
-        this.responsavel = SessionStorageService.getSessionUser().pessoa;
+        this.responsavel = this.sessionStorageService.getValue().pessoa;
 
         this.carregarUnidades();
-        this.selUnidade = SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId
+        this.selUnidade = this.sessionStorageService.getValue().pessoa.pesUnidade.uniId
         this.criarFormularioAgendamento();
     }
 
@@ -281,8 +281,8 @@ export class ReservarComponent implements OnInit, OnDestroy {
             ageData: new Date(nAgeData),
             ageHoraInicio: dataHoraInicio,
             ageHoraFim: dataHoraFim,
-            agePesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
-            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            agePesCadastro: this.sessionStorageService.getValue().pessoa.pesId,
+            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             ageDtCadastro: new Date(),
             ageDtAtualizacao: new Date(),
             ageEquipamentos: nAgeEquipamentos,

@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { routerTransition } from '../../../router.animations';
-import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import {
-    EquipamentoService, UnidadeService, OrganizeRoomsService, Equipamento, SessionStorageService, Unidade
-} from 'src/app/shared';
 import { Router } from '@angular/router';
+import { routerTransition } from 'src/app/router.animations';
+import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
+import { Equipamento, Unidade } from 'src/app/shared/_models';
+import { UnidadeController, EquipamentoController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-equipamentos-adicionar',
@@ -14,49 +15,37 @@ import { Router } from '@angular/router';
 })
 
 export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
+
     labelPosition = 'before';
-    permissao;
-
+    permissao: string;
     formAddEquipamento: FormGroup;
-    listUnidades;
-
-    selEquipamento;
+    listUnidades: Unidade[];
+    selEquipamento: Equipamento;
     selUnidade = new FormControl();
-
-    equDtAtualizacao;
-    equPesAtualizacao;
 
     constructor(
         private router: Router,
         private formBuilder: FormBuilder,
-        private equipamentoService: EquipamentoService,
-        private unidadeService: UnidadeService,
-        private organizeRoomsService: OrganizeRoomsService,
-        
+        private organizeRoomsService: OrganizeRoomsService<Equipamento>,
+        private sessionStorageService: SessionStorageService,
+        private equipamentoController: EquipamentoController,
+        private unidadeController: UnidadeController
     ) { }
 
     ngOnInit() {
         this.selEquipamento = this.organizeRoomsService.getValue();
-
-        /*if (this.selEquipamento != null && this.selEquipamento.equPesAtualizacao != null) {
-            this.equPesAtualizacao = this.selEquipamento.equPesAtualizacao.pesNome;
-            this.equDtAtualizacao = this.selEquipamento.equDtAtualizacao;
-        }*/
+        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
 
         this.carregarUnidades();
         this.criarFormulario();
-
-        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
         this.organizeRoomsService.setValue(null)
     }
 
-    carregarUnidades() {
-        this.unidadeService.buscarAtivas().subscribe(ret => {
-            this.listUnidades = ret.data;
-        });
+    async carregarUnidades() {
+        this.listUnidades = await this.unidadeController.buscarAtivas();
     }
 
     criarFormulario() {
@@ -78,17 +67,17 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
                 equAtiva: [true],
                 equDtCadastro: [new Date()]
             });
-            this.selUnidade = new FormControl(SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId)
+            this.selUnidade = new FormControl(this.sessionStorageService.getValue().pessoa.pesUnidade.uniId)
         }
     }
 
-    adicionarEquipamento() {
+    async adicionarEquipamento() {
 
         var equPesCadastro;
         if (this.selEquipamento != null) {
             equPesCadastro = null
         } else {
-            equPesCadastro = SessionStorageService.getSessionUser().pessoa.pesId
+            equPesCadastro = this.sessionStorageService.getValue().pessoa.pesId
         }
 
         const unidade: Unidade = {
@@ -99,7 +88,7 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
             uniDtCadastro: null,
             uniPesAtualizacao: null,
             uniDtAtualizacao: null
-        }
+        };
 
         const equipamento: Equipamento = {
             equId: this.formAddEquipamento.value.equId,
@@ -107,35 +96,34 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
             equDescricao: this.formAddEquipamento.value.equDescricao,
             equAtiva: this.formAddEquipamento.value.equAtiva,
             equUnidade: unidade,
-            equPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            equPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             equDtAtualizacao: new Date(),
             // NÃO É ATUALIZADO 
             equPesCadastro: equPesCadastro,
             equDtCadastro: null,
         };
 
-        this.equipamentoService.adicionar(equipamento).subscribe(ret => {
-            if (ret.data != null) {
-                if (this.selEquipamento != null) {
-                    alert('Equipamento ' + ret.data.equNome + ' Atualizada com Sucesso!');
-                    this.router.navigate(['/equipamentos']);
-                } else {
-                    alert('Equipamento ' + ret.data.equNome + ' Adicionada com Sucesso!');
-                    this.router.navigate(['/equipamentos']);
-                }
+        let retEquipamento = await this.equipamentoController.adicionar(equipamento);
+
+        if (retEquipamento != null) {
+            if (this.selEquipamento != null) {
+                alert(`Equipamento ${retEquipamento.equNome} Atualizada com Sucesso!`);
+            } else {
+                alert(`Equipamento ${retEquipamento.equNome} Adicionada com Sucesso!`);
+
             }
-        });
+            this.router.navigate(['/equipamentos']);
+        }
     }
 
     excluir() {
-        this.equipamentoService.deletar(this.selEquipamento.equId).subscribe(ret => {
-            if (ret.data == true) {
-                alert('Equipamento ' + this.selEquipamento.equNome + ' Deletada com Sucesso!');
-                this.router.navigate(['/equipamentos']);
-            }
-            if (ret.data == false) {
-                alert('Não foi possível Deletar a Equipamento ' + this.selEquipamento.equNome + ' !');
-            }
-        })
+        let retorno = this.equipamentoController.deletar(this.selEquipamento.equId);
+
+        if (retorno) {
+            alert(`Equipamento ${this.selEquipamento.equNome} Deletada com Sucesso!`);
+            location.reload()
+        } else {
+            alert(`Não foi possível Deletar a Equipamento ${this.selEquipamento.equNome}!`);
+        }
     }
 }

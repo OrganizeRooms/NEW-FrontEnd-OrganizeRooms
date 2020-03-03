@@ -6,7 +6,7 @@ import { rangeLabel } from '../../shared/utils/range-label';
 
 import { AgendamentoService, OrganizeRoomsService, SessionStorageService, UnidadeService } from '../../shared/_services';
 import { NgbDateStruct, NgbDatepickerI18n, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n, AgendamentoContext } from 'src/app/shared';
+import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n, AgendamentoContext, Agendamento, Unidade } from 'src/app/shared';
 
 @Component({
     selector: 'app-agendamentos',
@@ -20,11 +20,11 @@ import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n, AgendamentoCo
     ]
 })
 export class AgendamentosComponent implements OnInit, OnDestroy {
-    permissao;
-
-    listUnidades: any[];
-    selUnidade;
-    selAgeStatus;
+    
+    permissao: string;
+    listUnidades: Unidade[];
+    selUnidade: Unidade;
+    selAgeStatus = 'AGENDADO';
     dataInicial: NgbDateStruct;
     dataFinal: NgbDateStruct;
     horaInicio = { hour: 0, minute: 0, second: 0 };
@@ -34,8 +34,8 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
     apareceFiltrar = true;
 
     // Tabela com os Dados
-    displayedColumns: string[] = ['ageAssunto', 'ageData', 'periodo', 'ageStatus', 'detalhes'];
-    tableData = new MatTableDataSource<any>();
+    displayedColumns = ['ageAssunto', 'ageData', 'periodo', 'ageStatus', 'detalhes'];
+    tableData = new MatTableDataSource<Unidade>();
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -44,22 +44,20 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
         private agendamentoService: AgendamentoService,
         private calendar: NgbCalendar,
         private unidadeService: UnidadeService,
-        private organizeRoomsService: OrganizeRoomsService,
-        
+        private organizeRoomsService: OrganizeRoomsService<Agendamento>,
+        private sessionStorageService: SessionStorageService
     ) { }
 
     ngOnInit() {
         // this.carregarAgendamentos();
-        this.carregarUnidades();
-        this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
-        this.selAgeStatus = 'AGENDADO';
-        this.selUnidade = SessionStorageService.getSessionUser().pessoa.pesUnidade.uniId;
-
+        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
+        this.selUnidade = this.sessionStorageService.getValue().pessoa.pesUnidade;
+        
         var today = this.calendar.getToday()
-
         this.dataFinal = today
         this.dataInicial = today
-
+        
+        this.carregarUnidades();
         this.configurarPaginador();
     }
 
@@ -82,14 +80,14 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
 
         if (this.filtrarValido) {
 
-            var idResponsavel = SessionStorageService.getSessionUser().pessoa.pesId
+            var idResponsavel = this.sessionStorageService.getValue().pessoa.pesId
 
             var nDataInicial = this.montarStringData(this.dataInicial)
             var nDataFinal = this.montarStringData(this.dataFinal)
 
             var agendamentoContext: AgendamentoContext = {
-                idUnidade: this.selUnidade,
-                lotacao: this.selAgeStatus,
+                idUnidade: this.selUnidade.uniId,
+                lotacao: 0,
                 dataInicial: nDataInicial,
                 dataFinal: nDataFinal,
                 idParticipante: idResponsavel,

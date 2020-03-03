@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { STORAGE_KEYS } from '../_config/storage_keys.config';
-import { ServiceInternal } from '../_models/';
+import { ServiceInternal, LocalUser } from '../_models/';
 
 @Injectable()
-export class StorageService<T> extends ServiceInternal<T> {
+export class StorageService extends ServiceInternal<LocalUser> {
 
-    getValue(): T {
+    getValue(): LocalUser {
         const usr = localStorage.getItem(STORAGE_KEYS.localUser);
         if (usr == null) {
             return null;
@@ -14,7 +14,7 @@ export class StorageService<T> extends ServiceInternal<T> {
         }
     }
 
-    setValue(obj: T) {
+    setValue(obj: LocalUser){
         if (obj == null) {
             localStorage.removeItem(STORAGE_KEYS.localUser);
         } else {

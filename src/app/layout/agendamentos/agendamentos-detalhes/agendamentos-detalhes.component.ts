@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { routerTransition } from '../../../router.animations';
+import { routerTransition } from 'src/app/router.animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MatTableDataSource } from '@angular/material';
@@ -11,7 +11,7 @@ import {
 import {
     Agendamento, Pessoa, Equipamento, Participante, AgendamentoContext, Notificacao, EnviaEmail
 } from 'src/app/shared/_models';
-import { ReservaEquipamento } from 'src/app/shared/_models/interfaces/reservaEquipamento';
+import { ReservaEquipamento } from 'src/app/shared/_models/reservaEquipamento';
 import { ReservaEquipamentoService } from 'src/app/shared/_services/reservaEquipamento.service';
 
 @Component({
@@ -57,7 +57,8 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         private agendamentoService: AgendamentoService,
         private participanteService: ParticipanteService,
         private reservaEquipamentoService: ReservaEquipamentoService,
-        private NotificacaoService: NotificacaoService
+        private NotificacaoService: NotificacaoService,
+        private sessionStorageService: SessionStorageService
     ) { }
 
     ngOnInit() {
@@ -69,8 +70,8 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             this.carregarPessoas();
             this.carregarEquipamentos();
 
-            this.permissao = SessionStorageService.getSessionUser().pessoa.pesPermissao;
-            this.pessoaLogada = SessionStorageService.getSessionUser().pessoa
+            this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
+            this.pessoaLogada = this.sessionStorageService.getValue().pessoa
         }
     }
 
@@ -176,7 +177,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             ageAssunto: this.formAgendamento.value.ageAssunto,
             ageDescricao: this.formAgendamento.value.ageDescricao,
             ageStatus: nAgeStatus,
-            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             // Atributos que não são alterados e possuem trava no BackEnd
             ageDtCadastro: null,
@@ -353,9 +354,9 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
                 notDescricao: mensagem,            /// mensagem enviada por e-mail
                 notAtiva: true,
                 notPessoa: part.parPessoa,                   // participante
-                notPesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
+                notPesCadastro: this.sessionStorageService.getValue().pessoa.pesId,
                 notDtCadastro: new Date(),
-                notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+                notPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
                 notDtAtualizacao: new Date(),
                 notEnviado: false,
                 enviaEmail: enviaEmail
@@ -416,9 +417,9 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             notDescricao: nMensagemExcluido,            // mensagem enviada por e-mail
             notAtiva: true,
             notPessoa: part.parPessoa,                   // participante
-            notPesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
+            notPesCadastro: this.sessionStorageService.getValue().pessoa.pesId,
             notDtCadastro: new Date(),
-            notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            notPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             notDtAtualizacao: new Date(),
             notEnviado: false,
             enviaEmail: enviaEmail

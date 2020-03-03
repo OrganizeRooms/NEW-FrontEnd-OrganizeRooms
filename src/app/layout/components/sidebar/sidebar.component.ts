@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { AuthenticationService, PessoaService, SessionStorageService } from '../../../shared/_services';
-import { Pessoa } from '../../../shared/_models';
+import { SessionStorageService } from 'src/app/shared/_services';
+import { LocalUser } from 'src/app/shared/_models';
+import { PessoaController, AuthenticationController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-sidebar',
@@ -15,16 +16,16 @@ export class SidebarComponent implements OnInit {
     collapsed: boolean;
     showMenu: string;
     pushRightClass: string;
-    localUser = SessionStorageService.getSessionUser();
-
-    permissao = this.localUser.pessoa.pesPermissao;
+    localUser: LocalUser;
+    permissao: string;
 
     @Output() collapsedEvent = new EventEmitter<boolean>();
 
     constructor(
         private router: Router,
-        private AuthenticationService: AuthenticationService,
-        private PessoaService: PessoaService,
+        private authenticationController: AuthenticationController,
+        private sessionStorageService: SessionStorageService,
+        private pessoaController: PessoaController
     ) {
 
         this.router.events.subscribe(val => {
@@ -43,16 +44,20 @@ export class SidebarComponent implements OnInit {
         this.collapsed = false;
         this.showMenu = '';
         this.pushRightClass = 'push-right';
+
+        this.localUser = this.sessionStorageService.getValue();
+        this.permissao = this.localUser.pessoa.pesPermissao
     }
 
     resetarSenha() {
-        this.PessoaService.resetarSenha(this.localUser.pessoa).subscribe(ret => {
-            if (ret.data != 'false') {
-                alert("Senha Resetada com Sucesso!")
-            } else {
-                alert("Erro ao Resetar Senha!")
-            }
-        });
+
+        let retorno = this.pessoaController.resetarSenha(this.localUser.pessoa);
+
+        if (retorno) {
+            alert("Senha Resetada com Sucesso!")
+        } else {
+            alert("Erro ao Resetar Senha!")
+        }
     }
 
     eventCalled() {
@@ -87,8 +92,7 @@ export class SidebarComponent implements OnInit {
         dom.classList.toggle('rtl');
     }
 
-    logout() {
-        this.AuthenticationService.noSuccessfulLogin();//DESLOGAR
-        this.router.navigate(['/login']);
+    deslogar() {
+        this.authenticationController.deslogar();
     }
 }

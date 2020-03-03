@@ -44,7 +44,7 @@
                     <h6 class="dropdown-header">
                         Notificações
                     </h6>
-                    <div *ngIf="listNotificacoes">
+                    <div *ngIf="contNotificacoes != 0">
                         <a *ngFor="let noti of listNotificacoes" class="dropdown-item d-flex align-items-center"
                             (click)="desativarNotificacao(noti)">
                             <div>
@@ -54,7 +54,7 @@
                         </a>
                     </div>
 
-                    <a *ngIf="!listNotificacoes" class="dropdown-item d-flex align-items-center">
+                    <a *ngIf="contNotificacoes == 0" class="dropdown-item d-flex align-items-center">
                         <div>
                             <span class="font-weight-bold">Você não possui Novas Notificações!</span>
                         </div>
@@ -72,7 +72,7 @@
                     <a class="dropdown-item" (click)="resetarSenha()">
                         <i class="fa fa-fw fa-power-off"></i> Resetar Senha
                     </a>
-                    <a class="dropdown-item" [routerLink]="['/login']" (click)="logout()">
+                    <a class="dropdown-item" [routerLink]="['/login']" (click)="deslogar()">
                         <i class="fa fa-fw fa-power-off"></i> Sair
                     </a>
                 </div>

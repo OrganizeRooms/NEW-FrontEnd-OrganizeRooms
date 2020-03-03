@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class NotificacaoService extends ServiceWS<Notificacao> {
 
-
     buscarTodos(): Observable<Response> {
         throw new Error("Este metodo não é utilizado!.");
     }

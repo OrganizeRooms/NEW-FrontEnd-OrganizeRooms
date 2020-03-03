@@ -1,4 +1,5 @@
 export interface DialogData {
+  
     ageId: number,
     sala: string,
     pessoa_responsavel: string,

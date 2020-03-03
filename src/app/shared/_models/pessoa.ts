@@ -1,26 +1,26 @@
 ﻿import { Unidade } from './unidade';
 
 export interface Pessoa {
-    pesId: number;
-    pesEmail: string;
-    //pesSenha: string;
-    pesNome: string;
-    pesPermissao: string;
-    pesDescricaoPermissao: string;
-    pesUnidade: Unidade;
-    pesDdd: string;
-    pesTelefone: string;
+
+    pesId: number,
+    pesEmail: string,
+    pesNome: string,
+    pesPermissao: string,
+    pesDescricaoPermissao: string,
+    pesUnidade: Unidade,
+    pesDdd: string,
+    pesTelefone: string,
 
     // SIS = Cadastro manual
     // IMP = Por Importação
-    pesTipoInclusao: string;
+    pesTipoInclusao: string,
 
-    pesCadastro: Number;
-    pesDtCadastro: Date;
+    pesCadastro: number,
+    pesDtCadastro: Date,
 
-    pesAtualizacao: Number;
-    pesDtAtualizacao: Date;
+    pesAtualizacao: number,
+    pesDtAtualizacao: Date,
 
     /// SOMENTE FRONT
-    participanteObrigatorio: Boolean;
+    participanteObrigatorio: boolean
 }

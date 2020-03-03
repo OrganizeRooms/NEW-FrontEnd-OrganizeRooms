@@ -63,7 +63,7 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
                     <td mat-cell *matCellDef="let pessoa">
                         <a [routerLink]="['/pessoas-adicionar']" [routerLinkActive]="['router-link-active']"
-                            (click)="editarPessoa(pessoa)">
+                            (click)="editar(pessoa)">
                             <i class="fa fa-fw fa-pencil"></i>
                         </a>
                         &nbsp;

@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { routerTransition } from '../../../router.animations';
+import { Router } from '@angular/router';
+import { routerTransition } from 'src/app/router.animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Unidade, UnidadeService, OrganizeRoomsService, SessionStorageService } from 'src/app/shared/';
-import { Router, ActivatedRoute } from '@angular/router';
+
+import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
+import { Unidade, LocalUser } from 'src/app/shared/_models';
+import { UnidadeController } from 'src/app/shared/_controllers/';
 
 @Component({
     selector: 'app-unidades-adicionar',
@@ -13,53 +16,45 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
-    private _formBuilder: FormBuilder;
-
-    _labelPosition = 'before';
-    localUser = SessionStorageService.getSessionUser();
-    permissao = this.localUser.pessoa.pesPermissao
-
+    labelPosition = 'before';
+    localUser: LocalUser;
+    permissao: string;
     selUnidade: Unidade;
-    selUnidade2: Unidade; // teste
     formAddUnidade: FormGroup;
 
     constructor(
-        private ActivatedRoute: ActivatedRoute,
         private router: Router,
-        private UnidadeService: UnidadeService,
-        private OrganizeRoomsService: OrganizeRoomsService<Unidade>
+        private formBuilder: FormBuilder,
+        private organizeRoomsService: OrganizeRoomsService<Unidade>,
+        private sessionStorageService: SessionStorageService,
+        private unidadeController: UnidadeController
     ) { }
 
     ngOnInit() {
-
-        this.selUnidade = this.OrganizeRoomsService.getValue()
-
-        this.ActivatedRoute.queryParams.subscribe(() => {
-            let getNav = this.router.getCurrentNavigation();
-            if (getNav.extras.state) {
-                this.selUnidade2 = getNav.extras.state.unidade;
-            }
-        });
-
-        console.log('this.selUnidade2 = ' + this.selUnidade2)
+        this.selUnidade = this.organizeRoomsService.getValue();
+        this.localUser = this.sessionStorageService.getValue();
+        this.permissao = this.localUser.pessoa.pesPermissao;
 
         this.criarFormulario();
     }
 
     ngOnDestroy() {
-        this.OrganizeRoomsService.setValue(null)
+        this.organizeRoomsService.setValue(null)
     }
 
     criarFormulario() {
         if (this.selUnidade != null) {
-            this.formAddUnidade = this._formBuilder.group({
+
+            this.formAddUnidade = this.formBuilder.group({
                 uniId: [this.selUnidade.uniId],
                 uniNome: [this.selUnidade.uniNome, Validators.compose([Validators.required])],
                 uniAtiva: [this.selUnidade.uniAtiva],
                 uniDtCadastro: [this.selUnidade.uniDtCadastro]
             });
+
         } else {
-            this.formAddUnidade = this._formBuilder.group({
+
+            this.formAddUnidade = this.formBuilder.group({
                 uniId: [0],
                 uniNome: [null, Validators.compose([Validators.required])],
                 uniAtiva: [true],
@@ -68,7 +63,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         }
     }
 
-    adicionarUnidade() {
+    adicionar() {
 
         var uniPesCadastro;
         if (this.selUnidade != null) {
@@ -77,7 +72,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
             uniPesCadastro = this.localUser.pessoa.pesId
         }
 
-        const unidade: Unidade = {
+        const newUnidade: Unidade = {
             uniId: this.formAddUnidade.value.uniId,
             uniNome: this.formAddUnidade.value.uniNome,
             uniAtiva: this.formAddUnidade.value.uniAtiva,
@@ -88,28 +83,28 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
             uniDtCadastro: null,
         };
 
-        this.UnidadeService.adicionar(unidade).subscribe(ret => {
-            if (ret.data != null) {
-                if (this.selUnidade == null) {
-                    alert('Unidade ' + ret.data.uniNome + ' Adicionada com Sucesso!');
-                    this.router.navigate(['/unidades']);
-                } else {
-                    alert('Unidade ' + ret.data.uniNome + ' Atualizada com Sucesso!');
-                    this.router.navigate(['/unidades']);
-                }
+        let retorno = this.unidadeController.adicionar(newUnidade);
+        if (retorno != null) {
+
+            if (this.selUnidade == null) {
+                alert(`Unidade ${retorno.uniNome} Adicionada com Sucesso!`);
+
+            } else {
+                alert(`Unidade ${retorno.uniNome} Atualizada com Sucesso!`);
             }
-        });
+
+            this.router.navigate(['/unidades']);
+        }
     }
 
     excluir() {
-        this.UnidadeService.deletar(this.selUnidade.uniId.toString()).subscribe(ret => {
-            if (ret.data == true) {
-                alert('Unidade ' + this.selUnidade.uniNome + ' Deletada com Sucesso!');
-                this.router.navigate(['/unidades']);
-            }
-            if (ret.data == false) {
-                alert('Não foi possível Deletar a Unidade ' + this.selUnidade.uniNome + ' !');
-            }
-        })
+        let retorno = this.unidadeController.deletar(this.selUnidade.uniId);
+        if (retorno) {
+            alert(`Unidade ${this.selUnidade.uniNome} Deletada com Sucesso!`);
+            this.router.navigate(['/unidades']);
+
+        } else {
+            alert(`Não foi possível Deletar a Unidade ${this.selUnidade.uniNome}!`);
+        }
     }
 }

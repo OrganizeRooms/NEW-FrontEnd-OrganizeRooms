@@ -3,7 +3,9 @@ import { routerTransition } from '../../router.animations';
 // Date Picker
 import { NgbDateStruct, NgbDatepickerI18n, NgbModal, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { I18n, CustomDatepickerI18n, NgbDateCustomParserFormatter } from 'src/app/shared/utils';
-import { Agendamento, AgendamentoService, SessionStorageService, ParticipanteService, Participante, AgendamentoContext, Notificacao, EnviaEmail, NotificacaoService } from 'src/app/shared';
+import { AgendamentoService, SessionStorageService, ParticipanteService } from 'src/app/shared/_services';
+import { NotificacaoController } from 'src/app/shared/_controllers';
+import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-home',
@@ -28,17 +30,17 @@ export class HomeComponent implements OnInit {
     constructor(
         private modal: NgbModal,
         private calendar: NgbCalendar,
-        
+        private sessionStorageService: SessionStorageService,
         private agendamentoService: AgendamentoService,
-        private participanteService: ParticipanteService,        
-        private NotificacaoService: NotificacaoService
+        private participanteService: ParticipanteService,
+        private notificacaoController: NotificacaoController
     ) { }
 
     ngOnInit() {
         var today = this.calendar.getToday()
         this.data = today;
 
-        this.pessoaLogada = SessionStorageService.getSessionUser().pessoa;
+        this.pessoaLogada = this.sessionStorageService.getValue().pessoa;
         this.filtro();
     }
 
@@ -130,11 +132,11 @@ export class HomeComponent implements OnInit {
 
         var msg = "Recusado"
         this.atualizar(part, msg)
-       
+
 
         if (this.participante.parTipo = 2) {
             this.notificarRecusaPartObrigatorio(agend)
-        } else{
+        } else {
             //location.reload();
         }
 
@@ -146,7 +148,7 @@ export class HomeComponent implements OnInit {
             ageAssunto: agend.ageAssunto,
             ageDescricao: agend.ageDescricao,
             ageStatus: 'CONCLUIDO',
-            agePesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             ageEquipamentos: agend.ageEquipamentos,
             // Atributos que não são alterados e possuem trava no BackEnd
@@ -191,23 +193,16 @@ export class HomeComponent implements OnInit {
             notDescricao: nMensagem,                     // mensagem enviada por e-mail
             notAtiva: true,
             notPessoa: agend.agePesResponsavel, // participante
-            notPesCadastro: SessionStorageService.getSessionUser().pessoa.pesId,
+            notPesCadastro: this.sessionStorageService.getValue().pessoa.pesId,
             notDtCadastro: new Date(),
-            notPesAtualizacao: SessionStorageService.getSessionUser().pessoa.pesId,
+            notPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             notDtAtualizacao: new Date(),
             notEnviado: false,
             enviaEmail: enviaEmail
         }
         notificacoes.push(notificacao);
 
-        console.log(notificacoes)
-
-        this.NotificacaoService.enviarEmail(notificacoes).subscribe(ret => {
-            console.log(ret.data)
-            if (ret.data != null) {
-                //
-            }
-        });
+        this.notificacaoController.enviarEmail(notificacoes);
     }
 
     atualizar(participante, msg) {
