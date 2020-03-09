@@ -2,7 +2,7 @@ import { Component, OnInit, LOCALE_ID } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 // Date Picker
 import { NgbDateStruct, NgbDatepickerI18n, NgbModal, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { I18n, CustomDatepickerI18n, NgbDateCustomParserFormatter } from 'src/app/shared/utils';
+import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
 import { AgendamentoService, SessionStorageService, ParticipanteService } from 'src/app/shared/_services';
 import { NotificacaoController } from 'src/app/shared/_controllers';
 import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail } from 'src/app/shared/_models';
@@ -176,7 +176,7 @@ export class HomeComponent implements OnInit {
         var notificacoes = new Array<Notificacao>()
 
         var nMensagem = 'O Participante obrigatório ' + this.pessoaLogada.pesNome
-            + ' recusou o convite para a Reunião marcada no dia ' + this.montarStringDataPtBr(new Date(agend.ageHoraInicio))
+            + ' recusou o convite para a Reunião marcada no dia ' + this.montarStringData(new Date(agend.ageHoraInicio))
             + ' no período das ' + this.montarStringHoraMinuto(new Date(agend.ageHoraInicio))
             + ' às ' + this.montarStringHoraMinuto(new Date(agend.ageHoraFim)) + '.'
 
@@ -236,7 +236,7 @@ export class HomeComponent implements OnInit {
         return agendamento
     }
 
-    montarStringDataPtBr(data: Date) {
+    montarStringData(data: Date) {
 
         var mes = this.validarData(data, 1);
         var dia = this.validarData(data, 2);

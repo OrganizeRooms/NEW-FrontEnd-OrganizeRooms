@@ -44,7 +44,6 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
     criarFormulario() {
         if (this.selUnidade != null) {
-
             this.formAddUnidade = this.formBuilder.group({
                 uniId: [this.selUnidade.uniId],
                 uniNome: [this.selUnidade.uniNome, Validators.compose([Validators.required])],
@@ -53,7 +52,6 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
             });
 
         } else {
-
             this.formAddUnidade = this.formBuilder.group({
                 uniId: [0],
                 uniNome: [null, Validators.compose([Validators.required])],
@@ -63,28 +61,12 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         }
     }
 
-    adicionar() {
+    async adicionar() {
 
-        var uniPesCadastro;
-        if (this.selUnidade != null) {
-            uniPesCadastro = null
-        } else {
-            uniPesCadastro = this.localUser.pessoa.pesId
-        }
+        const unidade = this.montarUnidade();
 
-        const newUnidade: Unidade = {
-            uniId: this.formAddUnidade.value.uniId,
-            uniNome: this.formAddUnidade.value.uniNome,
-            uniAtiva: this.formAddUnidade.value.uniAtiva,
-            uniPesAtualizacao: this.localUser.pessoa.pesId,
-            uniDtAtualizacao: new Date(),
-            uniPesCadastro: uniPesCadastro,
-            // NÃO É ATUALIZADO 
-            uniDtCadastro: null,
-        };
-
-        let retorno = this.unidadeController.adicionar(newUnidade);
-        if (retorno != null) {
+        let retorno = await this.unidadeController.adicionar(unidade);
+        if (retorno) {
 
             if (this.selUnidade == null) {
                 alert(`Unidade ${retorno.uniNome} Adicionada com Sucesso!`);
@@ -97,8 +79,23 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         }
     }
 
-    excluir() {
-        let retorno = this.unidadeController.deletar(this.selUnidade.uniId);
+    montarUnidade(): Unidade {
+
+        let uniPesCadastro = this.selUnidade == null ? this.localUser.pessoa.pesId : null;
+
+        return {
+            uniId: this.formAddUnidade.value.uniId,
+            uniNome: this.formAddUnidade.value.uniNome,
+            uniAtiva: this.formAddUnidade.value.uniAtiva,
+            uniPesAtualizacao: this.localUser.pessoa.pesId,
+            uniDtAtualizacao: new Date(),
+            uniPesCadastro: uniPesCadastro,
+            uniDtCadastro: new Date(),
+        };
+    }
+
+    async excluir() {
+        let retorno = await this.unidadeController.deletar(this.selUnidade.uniId);
         if (retorno) {
             alert(`Unidade ${this.selUnidade.uniNome} Deletada com Sucesso!`);
             this.router.navigate(['/unidades']);

@@ -4,7 +4,7 @@ import { routerTransition } from 'src/app/router.animations';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
-import { Equipamento, Unidade } from 'src/app/shared/_models';
+import { Equipamento, Unidade, LocalUser } from 'src/app/shared/_models';
 import { UnidadeController, EquipamentoController } from 'src/app/shared/_controllers';
 
 @Component({
@@ -17,6 +17,7 @@ import { UnidadeController, EquipamentoController } from 'src/app/shared/_contro
 export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
 
     labelPosition = 'before';
+    localUser: LocalUser;
     permissao: string;
     formAddEquipamento: FormGroup;
     listUnidades: Unidade[];
@@ -34,7 +35,8 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.selEquipamento = this.organizeRoomsService.getValue();
-        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
+        this.localUser = this.sessionStorageService.getValue();
+        this.permissao = this.localUser.pessoa.pesPermissao;
 
         this.carregarUnidades();
         this.criarFormulario();
@@ -57,7 +59,6 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
                 equAtiva: [this.selEquipamento.equAtiva],
                 equDtCadastro: [this.selEquipamento.equDtCadastro]
             });
-            this.selUnidade = new FormControl(this.selEquipamento.equUnidade.uniId)
 
         } else {
             this.formAddEquipamento = this.formBuilder.group({
@@ -67,44 +68,18 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
                 equAtiva: [true],
                 equDtCadastro: [new Date()]
             });
-            this.selUnidade = new FormControl(this.sessionStorageService.getValue().pessoa.pesUnidade.uniId)
         }
+
+        this.selUnidade = new FormControl(
+            this.selUnidade != null ? this.selEquipamento.equUnidade.uniId : this.localUser.pessoa.pesUnidade.uniId
+        );
     }
 
     async adicionarEquipamento() {
 
-        var equPesCadastro;
-        if (this.selEquipamento != null) {
-            equPesCadastro = null
-        } else {
-            equPesCadastro = this.sessionStorageService.getValue().pessoa.pesId
-        }
-
-        const unidade: Unidade = {
-            uniId: this.selUnidade.value,
-            uniNome: null,
-            uniAtiva: null,
-            uniPesCadastro: null,
-            uniDtCadastro: null,
-            uniPesAtualizacao: null,
-            uniDtAtualizacao: null
-        };
-
-        const equipamento: Equipamento = {
-            equId: this.formAddEquipamento.value.equId,
-            equNome: this.formAddEquipamento.value.equNome,
-            equDescricao: this.formAddEquipamento.value.equDescricao,
-            equAtiva: this.formAddEquipamento.value.equAtiva,
-            equUnidade: unidade,
-            equPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
-            equDtAtualizacao: new Date(),
-            // NÃO É ATUALIZADO 
-            equPesCadastro: equPesCadastro,
-            equDtCadastro: null,
-        };
+        const equipamento = this.montarEquipamento();
 
         let retEquipamento = await this.equipamentoController.adicionar(equipamento);
-
         if (retEquipamento != null) {
             if (this.selEquipamento != null) {
                 alert(`Equipamento ${retEquipamento.equNome} Atualizada com Sucesso!`);
@@ -114,6 +89,23 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
             }
             this.router.navigate(['/equipamentos']);
         }
+    }
+
+    montarEquipamento(): Equipamento {
+
+        var equPesCadastro = this.selEquipamento == null ? this.localUser.pessoa.pesId : null;
+
+        return {
+            equId: this.formAddEquipamento.value.equId,
+            equNome: this.formAddEquipamento.value.equNome,
+            equDescricao: this.formAddEquipamento.value.equDescricao,
+            equAtiva: this.formAddEquipamento.value.equAtiva,
+            equUnidade: this.unidadeController.montarUnidadeComId(this.selUnidade.value),
+            equPesAtualizacao: this.localUser.pessoa.pesId,
+            equDtAtualizacao: new Date(),
+            equPesCadastro: equPesCadastro,
+            equDtCadastro: new Date(),
+        };
     }
 
     excluir() {

@@ -2,10 +2,10 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { rangeLabel } from '../../shared/utils/range-label';
-
-import { SalaService, OrganizeRoomsService, StorageService, SessionStorageService } from '../../shared/_services';
-import { Sala } from 'src/app/shared';
+import { configurarPaginador } from 'src/app/shared/utils/table-data';
+import { OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
+import { SalaController } from 'src/app/shared/_controllers';
+import { Sala } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-salas',
@@ -14,51 +14,46 @@ import { Sala } from 'src/app/shared';
     animations: [routerTransition()]
 })
 export class SalasComponent implements OnInit {
-    permissao;
 
-    listSalas;
-
-    displayedColumns: string[] = ['salaNome', 'salaUnidade', 'salaLotacao', 'salaAtiva', 'detalhes'];
-    tableData = new MatTableDataSource<any>();
+    permissao: string;
+    listSalas: Sala[];
+    displayedColumns = ['salaNome', 'salaUnidade', 'salaLotacao', 'salaAtiva', 'detalhes'];
+    tableData = new MatTableDataSource<Sala>();
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
-        private salaService: SalaService,
         private organizeRoomsService: OrganizeRoomsService<Sala>,
-        private sessionStorageService: SessionStorageService
+        private sessionStorageService: SessionStorageService,
+        private salaController: SalaController
     ) { }
 
     ngOnInit() {
-        this.carregarSalas();
-        this.configurarPaginador();
-
         this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
+
+        this.carregarDados();
+        this.configurarPaginador();
     }
 
-    carregarSalas() {
-        this.salaService.buscarTodos().subscribe(ret => {
-            this.tableData.data = ret.data;
-            this.tableData.paginator = this.paginator;
-            this.tableData.sort = this.sort;
-        });
+    async carregarDados() {
+        this.tableData.data = await this.salaController.buscarTodos();
     }
 
-    editarSala(registro) {
+    editar(registro: Sala) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    excluir(sala) {
-        this.salaService.deletar(sala.salaId).subscribe(ret => {
-            if (ret.data == true) {
-                alert(sala.salaNome + ' Deletada com Sucesso!');
-                location.reload()
-            }
-            if (ret.data == false) {
-                alert('Não foi possível Deletar ' + sala.salaNome + ' !');
-            }
-        })
+    async excluir(sala: Sala) {
+        let retorno = await this.salaController.deletar(sala.salaId)
+
+        if (retorno) {
+            alert(`${sala.salaNome} Deletada com Sucesso!`);
+            location.reload();
+
+        } else {
+            alert(`Não foi possível Deletar ${sala.salaNome}!`);
+        }
     }
 
     aplicarFiltro(valor: string) {
@@ -66,9 +61,9 @@ export class SalasComponent implements OnInit {
     }
 
     configurarPaginador() {
-        this.paginator._intl.itemsPerPageLabel = 'Itens por Página';
-        this.paginator._intl.getRangeLabel = rangeLabel;
-        this.paginator.showFirstLastButtons = true;
-        this.paginator.pageSizeOptions = [8, 10, 15, 20, 30];
+        this.paginator = configurarPaginador(this.paginator);
+
+        this.tableData.paginator = this.paginator;
+        this.tableData.sort = this.sort;
     }
 }

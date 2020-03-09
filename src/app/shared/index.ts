@@ -5,4 +5,5 @@ export * from './_models';
 export * from './_controllers';
 export * from './_services';
 export * from './_config';
+export * from './_helpers';
 export * from './utils';

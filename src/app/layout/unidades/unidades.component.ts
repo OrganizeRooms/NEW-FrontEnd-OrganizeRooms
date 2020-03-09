@@ -2,10 +2,10 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { rangeLabel } from '../../shared/utils/range-label';
 import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
 import { Unidade } from 'src/app/shared/_models';
 import { UnidadeController } from 'src/app/shared/_controllers';
+import { configurarPaginador } from 'src/app/shared/utils/table-data';
 
 
 @Component({
@@ -60,12 +60,9 @@ export class UnidadesComponent implements OnInit {
     }
 
     configurarPaginador() {
+        this.paginator = configurarPaginador(this.paginator);
+        
         this.tableData.paginator = this.paginator;
         this.tableData.sort = this.sort;
-
-        this.paginator._intl.itemsPerPageLabel = 'Itens por Página';
-        this.paginator._intl.getRangeLabel = rangeLabel;
-        this.paginator.showFirstLastButtons = true;
-        this.paginator.pageSizeOptions = [8, 10, 15, 20, 30];
     }
 }

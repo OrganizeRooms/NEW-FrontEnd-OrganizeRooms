@@ -11,11 +11,17 @@ import {
     MatTableModule, MatPaginatorModule, MatSortModule, MatRadioModule
 } from '@angular/material';
 
+import { VerificarDisponibilidadeComponent } from './verificar-disponibilidade/verificar-disponibilidade.component';
+import { AgendarComponent } from './agendar/agendar.component';
+import { SelecionarEquipamentosModule, SelecionarPessoasModule, SelecionarEquipamentosComponent, SelecionarPessoasComponent } from '../components/agendamento';
+
 @NgModule({
     imports: [
         CommonModule,
         ReservarRoutingModule,
         PageHeaderModule,
+        SelecionarEquipamentosModule,
+        SelecionarPessoasModule,
         MatStepperModule,
         MatFormFieldModule,
         FormsModule,
@@ -31,10 +37,18 @@ import {
         NgbModule
     ],
     declarations: [
-        ReservarComponent
+        ReservarComponent,
+        VerificarDisponibilidadeComponent,
+        AgendarComponent
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
+    ],
+    entryComponents: [
+        VerificarDisponibilidadeComponent,
+        AgendarComponent,
+        SelecionarEquipamentosComponent,
+        SelecionarPessoasComponent
     ]
 })
 export class ReservarModule { }

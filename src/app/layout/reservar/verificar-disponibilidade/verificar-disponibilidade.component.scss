@@ -1,0 +1,81 @@
+  #step1{
+    min-height: 20em;
+}
+
+.datepicker-home{
+    //margin-top: 24px;
+    max-width: 220px;
+}
+
+.btn-filtrar{
+    margin-top: 24px;
+    width: 100px;
+}
+
+.table-salas{
+    margin: 0 auto;
+    padding: 10px;
+    border: black solid;
+}
+
+.card-body {
+    max-height: 180px;
+    overflow-y: scroll;
+}
+
+h2{
+    margin-top: 10px;
+    margin-right: -50px; 
+  }
+
+.page-text{
+    font-size: 110%;
+}
+
+.card-agendamento {
+    padding-left: 0px !important; 
+}
+  
+.card-titulo{
+    font-size: 110%;
+    font-weight: bolder;
+}
+
+.mat-column-select {
+    overflow: initial;
+  }
+
+  .list-group-item{
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+.btn-selecionar{
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+}
+
+/* Column Widths*/
+.mat-column-selecionar {
+    max-width: 5px;
+}
+/* Column Widths Participantes*/
+.mat-column-pesNome {
+    max-width: 40px;
+}
+.mat-column-pesUnidade {
+    max-width: 30px;
+}
+.mat-column-obrigatorio {
+    max-width: 5px;
+}
+/*End Participantes*/
+
+/* Column Widths Equipamentos*/
+.mat-column-equNome {
+    max-width: 45px;
+}
+.mat-column-equDescricao{
+    max-width: 55px;
+}
+/*End Equipamentos*/
