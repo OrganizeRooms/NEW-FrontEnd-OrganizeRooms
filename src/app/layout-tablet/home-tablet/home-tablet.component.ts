@@ -2,8 +2,8 @@ import { Component, OnInit, LOCALE_ID } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 // Date Picker
 import { NgbDateStruct, NgbDatepickerI18n, NgbModal, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { I18n, CustomDatepickerI18n, NgbDateCustomParserFormatter } from 'src/app/shared/utils';
-import { Agendamento, AgendamentoService, SessionStorageService, ParticipanteService, Participante, AgendamentoContext, SalaService } from 'src/app/shared';
+import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
+import { Agendamento, AgendamentoService, SessionStorageService, AgendamentoContext, SalaService } from 'src/app/shared';
 import { FormControl } from '@angular/forms';
 
 @Component({

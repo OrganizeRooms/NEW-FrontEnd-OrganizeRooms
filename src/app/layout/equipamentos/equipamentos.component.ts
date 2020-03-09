@@ -2,11 +2,10 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { rangeLabel } from '../../shared/utils/range-label';
-
 import { OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
 import { Equipamento } from 'src/app/shared/_models';
 import { EquipamentoController } from 'src/app/shared/_controllers';
+import { configurarPaginador } from 'src/app/shared/utils/table-data';
 
 @Component({
     selector: 'app-equipamentos',
@@ -45,9 +44,8 @@ export class EquipamentosComponent implements OnInit {
         this.organizeRoomsService.setValue(registro);
     }
 
-    excluir(equipamento: Equipamento) {
-        let retorno = this.equipamentoController.deletar(equipamento.equId);
-        console.log(retorno);
+    async excluir(equipamento: Equipamento) {
+        let retorno = await this.equipamentoController.deletar(equipamento.equId);
 
         if (retorno) {
             alert(`Equipamento ${equipamento.equNome} Deletada com Sucesso!`);
@@ -62,12 +60,9 @@ export class EquipamentosComponent implements OnInit {
     }
 
     configurarPaginador() {
+        this.paginator = configurarPaginador(this.paginator);
+        
         this.tableData.paginator = this.paginator;
         this.tableData.sort = this.sort;
-
-        this.paginator._intl.itemsPerPageLabel = 'Itens por Página';
-        this.paginator._intl.getRangeLabel = rangeLabel;
-        this.paginator.showFirstLastButtons = true;
-        this.paginator.pageSizeOptions = [8, 10, 15, 20, 30];
     }
 }

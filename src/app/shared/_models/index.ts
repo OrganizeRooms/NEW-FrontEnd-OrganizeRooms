@@ -14,3 +14,4 @@ export * from './enviaEmail';
 export * from './agendamento';
 export * from './agendamentoContext';
 export * from './dialogdata';
+export * from './hora';

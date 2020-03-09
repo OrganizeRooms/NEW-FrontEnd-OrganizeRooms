@@ -28,7 +28,11 @@ export class UnidadeService extends ServiceWS<Unidade>{
     }
 
     buscarPorId(id: String): Observable<Response> {
-        return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades/` + id);
+        return this.http.post<Response>(`${API_CONFIG.baseUrl}/unidades/porId/`, id);
     }
+    /*
+    buscarPorId(id: String): Observable<Response> {
+        return this.http.get<Response>(`${API_CONFIG.baseUrl}/unidades/` + id);
+    }*/
 
 }

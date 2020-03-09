@@ -111,11 +111,11 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
     carregarEquipamentos() {
 
-        var dataHoraInicio = this.montarStringDataHora(
+        var dataHoraInicio = this.montarStringDataHoraEng(
             new Date(this.selAgendamento.ageHoraInicio),
             new Date(this.selAgendamento.ageHoraInicio))
 
-        var dataHoraFim = this.montarStringDataHora(
+        var dataHoraFim = this.montarStringDataHoraEng(
             new Date(this.selAgendamento.ageHoraFim),
             new Date(this.selAgendamento.ageHoraFim))
 
@@ -321,14 +321,14 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         var notificacoes = new Array<Notificacao>()
 
         var nMensagemPadrão = 'Você possui uma nova reunião na data '
-            + this.montarStringDataPtBr(new Date(this.selAgendamento.ageHoraInicio))
+            + this.montarStringData(new Date(this.selAgendamento.ageHoraInicio))
             + ' no período das ' + this.montarStringHoraMinuto(new Date(this.selAgendamento.ageHoraInicio))
             + ' às ' + this.montarStringHoraMinuto(new Date(this.selAgendamento.ageHoraFim))
             + ' marcada por ' + this.selAgendamento.agePesResponsavel.pesNome + '.'
 
         var nMensagemObrigatorio = 'Você é uma pessoa Obrigatória na nova reunião marcada por '
             + this.selAgendamento.agePesResponsavel.pesNome
-            + ' na data ' + this.montarStringDataPtBr(new Date(this.selAgendamento.ageHoraInicio))
+            + ' na data ' + this.montarStringData(new Date(this.selAgendamento.ageHoraInicio))
             + ' no período das ' + this.montarStringHoraMinuto(new Date(this.selAgendamento.ageHoraInicio))
             + ' às ' + this.montarStringHoraMinuto(new Date(this.selAgendamento.ageHoraFim)) + '.'
 
@@ -400,7 +400,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         var notificacoes = new Array<Notificacao>()
 
         var nMensagemExcluido = 'Você foi retirado da reunião marcada por ' + this.selAgendamento.agePesResponsavel.pesNome
-            + ' na data ' + this.montarStringDataPtBr(new Date(this.selAgendamento.ageHoraInicio))
+            + ' na data ' + this.montarStringData(new Date(this.selAgendamento.ageHoraInicio))
             + ' no período das ' + this.montarStringHoraMinuto(new Date(this.selAgendamento.ageHoraInicio))
             + ' às ' + this.montarStringHoraMinuto(new Date(this.selAgendamento.ageHoraFim)) + '.'
 
@@ -506,7 +506,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         return stringData
     }
 
-    montarStringDataPtBr(data: Date) {
+    montarStringData(data: Date) {
 
         var mes = this.validarData(data, 1);
         var dia = this.validarData(data, 2);
@@ -524,7 +524,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         return stringHoraMinuto
     }
 
-    montarStringDataHora(parData, parHora) {
+    montarStringDataHoraEng(parData, parHora) {
 
         var mes = this.validarData(parData, 1);
         var dia = this.validarData(parData, 2);

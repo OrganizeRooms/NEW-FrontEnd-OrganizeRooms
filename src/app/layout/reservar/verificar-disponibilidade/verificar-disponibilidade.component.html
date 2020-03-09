@@ -1,0 +1,87 @@
+<div id="step1">
+    <div class="row">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-5">
+            <span>Unidade <span style="color: red;">*</span></span>
+            <mat-select class="form-control" [(ngModel)]="selNumeroUnidade">
+                <mat-option *ngFor="let unidade of listUnidades" [value]="unidade.uniId">
+                    {{unidade.uniNome}}
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="col-12 col-sm-5 col-md-4 col-lg-6 col-xl-5">
+            <span>Data <span style="color: red;">*</span></span>
+            <div class="input-group datepicker-home">
+                <input class="form-control text-center" placeholder="dd/mm/yyyy" name="dp" [(ngModel)]="data"
+                    ngbDatepicker #d="ngbDatepicker" [minDate]="today">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-11 col-xl-10">
+            <div class="row">
+                <div class="col-6 col-sm-3 col-md-3 col-lg-4 col-xl-4">
+                    <span>Hora Inicial</span>
+                    <ngb-timepicker [spinners]="false" [(ngModel)]="horaInicio"></ngb-timepicker>
+                </div>
+                <div class="col-6 col-sm-3 col-md-4 col-lg-4 col-xl-4">
+                    <span>Hora Final</span>
+                    <ngb-timepicker [spinners]="false" [(ngModel)]="horaFim"></ngb-timepicker>
+                </div>
+
+                <div class="col-6 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <span>Lotação</span>
+                    <input type="text" class="form-control text-center" [(ngModel)]="lotacao">
+                </div>
+                <div *ngIf="apareceFiltrar == true" (click)="validarCampos()"
+                    class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <a class="btn btn-padrao btn-filtrar">
+                        Filtrar
+                    </a>
+                </div>
+                <div *ngIf="filtrarValido == true && apareceFiltrar == false"
+                    class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <a class="btn btn-padrao btn-filtrar" (click)="limpar()">
+                        Limpar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <mat-radio-group *ngIf="listSalas != null" [(ngModel)]="selSala">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sala</th>
+                    <th>Lotação</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="listSalas != null || listSalas != null ">
+                <tr *ngFor="let sala of listSalas">
+                    <td>
+                        <mat-radio-button [value]="sala">
+                            {{sala.salaNome}}
+                        </mat-radio-button>
+                    </td>
+                    <td>{{sala.salaLotacao}}</td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="listSalas == null || listSalas == null ">
+                <tr>
+                    <td colspan="3">Não existem Salas Disponíveis para os filtros informados!</td>
+                </tr>
+            </tbody>
+        </table>
+    </mat-radio-group>
+
+    <div *ngIf="selSala != null" class="row ml-auto">
+        <a class="col-5 col-sm-3 col-md-3 col-lg-3 btn btn-padrao" (click)="next(stepper)">
+            Confirmar
+        </a>
+    </div>
+</div>

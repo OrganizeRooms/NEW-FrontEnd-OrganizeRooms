@@ -1,6 +1,5 @@
 import { EquipamentoService } from '../_services';
-import { Equipamento } from '../_models';
-
+import { Equipamento, AgendamentoContext } from '../_models';
 export class EquipamentoController {
 
     constructor(private equipamentoService: EquipamentoService) { }
@@ -13,6 +12,16 @@ export class EquipamentoController {
             .then(ret => {
                 lista = ret.data;
             });
+
+        return lista;
+    }
+
+    async buscarDisponiveis(agendamentoContext: AgendamentoContext): Promise<Equipamento[]> {
+
+        let lista: Equipamento[];
+        await this.equipamentoService.buscarDisponiveis(agendamentoContext).toPromise().then(ret => {
+            lista = ret.data
+        });
 
         return lista;
     }

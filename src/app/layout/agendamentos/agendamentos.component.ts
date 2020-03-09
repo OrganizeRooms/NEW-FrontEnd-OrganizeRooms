@@ -2,11 +2,11 @@ import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { rangeLabel } from '../../shared/utils/range-label';
-
 import { AgendamentoService, OrganizeRoomsService, SessionStorageService, UnidadeService } from '../../shared/_services';
 import { NgbDateStruct, NgbDatepickerI18n, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n, AgendamentoContext, Agendamento, Unidade } from 'src/app/shared';
+import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
+import { configurarPaginador } from 'src/app/shared/utils/table-data';
+import { AgendamentoContext, Agendamento, Unidade } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-agendamentos',
@@ -20,7 +20,7 @@ import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n, AgendamentoCo
     ]
 })
 export class AgendamentosComponent implements OnInit, OnDestroy {
-    
+
     permissao: string;
     listUnidades: Unidade[];
     selUnidade: Unidade;
@@ -52,11 +52,11 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
         // this.carregarAgendamentos();
         this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
         this.selUnidade = this.sessionStorageService.getValue().pessoa.pesUnidade;
-        
+
         var today = this.calendar.getToday()
         this.dataFinal = today
         this.dataInicial = today
-        
+
         this.carregarUnidades();
         this.configurarPaginador();
     }
@@ -145,9 +145,6 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
     }
 
     configurarPaginador() {
-        this.paginator._intl.itemsPerPageLabel = 'Itens por Página';
-        this.paginator._intl.getRangeLabel = rangeLabel;
-        this.paginator.showFirstLastButtons = true;
-        this.paginator.pageSizeOptions = [8, 10, 15, 20, 30];
+        this.paginator = configurarPaginador(this.paginator);
     }
 }

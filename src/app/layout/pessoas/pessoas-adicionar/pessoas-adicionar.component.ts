@@ -63,8 +63,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
                 pesTipoInclusao: [this.selPessoa.pesTipoInclusao],
                 pesDtCadastro: [this.selPessoa.pesDtCadastro],
             });
-            this.selPermissao = this.selPessoa.pesPermissao
-            this.selUnidade = new FormControl(this.selPessoa.pesUnidade.uniId)
+
         } else {
             this.formAddPessoa = this.formBuilder.group({
                 pesId: [0],
@@ -76,55 +75,19 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
                 pesTipoInclusao: ['SIS'],
                 pesDtCadastro: [new Date()],
             });
-            this.selUnidade = new FormControl(this.localUser.pessoa.pesUnidade.uniId)
-            this.selPermissao = 'ROLE_USUARIO';
         }
+
+        this.selPermissao = this.selPessoa == null ? 'ROLE_USUARIO' : this.selPessoa.pesPermissao;
+        this.selUnidade = new FormControl(
+            this.selPessoa == null ? this.localUser.pessoa.pesUnidade.uniId : this.selPessoa.pesUnidade.uniId
+        )
     }
 
     async adicionarPessoa() {
 
-        var pesTipoInclusao;
-        var pesCadastro;
-        if (this.selPessoa != null) {
-            pesTipoInclusao = null
-            pesCadastro = null
-        } else {
-            pesCadastro = this.localUser.pessoa.pesId
-            pesTipoInclusao = 'SIS'
-        }
+        const pessoa = this.montarPessoa();
 
-        const unidade: Unidade = {
-            uniId: this.selUnidade.value,
-            uniNome: null,
-            uniAtiva: null,
-            uniPesCadastro: null,
-            uniDtCadastro: null,
-            uniPesAtualizacao: null,
-            uniDtAtualizacao: null
-        };
-
-        const newPessoa: Pessoa = {
-            pesId: this.formAddPessoa.value.pesId,
-            pesNome: this.formAddPessoa.value.pesNome,
-            pesEmail: this.formAddPessoa.value.pesEmail,
-            pesPermissao: this.selPermissao,
-            pesDescricaoPermissao: null,
-            pesUnidade: unidade,
-            pesDdd: this.formAddPessoa.value.pesDDD,
-            pesTelefone: this.formAddPessoa.value.pesTelefone,
-            pesAtualizacao: this.localUser.pessoa.pesId,
-            pesDtAtualizacao: new Date(),
-            // NÃO É ATUALIZADO 
-            pesCadastro: pesCadastro,
-            pesTipoInclusao: pesTipoInclusao,
-            pesDtCadastro: null,
-
-            // somente front
-            participanteObrigatorio: null,
-        };
-
-        let retPessoa = await this.pessoaController.adicionar(newPessoa);
-
+        let retPessoa = await this.pessoaController.adicionar(pessoa);
         if (retPessoa != null) {
             if (this.selPessoa != null) {
                 alert(`Pessoa ${retPessoa.pesNome} Atualizada com Sucesso!`);
@@ -136,6 +99,29 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         } else {
             alert('Não foi possível realizar a ação! Tente Novamente.');
         }
+    }
+
+    montarPessoa(): Pessoa {
+
+        var pesTipoInclusao = this.selPessoa == null ? 'SIS' : null;
+        var pesCadastro = this.selPessoa == null ? this.localUser.pessoa.pesId : null;
+
+        return {
+            pesId: this.formAddPessoa.value.pesId,
+            pesNome: this.formAddPessoa.value.pesNome,
+            pesEmail: this.formAddPessoa.value.pesEmail,
+            pesPermissao: this.selPermissao,
+            pesDescricaoPermissao: null,
+            pesUnidade: this.unidadeController.montarUnidadeComId(this.selUnidade.value),
+            pesDdd: this.formAddPessoa.value.pesDDD,
+            pesTelefone: this.formAddPessoa.value.pesTelefone,
+            pesAtualizacao: this.localUser.pessoa.pesId,
+            pesDtAtualizacao: new Date(),
+            pesCadastro: pesCadastro,
+            pesTipoInclusao: pesTipoInclusao,
+            pesDtCadastro: new Date(),
+            participanteObrigatorio: null,
+        };
     }
 
     async excluir() {

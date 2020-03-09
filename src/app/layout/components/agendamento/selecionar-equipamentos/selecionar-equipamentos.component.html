@@ -1,0 +1,64 @@
+<div>
+    <div class="modal-header">
+        <h4 class="color-blue">
+            Selecione os Equipamentos
+        </h4>
+        <a class="close" aria-label="Close" (click)="fechar()">
+            <span aria-hidden="true">&times;</span>
+        </a>
+    </div>
+
+    <div class="modal-body">
+        <div class="page-text">
+            <div class="row justify-content-center">
+
+                <div class="col-7 col-sm-9 col-md-6 col-lg-5 col-xl-6">
+                    <input class="form-control text-center" matInput (keyup)="aplicarFiltro($event.target.value)"
+                        placeholder="Pesquisar">
+                </div>
+            </div>
+            <br />
+            <table mat-table [dataSource]="listEquipamentos" class="mat-elevation-z8">
+
+                <!-- Checkbox -->
+                <ng-container matColumnDef="selecionar">
+                    <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? masterToggle() : null"
+                            [checked]="selecionados.hasValue() && isAllSelected()"
+                            [indeterminate]="selecionados.hasValue() && !isAllSelected()"
+                            [aria-label]="checkboxLabel()">
+                        </mat-checkbox>
+
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? selecionados.toggle(row) : null" [checked]="selecionados.isSelected(row)"
+                            [aria-label]="checkboxLabel(row)">
+                        </mat-checkbox>
+                    </td>
+                </ng-container>
+
+                <!-- Nome -->
+                <ng-container matColumnDef="equNome">
+                    <th mat-header-cell *matHeaderCellDef>Nome</th>
+                    <td mat-cell *matCellDef="let equipamento">{{equipamento.equNome}}</td>
+                </ng-container>
+
+                <!-- Descrição -->
+                <ng-container matColumnDef="equDescricao">
+                    <th mat-header-cell *matHeaderCellDef>Descrição</th>
+                    <td mat-cell *matCellDef="let equipamento"> {{equipamento.equDescricao}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    (click)="selecionados.toggle(row)">
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="row ml-auto">
+            <a class="btn btn-padrao" (click)="fechar()">Fechar</a>
+        </div>
+    </div>
+</div>

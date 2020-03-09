@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { routerTransition } from 'src/app/router.animations';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Sala, OrganizeRoomsService, SalaService, UnidadeService, SessionStorageService, Unidade } from 'src/app/shared';
-import { Router } from '@angular/router';
+
+import { OrganizeRoomsService, SessionStorageService, } from 'src/app/shared/_services';
+import { SalaController, UnidadeController } from 'src/app/shared/_controllers';
+import { Sala, Unidade, Pessoa, LocalUser } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-salas-adicionar',
@@ -12,47 +15,44 @@ import { Router } from '@angular/router';
 })
 
 export class SalasAdicionarComponent implements OnInit, OnDestroy {
+
     labelPosition = 'before';
-    permissao;
-
+    localUser: LocalUser;
+    permissao: string;
     formAddSala: FormGroup;
-    listUnidades;
-
-    selSala;
+    listUnidades: Unidade[];
+    selSala: Sala;
     selUnidade = new FormControl();
-
-    salaDtAtualizacao;
-    salaPesAtualizacao;
 
     constructor(
         private router: Router,
         private formBuilder: FormBuilder,
-        private salaService: SalaService,
-        private unidadeService: UnidadeService,
         private organizeRoomsService: OrganizeRoomsService<Sala>,
-        private sessionStorageService: SessionStorageService
+        private sessionStorageService: SessionStorageService,
+        private salaController: SalaController,
+        private unidadeController: UnidadeController
     ) { }
 
     ngOnInit() {
         this.selSala = this.organizeRoomsService.getValue();
+        this.localUser = this.sessionStorageService.getValue();
+        this.permissao = this.localUser.pessoa.pesPermissao;
 
         this.carregarUnidades();
         this.criarFormulario();
-        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
     }
 
     ngOnDestroy() {
         this.organizeRoomsService.setValue(null)
     }
 
-    carregarUnidades() {
-        this.unidadeService.buscarAtivas().subscribe(ret => {
-            this.listUnidades = ret.data;
-        });
+    async carregarUnidades() {
+        this.listUnidades = await this.unidadeController.buscarAtivas();
     }
 
     criarFormulario() {
-        if (this.selSala != null) {
+
+        if (this.selSala) {
             this.formAddSala = this.formBuilder.group({
                 salaId: [this.selSala.salaId],
                 salaNome: [this.selSala.salaNome, Validators.compose([Validators.required])],
@@ -60,7 +60,7 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
                 salaAtiva: [this.selSala.salaAtiva],
                 salaDtCadastro: [this.selSala.salaDtCadastro]
             });
-            this.selUnidade = new FormControl(this.selSala.salaUnidade.uniId)
+
         } else {
             this.formAddSala = this.formBuilder.group({
                 salaId: [0],
@@ -69,64 +69,56 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
                 salaAtiva: [true],
                 salaDtCadastro: [new Date()]
             });
-            this.selUnidade = new FormControl(this.sessionStorageService.getValue().pessoa.pesUnidade.uniId);
+        }
+
+        this.selUnidade = new FormControl(
+            this.selSala != null ? this.selSala.salaUnidade.uniId : this.localUser.pessoa.pesUnidade.uniId
+        );
+    }
+
+    async adicionarSala() {
+
+        const sala = this.montarSala();
+
+        let retorno = await this.salaController.adicionar(sala);
+        if (retorno != null) {
+            if (this.selSala != null) {
+                alert(`Sala ${retorno.salaNome} Atualizada com Sucesso!`);
+
+            } else {
+                alert(`Sala ${retorno.salaNome} Adicionada com Sucesso!`);
+            }
+
+            this.router.navigate(['/salas']);
         }
     }
 
-    adicionarSala() {
+    montarSala(): Sala {
 
-        var salaPesCadastro;
-        if (this.selSala != null) {
-            salaPesCadastro = null
-        } else {
-            salaPesCadastro = this.sessionStorageService.getValue().pessoa.pesId
-        }
+        let salaPesCadastro = this.selSala == null ? this.localUser.pessoa.pesId : null;
 
-        const unidade: Unidade = {
-            uniId: this.selUnidade.value,
-            uniNome: null,
-            uniAtiva: null,
-            uniPesCadastro: null,
-            uniDtCadastro: null,
-            uniPesAtualizacao: null,
-            uniDtAtualizacao: null
-        }
-
-        const sala: Sala = {
+        return {
             salaId: this.formAddSala.value.salaId,
             salaNome: this.formAddSala.value.salaNome,
             salaLotacao: this.formAddSala.value.salaLotacao,
             salaAtiva: this.formAddSala.value.salaAtiva,
-            salaPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
+            salaPesAtualizacao: this.localUser.pessoa.pesId,
             salaDtAtualizacao: new Date(),
-            salaUnidade: unidade,
+            salaUnidade: this.unidadeController.montarUnidadeComId(this.selUnidade.value),
             salaPesCadastro: salaPesCadastro,
-            // NÃO É ATUALIZADO 
-            salaDtCadastro: null,
+            salaDtCadastro: new Date(),
         };
-
-        this.salaService.adicionar(sala).subscribe(ret => {
-            if (ret.data != null) {
-                if (this.selSala != null) {
-                    alert('Sala ' + ret.data.salaNome + ' Atualizada com Sucesso!');
-                    this.router.navigate(['/salas']);
-                } else {
-                    alert('Sala ' + ret.data.salaNome + ' Adicionada com Sucesso!');
-                    this.router.navigate(['/salas']);
-                }
-            }
-        });
     }
 
-    excluir() {
-        this.salaService.deletar(this.selSala.salaId).subscribe(ret => {
-            if (ret.data == true) {
-                alert(this.selSala.salaNome + ' Deletada com Sucesso!');
-                this.router.navigate(['/salas']);
-            }
-            if (ret.data == false) {
-                alert('Não foi possível Deletar ' + this.selSala.salaNome + ' !');
-            }
-        })
+    async excluir() {
+        let retorno = await this.salaController.deletar(this.selSala.salaId)
+
+        if (retorno) {
+            alert(`${this.selSala.salaNome} Deletada com Sucesso!`);
+            this.router.navigate(['/salas']);
+
+        } else {
+            alert(`Não foi possível Deletar ${this.selSala.salaNome}!`);
+        }
     }
 }
