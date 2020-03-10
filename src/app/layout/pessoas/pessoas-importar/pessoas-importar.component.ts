@@ -67,8 +67,8 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
         this.inconsistencias = await this.pessoaController.adicionarLista(this.csvRecords);
     }
 
-    getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any) {
-        let dataArr = [];
+    getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any): Pessoa[] {
+        let dataArr = new Array<Pessoa>();
 
         for (let i = 1; i < csvRecordsArray.length; i++) {
             let data = (<string>csvRecordsArray[i]).split(';');
@@ -113,9 +113,9 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
     }
 
     // GET CSV FILE HEADER COLUMNS
-    getHeaderArray(csvRecordsArr: any) {
+    getHeaderArray(csvRecordsArr: any): string[] {
         let headers = (<string>csvRecordsArr[0]).split(';');
-        let headerArray = [];
+        let headerArray = new Array<string>();
         for (let j = 0; j < headers.length; j++) {
             headerArray.push(headers[j]);
         }
