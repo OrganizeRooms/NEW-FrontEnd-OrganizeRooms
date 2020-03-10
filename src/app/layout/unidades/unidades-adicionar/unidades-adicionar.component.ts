@@ -39,7 +39,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.organizeRoomsService.setValue(null)
+        this.organizeRoomsService.setValue(this.unidadeController.montarUnidadeComId(0));
     }
 
     criarFormulario() {
@@ -81,15 +81,13 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
     montarUnidade(): Unidade {
 
-        let uniPesCadastro = this.selUnidade == null ? this.localUser.pessoa.pesId : null;
-
         return {
             uniId: this.formAddUnidade.value.uniId,
             uniNome: this.formAddUnidade.value.uniNome,
             uniAtiva: this.formAddUnidade.value.uniAtiva,
             uniPesAtualizacao: this.localUser.pessoa.pesId,
             uniDtAtualizacao: new Date(),
-            uniPesCadastro: uniPesCadastro,
+            uniPesCadastro: this.selUnidade == null ? this.localUser.pessoa.pesId : this.selUnidade.uniPesCadastro,
             uniDtCadastro: new Date(),
         };
     }

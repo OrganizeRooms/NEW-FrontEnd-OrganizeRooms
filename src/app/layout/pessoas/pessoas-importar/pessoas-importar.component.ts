@@ -4,7 +4,7 @@ import { routerTransition } from '../../../router.animations';
 import { toInteger } from 'src/app/shared/utils/util';
 import { SessionStorageService } from 'src/app/shared/_services';
 import { Pessoa, Unidade } from 'src/app/shared/_models';
-import { PessoaController } from 'src/app/shared/_controllers';
+import { PessoaController, UnidadeController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-pessoas-importar',
@@ -16,12 +16,13 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
 
     constructor(
         private sessionStorageService: SessionStorageService,
-        private pessoaController: PessoaController
+        private pessoaController: PessoaController,
+        private unidadeController: UnidadeController
     ) { }
 
     csvRecords: Pessoa[] = [];
     importLiberado = false
-    inconsistencias = null;
+    inconsistencias: string[];
 
     @ViewChild('fileImportInput', { static: true }) fileImportInput: any;
 
@@ -62,8 +63,8 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
         }
     }
 
-    importarPessoas() {
-        this.inconsistencias = this.pessoaController.adicionarLista(this.csvRecords);
+    async importarPessoas() {
+        this.inconsistencias = await this.pessoaController.adicionarLista(this.csvRecords);
     }
 
     getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any) {
@@ -77,23 +78,13 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
             if (data.length == headerLength) {
                 // nome;e-mail;ddd;telefone;unidade
 
-                let unidade: Unidade = {
-                    uniId: toInteger(data[4]),
-                    uniNome: null,
-                    uniAtiva: null,
-                    uniPesCadastro: null,
-                    uniDtCadastro: null,
-                    uniPesAtualizacao: null,
-                    uniDtAtualizacao: null,
-                };
-
                 let csvRecord: Pessoa = {
-                    pesId: null,
+                    pesId: 0,
                     pesNome: data[0].trim(),
                     pesEmail: data[1].trim(),
                     pesDdd: data[2].trim(),
                     pesTelefone: data[3].trim(),
-                    pesUnidade: unidade,
+                    pesUnidade: this.unidadeController.montarUnidadeComId(toInteger(data[4])),
                     pesPermissao: 'ROLE_USUARIO',
                     pesDescricaoPermissao: 'Usuario',
 
@@ -107,7 +98,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
                     pesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
                     pesDtAtualizacao: new Date(),
                     /// SOMENTE FRONT
-                    participanteObrigatorio: null
+                    participanteObrigatorio: false
                 };
 
                 dataArr.push(csvRecord);

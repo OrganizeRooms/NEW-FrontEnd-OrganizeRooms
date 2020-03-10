@@ -13,7 +13,7 @@ export class JwtInterceptor implements HttpInterceptor {
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
+        
         //const localUser = this.storage.getLocalUser();
         const localUser = this.sessionStorageService.getValue();
 

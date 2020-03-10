@@ -7,7 +7,7 @@ export interface Agendamento {
     ageId: number;
     ageAssunto: string;
     ageDescricao: string;
-    ageSala: Sala;
+    ageSala: Sala | null;
     agePesResponsavel: Pessoa;
     ageStatus: string;
     ageData: Date;
@@ -17,6 +17,6 @@ export interface Agendamento {
     agePesAtualizacao: number;
     ageDtCadastro: Date;
     ageDtAtualizacao: Date;
-    ageEquipamentos: Array<ReservaEquipamento>;
-    ageParticipantes: Array<Participante>
+    ageEquipamentos: ReservaEquipamento[] | null;
+    ageParticipantes: Participante[] | null;
 }

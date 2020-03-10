@@ -4,8 +4,9 @@ import { routerTransition } from '../../router.animations';
 import { NgbDateStruct, NgbDatepickerI18n, NgbModal, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
 import { AgendamentoService, SessionStorageService, ParticipanteService } from 'src/app/shared/_services';
-import { NotificacaoController } from 'src/app/shared/_controllers';
-import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail } from 'src/app/shared/_models';
+import { NotificacaoController, AgendamentoController } from 'src/app/shared/_controllers';
+import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail, Pessoa } from 'src/app/shared/_models';
+import { DateHelper } from 'src/app/shared';
 
 @Component({
     selector: 'app-home',
@@ -21,11 +22,11 @@ import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail 
 export class HomeComponent implements OnInit {
 
     // listAgendamentos: Agendamento;
-    listAgendamentos;
+    listAgendamentos: Array<Agendamento>;
     data: NgbDateStruct;
-    selAgendamento;
-    pessoaLogada;
-    participante;
+    selAgendamento: Agendamento;
+    pessoaLogada: Pessoa;
+    participante: Participante;
 
     constructor(
         private modal: NgbModal,
@@ -33,7 +34,8 @@ export class HomeComponent implements OnInit {
         private sessionStorageService: SessionStorageService,
         private agendamentoService: AgendamentoService,
         private participanteService: ParticipanteService,
-        private notificacaoController: NotificacaoController
+        private notificacaoController: NotificacaoController,
+        private agendamentoController: AgendamentoController
     ) { }
 
     ngOnInit() {
@@ -46,33 +48,30 @@ export class HomeComponent implements OnInit {
 
     filtro() {
 
-        var nData = this.montarStringDataEng(this.data);
+        var nData = DateHelper.montarStringDataEng(new Date(this.data.year, this.data.month, this.data.day));
 
         var agendamentoContext: AgendamentoContext = {
-            idUnidade: null,
-            lotacao: null,
-            dataInicial: null,
-            dataFinal: null,
-            idSala: null,
+            idUnidade: 0,
+            lotacao: 0,
+            dataInicial: '',
+            dataFinal: '',
+            idSala: 0,
             // Filtrar por Participante somente utiliza os campos abaixo
             dataAgendamento: nData,
             idParticipante: this.pessoaLogada.pesId,
         }
+
         this.agendamentoService.buscarPorParticipanteEDia(agendamentoContext).subscribe(ret => {
-            if (ret.data != null && ret.data != '') {
-                this.listAgendamentos = ret.data
-            } else {
-                this.listAgendamentos = null;
-            }
+            this.listAgendamentos = ret.data;
         })
     }
 
-    abrirModal(agend, modalDetalhes) {
+    abrirModal(agend: Agendamento, modalDetalhes: NgbModal) {
         this.selAgendamento = agend;
         this.modal.open(modalDetalhes)
     }
 
-    verificarPessoa(agePesResponsavel) {
+    verificarPessoa(agePesResponsavel: Pessoa) {
         var retorno = false
         if (this.pessoaLogada.pesId != agePesResponsavel.pesId) {
             return retorno = true
@@ -80,7 +79,7 @@ export class HomeComponent implements OnInit {
         return retorno
     }
 
-    verificarStatus(agend) {
+    verificarStatus(agend: Agendamento) {
         var retorno = false
         if (agend.ageStatus == 'AGENDADO' || agend.ageStatus == 'EM ANDAMENTO') {
             return retorno = true
@@ -88,7 +87,7 @@ export class HomeComponent implements OnInit {
         return retorno
     }
 
-    verificarConfirmacao(agend) {
+    verificarConfirmacao(agend: Agendamento) {
 
         var retorno = false
         agend.ageParticipantes.forEach(part => {
@@ -102,15 +101,14 @@ export class HomeComponent implements OnInit {
         return retorno
     }
 
-    aceitarAgendamento(agend) {
+    aceitarAgendamento(agend: Agendamento) {
 
-        var agendamento = this.gerarNovoAgendamento(agend)
         var part: Participante = {
-            parId: null,
-            parTipo: null,
+            parId: 0,
+            parTipo: 1,
             parConfirmado: true,
             parPessoa: this.pessoaLogada,
-            parAgendamento: agendamento
+            parAgendamento: this.agendamentoController.montarAgendamentoComId(agend.ageId)
         }
 
         var msg = "Aceito"
@@ -118,16 +116,14 @@ export class HomeComponent implements OnInit {
         location.reload();
     }
 
-    recusarAgendamento(agend) {
-
-        var agendamento = this.gerarNovoAgendamento(agend)
+    recusarAgendamento(agend: Agendamento) {
 
         var part: Participante = {
-            parId: null,
-            parTipo: null,
+            parId: 0,
+            parTipo: 1,
             parConfirmado: false,
             parPessoa: this.pessoaLogada,
-            parAgendamento: agendamento
+            parAgendamento: this.agendamentoController.montarAgendamentoComId(agend.ageId)
         }
 
         var msg = "Recusado"
@@ -142,7 +138,7 @@ export class HomeComponent implements OnInit {
 
     }
 
-    concluirAgendamento(agend) {
+    concluirAgendamento(agend: Agendamento) {
         const agendamento: Agendamento = {
             ageId: agend.ageId,
             ageAssunto: agend.ageAssunto,
@@ -152,13 +148,13 @@ export class HomeComponent implements OnInit {
             ageDtAtualizacao: new Date(),
             ageEquipamentos: agend.ageEquipamentos,
             // Atributos que não são alterados e possuem trava no BackEnd
-            ageDtCadastro: null,
+            ageDtCadastro: agend.ageDtCadastro,
             ageSala: null,
-            agePesResponsavel: null,
-            ageData: null,
-            ageHoraInicio: null,
-            ageHoraFim: null,
-            agePesCadastro: null,
+            agePesResponsavel: agend.agePesResponsavel,
+            ageData: agend.ageData,
+            ageHoraInicio: agend.ageHoraInicio,
+            ageHoraFim: agend.ageHoraFim,
+            agePesCadastro: agend.agePesCadastro,
             ageParticipantes: null
         }
 
@@ -172,13 +168,13 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    notificarRecusaPartObrigatorio(agend) {
+    notificarRecusaPartObrigatorio(agend: Agendamento) {
         var notificacoes = new Array<Notificacao>()
 
         var nMensagem = 'O Participante obrigatório ' + this.pessoaLogada.pesNome
-            + ' recusou o convite para a Reunião marcada no dia ' + this.montarStringData(new Date(agend.ageHoraInicio))
-            + ' no período das ' + this.montarStringHoraMinuto(new Date(agend.ageHoraInicio))
-            + ' às ' + this.montarStringHoraMinuto(new Date(agend.ageHoraFim)) + '.'
+            + ' recusou o convite para a Reunião marcada no dia ' + DateHelper.montarStringData(new Date(agend.ageHoraInicio))
+            + ' no período das ' + DateHelper.montarStringHoraMinuto(new Date(agend.ageHoraInicio))
+            + ' às ' + DateHelper.montarStringHoraMinuto(new Date(agend.ageHoraFim)) + '.'
 
         var nAssunto = 'Participante Obrigatório Recusou Convite para a Reunião'
 
@@ -189,7 +185,7 @@ export class HomeComponent implements OnInit {
         }
 
         var notificacao: Notificacao = {
-            notId: null,
+            notId: 0,
             notDescricao: nMensagem,                     // mensagem enviada por e-mail
             notAtiva: true,
             notPessoa: agend.agePesResponsavel, // participante
@@ -205,7 +201,7 @@ export class HomeComponent implements OnInit {
         this.notificacaoController.enviarEmail(notificacoes);
     }
 
-    atualizar(participante, msg) {
+    atualizar(participante: Participante, msg: string) {
         this.participanteService.atualizar(participante).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 alert("Agendamento " + msg + " com Sucesso!")
@@ -213,114 +209,6 @@ export class HomeComponent implements OnInit {
                 alert("Agendamento não" + msg + "! Tente novamente.")
             }
         });
-    }
-
-    gerarNovoAgendamento(agend): Agendamento {
-        let agendamento: Agendamento = {
-            ageId: agend.ageId,
-            ageAssunto: null,
-            ageDescricao: null,
-            ageSala: null,
-            agePesResponsavel: null,
-            ageStatus: null,
-            ageData: null,
-            ageHoraInicio: null,
-            ageHoraFim: null,
-            agePesCadastro: null,
-            agePesAtualizacao: null,
-            ageDtCadastro: null,
-            ageDtAtualizacao: null,
-            ageEquipamentos: null,
-            ageParticipantes: null
-        }
-        return agendamento
-    }
-
-    montarStringData(data: Date) {
-
-        var mes = this.validarData(data, 1);
-        var dia = this.validarData(data, 2);
-
-        var stringData = dia + '/' + mes + '/' + data.getFullYear()
-        return stringData
-    }
-
-    montarStringHoraMinuto(horaMinuto: Date) {
-
-        var hora = this.validarData(horaMinuto, 3);
-        var minuto = this.validarData(horaMinuto, 4);
-
-        var stringHoraMinuto = hora + ':' + minuto
-        return stringHoraMinuto
-    }
-
-    montarStringDataEng(data) {
-
-        var mes;
-        var dia;
-
-        if (data.month < 10) {
-            mes = '0' + data.month
-        } else {
-            mes = data.month
-        }
-
-        if (data.day < 10) {
-            dia = '0' + data.day
-        } else {
-            dia = data.day
-        }
-
-        var stringData = data.year + '/' + mes + '/' + dia
-        return stringData
-    }
-
-
-    validarData(valor: Date, tipoValor) {
-
-        var mes;        /// TIPO 1
-        var dia;        /// TIPO 2
-        var hora;       /// TIPO 3
-        var minuto;     /// TIPO 4
-
-        // Mes
-        if (tipoValor == 1) {
-            if (valor.getUTCMonth() + 1 < 10) {
-                mes = '0' + (valor.getUTCMonth() + 1)
-            } else {
-                mes = valor.getUTCMonth() + 1
-            }
-            return mes
-        }
-
-        // Dia
-        if (tipoValor == 2) {
-            if (valor.getDate() < 10) {
-                dia = '0' + valor.getDate()
-            } else {
-                dia = valor.getDate()
-            }
-            return dia
-        }
-
-        // Hora
-        if (tipoValor == 3) {
-            if (valor.getHours() < 10) {
-                hora = '0' + valor.getHours()
-            } else {
-                hora = valor.getHours()
-            }
-            return hora
-        }
-
-        if (tipoValor == 4) {
-            if (valor.getMinutes() < 10) {
-                minuto = '0' + valor.getMinutes()
-            } else {
-                minuto = valor.getMinutes()
-            }
-            return minuto
-        }
     }
 
 }

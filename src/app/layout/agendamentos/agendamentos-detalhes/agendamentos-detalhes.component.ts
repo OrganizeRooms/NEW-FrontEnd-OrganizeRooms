@@ -23,15 +23,15 @@ import { ReservaEquipamentoService } from 'src/app/shared/_services/reservaEquip
 
 export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
     labelPosition = 'before';
-    permissao;
-    pessoaLogada;
+    permissao: string;
+    pessoaLogada: Pessoa;
 
-    selAgendamento;
-    selUnidade;
+    selAgendamento: Agendamento;
+    selUnidade: number;
     formAgendamento: FormGroup;
-    ageParticipantes;
-    ageEquipamentos;
-    selAgeStatus;
+    ageParticipantes: Participante[];
+    ageEquipamentos: ReservaEquipamento[];
+    selAgeStatus: string;
 
     // Modal Participantes
     displayedColumnsParticipantes: string[] = ['selecionar', 'pesNome', 'pesUnidade', 'obrigatorio'];
@@ -79,7 +79,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         this.organizeRoomsService.setValue(null)
     }
 
-    abrirModal(modal) {
+    abrirModal(modal: NgbModal) {
         this.modal.open(modal)
     }
 
@@ -87,7 +87,6 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         if (this.selAgendamento != null) {
             this.formAgendamento = this.formBuilder.group({
                 ageId: [this.selAgendamento.ageId],
-                ageAtiva: [this.selAgendamento.ageAtiva],
                 ageData: [this.selAgendamento.ageData],
                 ageAssunto: [this.selAgendamento.ageAssunto, Validators.compose([Validators.required])],
                 ageDescricao: [this.selAgendamento.ageDescricao],
@@ -125,8 +124,8 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             dataAgendamento: this.montarStringDataEng(new Date(this.selAgendamento.ageHoraFim)),
             dataInicial: dataHoraInicio,
             dataFinal: dataHoraFim,
-            idParticipante: null,
-            idSala: null
+            idParticipante: 0,
+            idSala: 0
         }
 
         this.equipamentoService.buscarDisponiveis(agendamentoContext).subscribe(ret => {
@@ -144,7 +143,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         return retorno
     }
 
-    corStatus(status) {
+    corStatus(status: string) {
 
         var retorno
         if (status == 'AGENDADO') {
@@ -162,7 +161,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         }
     }
 
-    atualizarReserva(status) {
+    atualizarReserva(status: string) {
 
         var nAgeStatus;
 
@@ -180,15 +179,15 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             ageDtAtualizacao: new Date(),
             // Atributos que não são alterados e possuem trava no BackEnd
-            ageDtCadastro: null,
-            ageSala: null,
-            agePesResponsavel: null,
-            ageData: null,
-            ageHoraInicio: null,
-            ageHoraFim: null,
-            agePesCadastro: null,
-            ageEquipamentos: null,
-            ageParticipantes: null
+            ageDtCadastro: this.selAgendamento.ageDtCadastro,
+            ageSala: this.selAgendamento.ageSala,
+            agePesResponsavel: this.selAgendamento.agePesResponsavel,
+            ageData: this.selAgendamento.ageData,
+            ageHoraInicio: this.selAgendamento.ageHoraInicio,
+            ageHoraFim: this.selAgendamento.ageHoraFim,
+            agePesCadastro: this.selAgendamento.agePesCadastro,
+            ageEquipamentos: this.selAgendamento.ageEquipamentos,
+            ageParticipantes: this.selAgendamento.ageParticipantes
         }
 
         this.agendamentoService.atualizar(agendamento).subscribe(ret => {

@@ -55,14 +55,6 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     this.carregarUnidades();
   }
 
-  ngOnDestroy() {
-    this.listUnidades = null;
-    this.data = null;
-    this.selUnidade = null;
-    this.selNumeroUnidade = null;
-    this.lotacao = null;
-  }
-
   async carregarUnidades() {
     this.listUnidades = await this.unidadeController.buscarAtivas();
   }
@@ -104,8 +96,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
       dataAgendamento: DateHelper.montarStringDataEng(newData),
       dataInicial: DateHelper.montarStringDataHoraEng(newData, this.horaInicio),
       dataFinal: DateHelper.montarStringDataHoraEng(newData, this.horaFim),
-      idParticipante: null,
-      idSala: null
+      idParticipante: 0,
+      idSala: 0
     }
   }
 
@@ -115,8 +107,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
 
     return {
       ageId: 0,
-      ageAssunto: null,
-      ageDescricao: null,
+      ageAssunto: '',
+      ageDescricao: '',
       ageSala: this.montarNovaSala(),
       agePesResponsavel: this.pessoaLogada,
       ageStatus: 'AGENDADO',
@@ -135,7 +127,7 @@ export class VerificarDisponibilidadeComponent implements OnInit {
   montarNovaSala(): Sala {
 
     this.buscarUnidade();
-    
+
     return {
       salaId: this.selSala.salaId,
       salaNome: this.selSala.salaNome,
@@ -151,7 +143,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
 
   buscarUnidade() {
 
-    this.selUnidade = this.listUnidades.find(uni => uni.uniId == this.selNumeroUnidade);
+    let unidade = this.listUnidades.find(uni => uni.uniId == this.selNumeroUnidade);
+    this.selUnidade = unidade != null ? unidade : this.unidadeController.montarUnidadeComId(0);
   }
 
   // Reload na tela para recarregar os campos

@@ -23,13 +23,13 @@ export class DateHelper {
         return `${this.validarData(data, 2)}/${this.validarData(data, 1)}/${data.getFullYear()}`;
     }
 
-    static montarStringHoraMinuto(date: Date, hora: Hora = null): string {
+    static montarStringHoraMinuto(date: Date, hora?: Hora): string {
 
         let optDate = hora != null ? new Date(0, 0, 0, hora.hour, hora.minute, 0) : date;
         return `${this.validarData(optDate, 3)}:${this.validarData(optDate, 4)}`;
     }
 
-    static validarData(valor: Date, tipoValor: number): string {
+    static validarData(valor: Date, tipoValor: number): string | null {
 
         // Mes
         if (tipoValor == 1) {
@@ -50,6 +50,8 @@ export class DateHelper {
         if (tipoValor == 4) {
             return valor.getMinutes() < 10 ? `0${valor.getMinutes()}` : valor.getMinutes().toString();
         }
+
+        return null;
     }
 }
 

@@ -1,10 +1,11 @@
 import { AgendamentoService } from '../_services';
 import { Agendamento, Hora } from '../_models';
 import { DateHelper } from '../_helpers';
+import { PessoaController } from './pessoa-controller';
 
 export class AgendamentoController {
 
-    constructor(private agendamentoService: AgendamentoService) { }
+    constructor(private agendamentoService: AgendamentoService,private pessoaController: PessoaController) { }
 
     msgNotificacaoPadrao(data: Date, horaInicio: Date, horaFim: Date, responsavel: string): string {
         return `Você possui uma nova reunião na data ${DateHelper.montarStringData(data)} 
@@ -36,5 +37,25 @@ export class AgendamentoController {
         });
 
         return retorno;
+    }
+
+    montarAgendamentoComId(id: number): Agendamento {
+        return {
+            ageId: id,
+            ageAssunto: '',
+            ageDescricao: '',
+            ageSala: null,
+            agePesResponsavel: null,
+            ageStatus: '',
+            ageData: new Date(),
+            ageHoraInicio: new Date(),
+            ageHoraFim: new Date(),
+            agePesCadastro: 0,
+            agePesAtualizacao: 0,
+            ageDtCadastro: new Date(),
+            ageDtAtualizacao: new Date(),
+            ageEquipamentos: null,
+            ageParticipantes: null
+        }
     }
 }

@@ -72,12 +72,12 @@ export class UnidadeController {
     montarUnidadeComId(id: number): Unidade {
         return {
             uniId: id,
-            uniNome: null,
-            uniAtiva: null,
-            uniPesCadastro: null,
-            uniDtCadastro: null,
-            uniPesAtualizacao: null,
-            uniDtAtualizacao: null
+            uniNome: '',
+            uniAtiva: false,
+            uniPesCadastro: 0,
+            uniDtCadastro: new Date(),
+            uniPesAtualizacao: 0,
+            uniDtAtualizacao: new Date()
         }
     }
 

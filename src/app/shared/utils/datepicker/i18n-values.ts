@@ -9,3 +9,9 @@ export const I18N_VALUES = {
     },
     // other languages you would support
 };
+
+
+export function valores_I18N(idioma: string) {
+
+    return idioma == 'PT-BR' ? I18N_VALUES["pt-BR"] : I18N_VALUES['fr'];
+}

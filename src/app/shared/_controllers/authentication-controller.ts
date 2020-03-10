@@ -14,8 +14,10 @@ export class AuthenticationController {
 
         let retorno = true;
         await this.authenticationService.authenticate(credenciais).toPromise().then(response => {
-            const aux = JSON.parse(response.body);
-            this._successfulLogin(aux);
+            if (response.body != null) {
+                const aux = JSON.parse(response.body);
+                this._successfulLogin(aux);
+            }
         }, error => {
             this._noSuccessfulLogin();
             retorno = false;

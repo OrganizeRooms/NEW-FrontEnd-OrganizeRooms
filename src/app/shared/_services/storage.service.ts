@@ -7,14 +7,10 @@ export class StorageService extends ServiceInternal<LocalUser> {
 
     getValue(): LocalUser {
         const usr = localStorage.getItem(STORAGE_KEYS.localUser);
-        if (usr == null) {
-            return null;
-        } else {
-            return JSON.parse(usr);
-        }
+        return usr != null ? JSON.parse(usr) : '';
     }
 
-    setValue(obj: LocalUser){
+    setValue(obj: LocalUser) {
         if (obj == null) {
             localStorage.removeItem(STORAGE_KEYS.localUser);
         } else {

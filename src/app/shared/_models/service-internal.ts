@@ -6,6 +6,6 @@ export abstract class ServiceInternal<T>{
         protected router: Router
     ) { };
 
-    abstract getValue(): T;
-    abstract setValue(objeto: T);
+    abstract getValue(): T ;
+    abstract setValue(objeto: T): void;
 }

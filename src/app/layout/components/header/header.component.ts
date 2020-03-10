@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { AuthenticationService, SessionStorageService } from '../../../shared/_services';
+import { SessionStorageService } from '../../../shared/_services';
 import { Notificacao, LocalUser } from 'src/app/shared/_models';
 import { NotificacaoController, PessoaController, AuthenticationController } from 'src/app/shared/_controllers';
 
@@ -48,18 +48,18 @@ export class HeaderComponent implements OnInit {
         this.contNotificacoes = this.listNotificacoes.length;
     }
 
-    desativarNotificacao(registro) {
+    desativarNotificacao(registro: Notificacao) {
 
         let not: Notificacao = {
             notId: registro.notId,
             notAtiva: false,
             notPesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
             notDtAtualizacao: new Date(),
-            notDescricao: null,         // não é alterado
-            notPessoa: null,            // não é alterado
-            notPesCadastro: null,       // não é alterado
-            notDtCadastro: null,        // não é alterado
-            notEnviado: null,           // não é alterado
+            notDescricao: '',                            // não é alterado
+            notPessoa: null,                             // não é alterado
+            notPesCadastro: registro.notPesCadastro,     // não é alterado
+            notDtCadastro: registro.notDtCadastro,        // não é alterado
+            notEnviado: registro.notEnviado,              // não é alterado
             enviaEmail: null,
         };
 
@@ -79,8 +79,8 @@ export class HeaderComponent implements OnInit {
     }
 
     isToggled(): boolean {
-        const dom: Element = document.querySelector('body');
-        return dom.classList.contains(this.pushRightClass);
+        const dom = document.querySelector('body');
+        return dom != null ? dom.classList.contains(this.pushRightClass) : false;
     }
 
     toggleSidebar() {

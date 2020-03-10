@@ -14,8 +14,8 @@
     "allowSyntheticDefaultImports": true,
     // Novos no projeto
     "noEmitOnError": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
+    //"noImplicitAny": true,
+    //"strictNullChecks": true,
     //
     "typeRoots": [
       "node_modules/@types"

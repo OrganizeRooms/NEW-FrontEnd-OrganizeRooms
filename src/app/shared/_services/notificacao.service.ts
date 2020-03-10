@@ -1,5 +1,4 @@
 ﻿import { Injectable } from '@angular/core';
-
 import { API_CONFIG } from '../../shared/_config';
 import { Notificacao, Response, ServiceWS } from '../_models';
 import { Observable } from 'rxjs';
@@ -16,7 +15,12 @@ export class NotificacaoService extends ServiceWS<Notificacao> {
     }
 
     atualizar(objeto: Notificacao): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/notificacao`, objeto);
+        return this.http
+            .post<Response>(
+                `${API_CONFIG.baseUrl}/notificacao`,
+                objeto,
+                { headers: this.httpOptionsForBackEnd() }
+            );
     }
 
     deletar(id: string): Observable<Response> {
@@ -25,14 +29,25 @@ export class NotificacaoService extends ServiceWS<Notificacao> {
 
     // Traz somente as ativas
     buscarPorPessoa(idPessoa: String): Observable<Response> {
-        return this.http.get<Response>(`${API_CONFIG.baseUrl}/notificacao/pessoa/` + idPessoa);
+        return this.http
+            .get<Response>(`${API_CONFIG.baseUrl}/notificacao/pessoa/` + idPessoa);
     }
 
     enviarEmail(notificacao: Array<Notificacao>): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/notificacao/enviaEmail`, notificacao);
+        return this.http
+            .post<Response>(
+                `${API_CONFIG.baseUrl}/notificacao/enviaEmail`,
+                notificacao,
+                { headers: this.httpOptionsForBackEnd() }
+            );
     }
 
     enviarEmailAvulso(notificacao: Notificacao): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/notificacao/enviaEmailAvulso`, notificacao);
+        return this.http
+            .post<Response>(
+                `${API_CONFIG.baseUrl}/notificacao/enviaEmailAvulso`,
+                notificacao,
+                { headers: this.httpOptionsForBackEnd() }
+            );
     }
 }

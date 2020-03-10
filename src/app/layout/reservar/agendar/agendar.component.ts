@@ -50,26 +50,16 @@ export class AgendarComponent implements OnInit {
 
   ngOnInit() {
 
-
     this.data = this.agendamento.ageData;
     this.horaInicio = this.agendamento.ageHoraInicio;
     this.horaFim = this.agendamento.ageHoraFim;
     this.selSala = this.agendamento.ageSala;
-    console.log(this.selSala);
-
+ 
     this.lotacao = this.selSala.salaLotacao;
     this.responsavel = this.agendamento.agePesResponsavel.pesNome;
     this.selUnidade = this.agendamento.ageSala.salaUnidade;
 
     this.criarFormulario();
-  }
-
-  ngOnDestroy() {
-    this.formAgendar = null;
-    this.listUnidades = null;
-    this.data = null;
-    this.selUnidade = null;
-    this.lotacao = 0;
   }
 
   criarFormulario() {
@@ -118,8 +108,8 @@ export class AgendarComponent implements OnInit {
       dataAgendamento: DateHelper.montarStringDataEng(this.data),
       dataInicial: DateHelper.montarStringDataHoraEng(this.horaInicio),
       dataFinal: DateHelper.montarStringDataHoraEng(this.horaFim),
-      idParticipante: null,
-      idSala: null
+      idParticipante: 0,
+      idSala: 0
     }
   }
 
@@ -149,9 +139,9 @@ export class AgendarComponent implements OnInit {
 
   montaArrayParticipantes(): Participante[] {
 
-    if (this.pessoasSelecionadas.length == 0) return null;
+    var participantes = new Array<Participante>();
+    if (this.pessoasSelecionadas.length == 0) return participantes;
 
-    var participantes: Participante[];
     this.pessoasSelecionadas.forEach(pessoa => {
 
       var nParTipo = pessoa.participanteObrigatorio ? 2 : 1;
@@ -170,9 +160,9 @@ export class AgendarComponent implements OnInit {
 
   montaArrayReservaEquipamento(): ReservaEquipamento[] {
 
-    if (this.equipamentosSelecionados.length == 0) return null;
+    var reservas = new Array<ReservaEquipamento>();
+    if (this.equipamentosSelecionados.length == 0) return reservas;
 
-    var reservas: ReservaEquipamento[];
     this.equipamentosSelecionados.forEach(equip => {
 
       var reserva: ReservaEquipamento = {

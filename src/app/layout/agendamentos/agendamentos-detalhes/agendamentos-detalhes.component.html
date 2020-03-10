@@ -290,7 +290,7 @@
                         </mat-checkbox>
 
                     </th>
-                    <td mat-cell *matCellDef="let rowPart">
+                    <td mat-cell *matCellDef="let rowPart: number">
                         <mat-checkbox (click)="$event.stopPropagation()"
                             (change)="$event ? pessoasSelecionadas.toggle(rowPart) : null"
                             [checked]="pessoasSelecionadas.isSelected(rowPart)"
@@ -369,7 +369,7 @@
                         </mat-checkbox>
 
                     </th>
-                    <td mat-cell *matCellDef="let rowEquip">
+                    <td mat-cell *matCellDef="let rowEquip: number">
                         <mat-checkbox (click)="$event.stopPropagation()"
                             (change)="$event ? equipamentosSelecionados.toggle(rowEquip) : null"
                             [checked]="equipamentosSelecionados.isSelected(rowEquip)"
