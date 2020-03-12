@@ -2,9 +2,8 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
+import { OrganizeRoomsService, SessionStorageService, PessoaService } from '../../shared/_services';
 import { Pessoa } from 'src/app/shared/_models';
-import { PessoaController } from 'src/app/shared/_controllers';
 import { configurarPaginador } from 'src/app/shared/utils/table-data';
 
 @Component({
@@ -26,7 +25,7 @@ export class PessoasComponent implements OnInit {
     constructor(
         private organizeRoomsService: OrganizeRoomsService<Pessoa>,
         private sessionStorageService: SessionStorageService,
-        private pessoaController: PessoaController
+        private pessoaService: PessoaService
     ) { }
 
     ngOnInit() {
@@ -36,17 +35,23 @@ export class PessoasComponent implements OnInit {
         this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
     }
 
-    async carregarDados() {
-        this.tableData.data = await this.pessoaController.buscarTodos();
+    carregarDados() {
+        this.pessoaService.buscarTodos().subscribe(ret => {
+            this.tableData.data = ret.data;
+        });
     }
 
     editar(registro: Pessoa) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    async excluir(pessoa: Pessoa) {
+    excluir(pessoa: Pessoa) {
 
-        let retorno = await this.pessoaController.deletar(pessoa.pesId);
+        let retorno: boolean;
+        this.pessoaService.deletar(pessoa.pesId).subscribe(ret => {
+            retorno = ret.data;
+        });
+        
         if (retorno) {
             alert(`Pessoa ${pessoa.pesNome} Deletada com Sucesso!`);
             location.reload();

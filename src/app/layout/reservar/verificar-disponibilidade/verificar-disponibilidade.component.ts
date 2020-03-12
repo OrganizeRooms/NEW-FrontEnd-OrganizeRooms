@@ -4,8 +4,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { MatStepper } from '@angular/material';
 
 import { Pessoa, Unidade, Sala, AgendamentoContext, Hora, Agendamento } from 'src/app/shared/_models';
-import { UnidadeController, SalaController } from 'src/app/shared/_controllers';
-import { SessionStorageService, UnidadeService } from 'src/app/shared/_services';
+import { SessionStorageService, UnidadeService, SalaService } from 'src/app/shared/_services';
 import { DateHelper } from 'src/app/shared/_helpers';
 
 @Component({
@@ -39,8 +38,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     private calendar: NgbCalendar,
     private router: Router,
     private sessionStorageService: SessionStorageService,
-    private unidadeController: UnidadeController,
-    private salaController: SalaController
+    private unidadeService: UnidadeService,
+    private salaService: SalaService
   ) { }
 
   ngOnInit() {
@@ -55,16 +54,10 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     this.carregarUnidades();
   }
 
-  ngOnDestroy() {
-    this.listUnidades = null;
-    this.data = null;
-    this.selUnidade = null;
-    this.selNumeroUnidade = null;
-    this.lotacao = null;
-  }
-
-  async carregarUnidades() {
-    this.listUnidades = await this.unidadeController.buscarAtivas();
+  carregarUnidades() {
+    this.unidadeService.buscarAtivas().subscribe(ret => {
+      this.listUnidades = ret.data;
+    });
   }
 
   // Verificação dos Campos OBRIGATÓRIOS da Verificação de Disponibilidade das Salas
@@ -86,11 +79,14 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     }
   }
 
-  async filtrarSalas() {
+  filtrarSalas() {
 
     if (this.filtrarValido) {
 
-      this.listSalas = await this.salaController.buscarDisponiveis(this.montarAgendamentoContext());
+      this.salaService.buscarDisponiveis(this.montarAgendamentoContext()).subscribe(ret => {
+        this.listSalas = ret.data;
+      });
+
       this.apareceFiltrar = false;
     }
   }
@@ -104,8 +100,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
       dataAgendamento: DateHelper.montarStringDataEng(newData),
       dataInicial: DateHelper.montarStringDataHoraEng(newData, this.horaInicio),
       dataFinal: DateHelper.montarStringDataHoraEng(newData, this.horaFim),
-      idParticipante: null,
-      idSala: null
+      idParticipante: 0,
+      idSala: 0
     }
   }
 
@@ -115,8 +111,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
 
     return {
       ageId: 0,
-      ageAssunto: null,
-      ageDescricao: null,
+      ageAssunto: '',
+      ageDescricao: '',
       ageSala: this.montarNovaSala(),
       agePesResponsavel: this.pessoaLogada,
       ageStatus: 'AGENDADO',
@@ -129,13 +125,13 @@ export class VerificarDisponibilidadeComponent implements OnInit {
       ageDtAtualizacao: new Date(),
       ageEquipamentos: null,
       ageParticipantes: null
-    }
+    };
   }
 
   montarNovaSala(): Sala {
 
     this.buscarUnidade();
-    
+
     return {
       salaId: this.selSala.salaId,
       salaNome: this.selSala.salaNome,
@@ -151,7 +147,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
 
   buscarUnidade() {
 
-    this.selUnidade = this.listUnidades.find(uni => uni.uniId == this.selNumeroUnidade);
+    let unidade = this.listUnidades.find(uni => uni.uniId == this.selNumeroUnidade);
+    this.selUnidade = unidade != null ? unidade : null;
   }
 
   // Reload na tela para recarregar os campos

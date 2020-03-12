@@ -10,7 +10,7 @@ export function isAllSelectedPart() {
 export function masterTogglePart() {
     this.isAllSelectedPart() ?
         this.pessoasSelecionadas.clear() :
-        this.listPessoas.data.forEach(rowPart => this.pessoasSelecionadas.select(rowPart));
+        this.listPessoas.data.forEach((rowPart: number) => this.pessoasSelecionadas.select(rowPart));
 }
 
 /** The label for the checkbox on the passed row */
@@ -34,7 +34,7 @@ export function isAllSelectedEquip() {
 export function masterToggleEquip() {
     this.isAllSelectedEquip() ?
         this.equipamentosSelecionados.clear() :
-        this.listEquipamentos.data.forEach(rowEquip => this.equipamentosSelecionados.select(rowEquip));
+        this.listEquipamentos.data.forEach((rowEquip: number) => this.equipamentosSelecionados.select(rowEquip));
 }
 
 /** The label for the checkbox on the passed row */

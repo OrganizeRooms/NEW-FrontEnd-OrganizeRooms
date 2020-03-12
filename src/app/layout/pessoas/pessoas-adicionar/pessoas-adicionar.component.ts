@@ -3,9 +3,8 @@ import { Router } from '@angular/router';
 import { routerTransition } from 'src/app/router.animations';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
-import { Pessoa, Unidade, LocalUser } from 'src/app/shared/_models';
-import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
-import { PessoaController, UnidadeController } from 'src/app/shared/_controllers';
+import { Pessoa, Unidade, LocalUser, montarUnidadeComId } from 'src/app/shared/_models';
+import { OrganizeRoomsService, SessionStorageService, UnidadeService, PessoaService } from 'src/app/shared/_services';
 
 @Component({
     selector: 'app-pessoas-adicionar',
@@ -30,8 +29,8 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private organizeRoomsService: OrganizeRoomsService<Pessoa>,
         private sessionStorageService: SessionStorageService,
-        private pessoaController: PessoaController,
-        private unidadeController: UnidadeController
+        private pessoaService: PessoaService,
+        private unidadeService: UnidadeService
     ) { }
 
     ngOnInit() {
@@ -47,8 +46,10 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         this.organizeRoomsService.setValue(null)
     }
 
-    async carregarUnidades() {
-        this.listUnidades = await this.unidadeController.buscarAtivas();
+    carregarUnidades() {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
+            this.listUnidades = ret.data;
+        });
     }
 
     criarFormulario() {
@@ -83,16 +84,17 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         )
     }
 
-    async adicionarPessoa() {
+    adicionarPessoa() {
 
-        const pessoa = this.montarPessoa();
-
-        let retPessoa = await this.pessoaController.adicionar(pessoa);
-        if (retPessoa != null) {
+        let retorno: Pessoa;
+        this.pessoaService.adicionar(this.montarPessoa()).subscribe(ret => {
+            retorno = ret.data;
+        });
+        if (retorno) {
             if (this.selPessoa != null) {
-                alert(`Pessoa ${retPessoa.pesNome} Atualizada com Sucesso!`);
+                alert(`Pessoa ${retorno.pesNome} Atualizada com Sucesso!`);
             } else {
-                alert(`Pessoa ${retPessoa.pesNome} Adiconada com Sucesso!`);
+                alert(`Pessoa ${retorno.pesNome} Adiconada com Sucesso!`);
             }
 
             this.router.navigate(['/pessoas']);
@@ -112,7 +114,7 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
             pesEmail: this.formAddPessoa.value.pesEmail,
             pesPermissao: this.selPermissao,
             pesDescricaoPermissao: null,
-            pesUnidade: this.unidadeController.montarUnidadeComId(this.selUnidade.value),
+            pesUnidade: montarUnidadeComId(this.selUnidade.value),
             pesDdd: this.formAddPessoa.value.pesDDD,
             pesTelefone: this.formAddPessoa.value.pesTelefone,
             pesAtualizacao: this.localUser.pessoa.pesId,
@@ -124,10 +126,14 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         };
     }
 
-    async excluir() {
+    excluir() {
 
-        let retorno = await this.pessoaController.deletar(this.selPessoa.pesId);
-        if (retorno == true) {
+        let retorno: boolean;
+        this.pessoaService.deletar(this.selPessoa.pesId).subscribe(ret => {
+            retorno = ret.data;
+        });
+
+        if (retorno) {
             alert(`Pessoa ${this.selPessoa.pesNome} Deletada com Sucesso!`);
             this.router.navigate(['/pessoas']);
 
@@ -137,9 +143,12 @@ export class PessoasAdicionarComponent implements OnInit, OnDestroy {
         }
     }
 
-    async resetarSenha() {
+    resetarSenha() {
 
-        let retorno = await this.pessoaController.resetarSenha(this.selPessoa);
+        let retorno: boolean;
+        this.pessoaService.resetarSenha(this.selPessoa).subscribe(ret => {
+            retorno = ret.data;
+        });
 
         if (retorno) {
             alert("Senha Resetada com Sucesso!")

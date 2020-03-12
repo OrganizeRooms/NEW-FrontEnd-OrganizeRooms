@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Directive } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuthenticationController } from 'src/app/shared';
+import { montarNovoAuthentication, AuthenticationService, JwtAuthentication } from 'src/app/shared';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -8,18 +8,17 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './login-modal.component.html',
   styleUrls: ['./login-modal.component.scss']
 })
-
 export class LoginModalComponent implements OnInit {
 
   loading = false;
   modalNovaSenhaForm: FormGroup;
-  novaSenha = this.authenticationController.montarNovoAuthentication();
+  novaSenha = montarNovoAuthentication();
   @Input() email: string;
 
   constructor(
     protected activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
-    private authenticationController: AuthenticationController,
+    private authenticationService: AuthenticationService
   ) { }
 
   ngOnInit() {
@@ -44,25 +43,9 @@ export class LoginModalComponent implements OnInit {
       alert("As senhas estão diferentes ou vazias!")
 
     } else {
-      let retornoEmail = this.validarEmail();
+      let email = montarNovoAuthentication(this.email);
+      this.validarEmail(email);
 
-      if (retornoEmail) {
-        this.novaSenha.pesEmail = this.email;
-        this.novaSenha.pesSenha = this.modalNovaSenhaForm.value.senhaAtual;
-        this.novaSenha.pesNovaSenha = this.modalNovaSenhaForm.value.novaPesSenha;
-
-        let retornoSenha = this.alterarSenha();
-        if (retornoSenha) {
-          alert("Senha alterada com sucesso! \n Realize o Login novamente com sua Nova senha");
-          this.fecharModal();
-
-        } else {
-          alert("Não foi possível alterar a Senha! Tente Novamente.");
-        }
-
-      } else {
-        alert("Email inexistente! Informe um E-mail Válido!");
-      }
     }
   }
 
@@ -72,15 +55,46 @@ export class LoginModalComponent implements OnInit {
       || this.modalNovaSenhaForm.value.novaPesSenhaRepetir == null || this.modalNovaSenhaForm.value.novaPesSenhaRepetir == '')
   }
 
-  async validarEmail(): Promise<boolean> {
-    let email = this.authenticationController.montarNovoAuthentication();
-    email.pesEmail = this.email
+  validarEmail(email: JwtAuthentication) {
 
-    return await this.authenticationController.verificarEmail(email);
+    let retorno: boolean;
+    this.authenticationService.verificarEmail(email).subscribe(ret => {
+      retorno = ret.data;
+
+    }, err => { },
+      () => {
+        if (retorno) {
+          this.novaSenha.pesEmail = this.email;
+          this.novaSenha.pesSenha = this.modalNovaSenhaForm.value.senhaAtual;
+          this.novaSenha.pesNovaSenha = this.modalNovaSenhaForm.value.novaPesSenha;
+
+          this.alterarSenha();
+
+        } else {
+          alert("Email Inválido - Informe um E-mail Válido!");
+        }
+      }
+    );
   }
 
-  async alterarSenha(): Promise<boolean> {
-    return await this.authenticationController.alterarSenha(this.novaSenha);
+  alterarSenha() {
+
+    let retorno: boolean;
+    this.authenticationService.novaSenha(this.novaSenha).subscribe(ret => {
+      retorno = ret.data;
+
+    }, err => { },
+      () => {
+
+        if (retorno) {
+          alert("Senha alterada com sucesso! \nRealize o Login novamente com sua Nova senha");
+          this.fecharModal();
+
+        } else {
+          alert("Não foi possível alterar a Senha! Tente Novamente.");
+        }
+      }
+    );
   }
 
   fecharModal() {

@@ -13,11 +13,9 @@ import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 registerLocaleData(localePt);
 
-import { StorageService, AuthenticationService, OrganizeRoomsService, SessionStorageService } from './shared/_services';
 import {
-    NotificacaoController, PessoaController, UnidadeController,
-    EquipamentoController, AgendamentoController, SalaController, AuthenticationController
-} from './shared/_controllers';
+    StorageService, AuthenticationService, OrganizeRoomsService, SessionStorageService
+} from './shared/_services';
 
 @NgModule({
     imports: [
@@ -37,13 +35,6 @@ import {
         SessionStorageService,
         AuthenticationService,
         OrganizeRoomsService,
-        NotificacaoController,
-        PessoaController,
-        EquipamentoController,
-        UnidadeController,
-        AgendamentoController,
-        SalaController,
-        AuthenticationController,
         { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
         //   { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     ],

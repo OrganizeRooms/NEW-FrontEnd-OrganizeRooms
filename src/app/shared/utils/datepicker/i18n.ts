@@ -4,5 +4,5 @@ import { Injectable } from '@angular/core';
 // use the Angular LOCALE_ID value
 @Injectable()
 export class I18n {
-  language = 'pt-BR';
+  static language = 'PT-BR';
 }

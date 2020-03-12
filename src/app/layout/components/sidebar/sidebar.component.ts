@@ -1,9 +1,8 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { SessionStorageService } from 'src/app/shared/_services';
+import { SessionStorageService, PessoaService, AuthenticationService } from 'src/app/shared/_services';
 import { LocalUser } from 'src/app/shared/_models';
-import { PessoaController, AuthenticationController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-sidebar',
@@ -23,9 +22,9 @@ export class SidebarComponent implements OnInit {
 
     constructor(
         private router: Router,
-        private authenticationController: AuthenticationController,
+        private authenticationService: AuthenticationService,
         private sessionStorageService: SessionStorageService,
-        private pessoaController: PessoaController
+        private pessoaService: PessoaService
     ) {
 
         this.router.events.subscribe(val => {
@@ -50,14 +49,23 @@ export class SidebarComponent implements OnInit {
     }
 
     resetarSenha() {
-
-        let retorno = this.pessoaController.resetarSenha(this.localUser.pessoa);
-
-        if (retorno) {
-            alert("Senha Resetada com Sucesso!")
-        } else {
+        
+        let retorno: boolean;
+        this.pessoaService.resetarSenha(this.localUser.pessoa).subscribe(ret => {
+            retorno = ret.data;
+        }, err => {
+            console.log(err)
             alert("Erro ao Resetar Senha!")
-        }
+        }, () => {
+            alert("Senha Resetada com Sucesso!")
+        });
+
+        /*
+         if (retorno) {
+             alert("Senha Resetada com Sucesso!")
+         } else {
+             alert("Erro ao Resetar Senha!")
+         }*/
     }
 
     eventCalled() {
@@ -93,6 +101,6 @@ export class SidebarComponent implements OnInit {
     }
 
     deslogar() {
-        this.authenticationController.deslogar();
+        this.authenticationService.deslogar();
     }
 }

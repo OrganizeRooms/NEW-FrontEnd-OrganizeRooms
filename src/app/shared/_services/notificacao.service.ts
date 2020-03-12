@@ -1,11 +1,12 @@
 ﻿import { Injectable } from '@angular/core';
-
-import { API_CONFIG } from '../../shared/_config';
-import { Notificacao, Response, ServiceWS } from '../_models';
+import { API_CONFIG } from '../_config';
 import { Observable } from 'rxjs';
+import { retry, catchError } from 'rxjs/operators';
+import { ServiceHelper } from '../_helpers';
+import { Notificacao, Response, ServiceWS } from '../_models';
 
 @Injectable({ providedIn: 'root' })
-export class NotificacaoService extends ServiceWS<Notificacao> {
+export class NotificacaoService extends ServiceHelper implements ServiceWS<Notificacao> {
 
     buscarTodos(): Observable<Response> {
         throw new Error("Este metodo não é utilizado!.");
@@ -16,23 +17,54 @@ export class NotificacaoService extends ServiceWS<Notificacao> {
     }
 
     atualizar(objeto: Notificacao): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/notificacao`, objeto);
+        return this.http
+            .post<Response>(
+                `${API_CONFIG.baseUrl}/notificacao`,
+                objeto,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
     }
 
-    deletar(id: string): Observable<Response> {
+    deletar(id: number): Observable<Response> {
         throw new Error("Este metodo não é utilizado!.");
     }
 
     // Traz somente as ativas
-    buscarPorPessoa(idPessoa: String): Observable<Response> {
-        return this.http.get<Response>(`${API_CONFIG.baseUrl}/notificacao/pessoa/` + idPessoa);
+    buscarPorIdPessoa(idPessoa: number): Observable<Response> {
+        return this.http
+            .get<Response>(
+                `${API_CONFIG.baseUrl}/notificacao/pessoa/${idPessoa}`,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
     }
 
     enviarEmail(notificacao: Array<Notificacao>): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/notificacao/enviaEmail`, notificacao);
+        return this.http
+            .post<Response>(
+                `${API_CONFIG.baseUrl}/notificacao/enviaEmail`,
+                notificacao,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
     }
 
     enviarEmailAvulso(notificacao: Notificacao): Observable<Response> {
-        return this.http.post<Response>(`${API_CONFIG.baseUrl}/notificacao/enviaEmailAvulso`, notificacao);
+        return this.http
+            .post<Response>(
+                `${API_CONFIG.baseUrl}/notificacao/enviaEmailAvulso`,
+                notificacao,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
     }
 }

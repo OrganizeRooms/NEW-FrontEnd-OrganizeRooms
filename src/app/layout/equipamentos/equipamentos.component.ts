@@ -2,9 +2,8 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
+import { OrganizeRoomsService, SessionStorageService, EquipamentoService } from '../../shared/_services';
 import { Equipamento } from 'src/app/shared/_models';
-import { EquipamentoController } from 'src/app/shared/_controllers';
 import { configurarPaginador } from 'src/app/shared/utils/table-data';
 
 @Component({
@@ -26,7 +25,7 @@ export class EquipamentosComponent implements OnInit {
     constructor(
         private organizeRoomsService: OrganizeRoomsService<Equipamento>,
         private sessionStorageService: SessionStorageService,
-        private equipamentoController: EquipamentoController
+        private equipamentoService: EquipamentoService
     ) { }
 
     ngOnInit() {
@@ -36,16 +35,21 @@ export class EquipamentosComponent implements OnInit {
         this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
     }
 
-    async carregarDados() {
-        this.tableData.data = await this.equipamentoController.buscarTodos();
+    carregarDados() {
+        this.equipamentoService.buscarTodos().subscribe(ret => {
+            this.tableData.data = ret.data;
+        });
     }
 
     editarEquipamento(registro: Equipamento) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    async excluir(equipamento: Equipamento) {
-        let retorno = await this.equipamentoController.deletar(equipamento.equId);
+    excluir(equipamento: Equipamento) {
+        let retorno: boolean;
+        this.equipamentoService.deletar(equipamento.equId).subscribe(ret => {
+            retorno = ret.data;
+        });
 
         if (retorno) {
             alert(`Equipamento ${equipamento.equNome} Deletada com Sucesso!`);
@@ -61,7 +65,7 @@ export class EquipamentosComponent implements OnInit {
 
     configurarPaginador() {
         this.paginator = configurarPaginador(this.paginator);
-        
+
         this.tableData.paginator = this.paginator;
         this.tableData.sort = this.sort;
     }

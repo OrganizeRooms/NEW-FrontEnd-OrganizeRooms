@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { SessionStorageService } from '../../../shared/_services';
-import { AuthenticationController, Pessoa } from 'src/app/shared';
+import { AuthenticationService } from '../../../shared/_services';
+import { Pessoa } from 'src/app/shared';
 
 @Component({
     selector: 'app-header-tablet',
@@ -14,7 +14,7 @@ export class HeaderTabletComponent implements OnInit {
     currentPessoa: Pessoa;
 
     constructor(private router: Router,
-        private authenticationController: AuthenticationController
+        private authenticationService: AuthenticationService
     ) {
 
         this.router.events.subscribe(val => {
@@ -48,6 +48,6 @@ export class HeaderTabletComponent implements OnInit {
     }
 
     deslogar() {
-        this.authenticationController.deslogar();
+        this.authenticationService.deslogar();
     }
 }

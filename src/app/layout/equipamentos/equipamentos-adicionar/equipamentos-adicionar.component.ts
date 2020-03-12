@@ -3,9 +3,8 @@ import { Router } from '@angular/router';
 import { routerTransition } from 'src/app/router.animations';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
-import { Equipamento, Unidade, LocalUser } from 'src/app/shared/_models';
-import { UnidadeController, EquipamentoController } from 'src/app/shared/_controllers';
+import { OrganizeRoomsService, SessionStorageService, UnidadeService, EquipamentoService } from 'src/app/shared/_services';
+import { Equipamento, Unidade, LocalUser, montarUnidadeComId } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-equipamentos-adicionar',
@@ -29,8 +28,8 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private organizeRoomsService: OrganizeRoomsService<Equipamento>,
         private sessionStorageService: SessionStorageService,
-        private equipamentoController: EquipamentoController,
-        private unidadeController: UnidadeController
+        private unidadeService: UnidadeService,
+        private equipamentoService: EquipamentoService
     ) { }
 
     ngOnInit() {
@@ -46,8 +45,10 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
         this.organizeRoomsService.setValue(null)
     }
 
-    async carregarUnidades() {
-        this.listUnidades = await this.unidadeController.buscarAtivas();
+    carregarUnidades() {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
+            this.listUnidades = ret.data;
+        });
     }
 
     criarFormulario() {
@@ -75,16 +76,18 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
         );
     }
 
-    async adicionarEquipamento() {
+    adicionarEquipamento() {
 
-        const equipamento = this.montarEquipamento();
+        let retorno: Equipamento;
+        this.equipamentoService.adicionar(this.montarEquipamento()).subscribe(ret => {
+            retorno = ret.data;
+        });
 
-        let retEquipamento = await this.equipamentoController.adicionar(equipamento);
-        if (retEquipamento != null) {
+        if (retorno) {
             if (this.selEquipamento != null) {
-                alert(`Equipamento ${retEquipamento.equNome} Atualizada com Sucesso!`);
+                alert(`Equipamento ${retorno.equNome} Atualizada com Sucesso!`);
             } else {
-                alert(`Equipamento ${retEquipamento.equNome} Adicionada com Sucesso!`);
+                alert(`Equipamento ${retorno.equNome} Adicionada com Sucesso!`);
 
             }
             this.router.navigate(['/equipamentos']);
@@ -93,23 +96,25 @@ export class EquipamentosAdicionarComponent implements OnInit, OnDestroy {
 
     montarEquipamento(): Equipamento {
 
-        var equPesCadastro = this.selEquipamento == null ? this.localUser.pessoa.pesId : null;
-
         return {
             equId: this.formAddEquipamento.value.equId,
             equNome: this.formAddEquipamento.value.equNome,
             equDescricao: this.formAddEquipamento.value.equDescricao,
             equAtiva: this.formAddEquipamento.value.equAtiva,
-            equUnidade: this.unidadeController.montarUnidadeComId(this.selUnidade.value),
+            equUnidade: montarUnidadeComId(this.selUnidade.value),
             equPesAtualizacao: this.localUser.pessoa.pesId,
             equDtAtualizacao: new Date(),
-            equPesCadastro: equPesCadastro,
+            equPesCadastro: this.selEquipamento == null ? this.localUser.pessoa.pesId : null,
             equDtCadastro: new Date(),
         };
     }
 
     excluir() {
-        let retorno = this.equipamentoController.deletar(this.selEquipamento.equId);
+
+        let retorno: boolean;
+        this.equipamentoService.deletar(this.selEquipamento.equId).subscribe(ret => {
+            retorno = ret.data;
+        });
 
         if (retorno) {
             alert(`Equipamento ${this.selEquipamento.equNome} Deletada com Sucesso!`);

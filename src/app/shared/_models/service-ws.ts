@@ -1,15 +1,11 @@
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Response } from './response';
-import { HttpClient } from '@angular/common/http';
 
-export abstract class ServiceWS<T> {
+export interface ServiceWS<T> {
 
-    constructor(
-        protected http: HttpClient
-    ) { };
+    buscarTodos(): Observable<Response>;
+    adicionar(objeto: T): Observable<Response>;
+    atualizar(objeto: T): Observable<Response>;
+    deletar(id: number): Observable<Response>;
 
-    abstract buscarTodos(): Observable<Response>;
-    abstract adicionar(objeto: T): Observable<Response>;
-    abstract atualizar(objeto: T): Observable<Response>;
-    abstract deletar(id: string): Observable<Response>;
 }

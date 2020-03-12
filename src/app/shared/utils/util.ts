@@ -34,15 +34,6 @@ export function padNumber(value: number) {
     }
 }
 
-export function regExpEscape(text) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-}
-
-export function hasClassName(element: any, className: string): boolean {
-    return element && element.className && element.className.split &&
-        element.className.split(/\s+/).indexOf(className) >= 0;
-}
-
 if (typeof Element !== 'undefined' && !Element.prototype.closest) {
     // Polyfill for ie10+
 
@@ -64,12 +55,4 @@ if (typeof Element !== 'undefined' && !Element.prototype.closest) {
         } while (el !== null && el.nodeType === 1);
         return null;
     };
-}
-
-export function closest(element: HTMLElement, selector): HTMLElement {
-    if (!selector) {
-        return null;
-    }
-
-    return element.closest(selector);
 }

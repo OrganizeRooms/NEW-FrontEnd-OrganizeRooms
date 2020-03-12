@@ -1,9 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { PessoaController, Pessoa, ConfSelectionModel } from 'src/app/shared';
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormGroup } from '@angular/forms';
+import { ConfSelectionModel } from 'src/app/shared/utils';
+import { PessoaService } from 'src/app/shared';
+import { Pessoa } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-selecionar-pessoas',
@@ -17,14 +19,13 @@ export class SelecionarPessoasComponent implements OnInit, OnDestroy {
     listPessoas = new MatTableDataSource<Pessoa>();
     selecionados = new SelectionModel<Pessoa>(true, []);
     filtrosModalPartic: FormGroup;
-    confSelectionModelPessoa = new ConfSelectionModel<Pessoa>(this.selecionados, this.listPessoas);
+    confSelectionModelPessoa: ConfSelectionModel<Pessoa>;
+    activeModal: NgbActiveModal;
 
-    constructor(
-        private activeModal: NgbActiveModal,
-        private pessoaController: PessoaController
-    ) { }
+    constructor(private pessoaService: PessoaService) { }
 
     ngOnInit() {
+        this.confSelectionModelPessoa = new ConfSelectionModel<Pessoa>(this.selecionados, this.listPessoas);
         this.carregarPessoas();
     }
 
@@ -32,8 +33,10 @@ export class SelecionarPessoasComponent implements OnInit, OnDestroy {
         this.fechar();
     }
 
-    async carregarPessoas() {
-        this.listPessoas.data = await this.pessoaController.buscarTodos();
+    carregarPessoas() {
+        this.pessoaService.buscarTodos().subscribe(ret => {
+            this.listPessoas.data = ret.data;
+        });
     }
 
     fechar() {

@@ -7,15 +7,13 @@ import { ServiceInternal } from '../_models/service-internal';
 export class SessionStorageService extends ServiceInternal<LocalUser> {
 
     getValue(): LocalUser {
+
         const usr = sessionStorage.getItem(STORAGE_KEYS.localUser);
-        if (usr == null) {
-            return null;
-        } else {
-            return JSON.parse(usr);
-        }
+        return usr != null ? JSON.parse(usr) : '';
     }
 
     setValue(objeto: LocalUser) {
+        
         if (objeto == null) {
             sessionStorage.removeItem(STORAGE_KEYS.localUser);
         } else {

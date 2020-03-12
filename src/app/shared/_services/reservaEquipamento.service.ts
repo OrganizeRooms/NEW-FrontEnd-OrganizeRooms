@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { API_CONFIG } from '../_config';
-import { Response, Participante, ServiceWS } from '../_models';
 import { Observable } from 'rxjs';
-import { ReservaEquipamento } from '../_models/reservaEquipamento';
+import { ServiceHelper } from '../_helpers';
+import { Response, ServiceWS, ReservaEquipamento} from '../_models';
 
 @Injectable({ providedIn: 'root' })
-export class ReservaEquipamentoService extends ServiceWS<ReservaEquipamento> {
+export class ReservaEquipamentoService extends ServiceHelper implements ServiceWS<ReservaEquipamento> {
 
     buscarTodos(): Observable<Response> {
         throw new Error("Este metodo não é utilizado!.");
@@ -15,7 +15,7 @@ export class ReservaEquipamentoService extends ServiceWS<ReservaEquipamento> {
         return this.http.post<Response>(`${API_CONFIG.baseUrl}/reservaEquipamento`, objeto);
     }
 
-    adicionarLista(reservas: Array<Participante>): Observable<Response> {
+    adicionarLista(reservas: Array<ReservaEquipamento>): Observable<Response> {
         return this.http.post<Response>(`${API_CONFIG.baseUrl}/reservaEquipamento/listaReservas`, reservas);
     }
 
@@ -23,11 +23,11 @@ export class ReservaEquipamentoService extends ServiceWS<ReservaEquipamento> {
         return this.adicionar(objeto);
     }
 
-    deletar(resId: String): Observable<Response> {
-        return this.http.delete<Response>(`${API_CONFIG.baseUrl}/reservaEquipamento/deletar/` + resId);
+    deletar(id: number): Observable<Response> {
+        return this.http.delete<Response>(`${API_CONFIG.baseUrl}/reservaEquipamento/deletar/${id}`);
     }
 
     buscarPorAgendamento(ageId: String): Observable<Response> {
-        return this.http.get<Response>(`${API_CONFIG.baseUrl}/reservaEquipamento/porAgendamento/` + ageId);
+        return this.http.get<Response>(`${API_CONFIG.baseUrl}/reservaEquipamento/porAgendamento/${ageId}`);
     }
 }

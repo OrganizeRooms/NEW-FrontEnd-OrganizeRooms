@@ -2,9 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { routerTransition } from '../../../router.animations';
 
 import { toInteger } from 'src/app/shared/utils/util';
-import { SessionStorageService } from 'src/app/shared/_services';
-import { Pessoa, Unidade } from 'src/app/shared/_models';
-import { PessoaController } from 'src/app/shared/_controllers';
+import { SessionStorageService, PessoaService } from 'src/app/shared/_services';
+import { Pessoa, Unidade, montarUnidadeComId } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-pessoas-importar',
@@ -14,14 +13,15 @@ import { PessoaController } from 'src/app/shared/_controllers';
 })
 export class PessoasImportarComponent implements OnInit, OnDestroy {
 
+
     constructor(
         private sessionStorageService: SessionStorageService,
-        private pessoaController: PessoaController
+        private pessoaService: PessoaService
     ) { }
 
     csvRecords: Pessoa[] = [];
     importLiberado = false
-    inconsistencias = null;
+    inconsistencias: string[];
 
     @ViewChild('fileImportInput', { static: true }) fileImportInput: any;
 
@@ -63,11 +63,13 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
     }
 
     importarPessoas() {
-        this.inconsistencias = this.pessoaController.adicionarLista(this.csvRecords);
+        this.pessoaService.adicionarLista(this.csvRecords).subscribe(ret => {
+            this.inconsistencias = ret.data;
+        });
     }
 
-    getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any) {
-        let dataArr = [];
+    getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any): Pessoa[] {
+        let dataArr = new Array<Pessoa>();
 
         for (let i = 1; i < csvRecordsArray.length; i++) {
             let data = (<string>csvRecordsArray[i]).split(';');
@@ -77,23 +79,13 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
             if (data.length == headerLength) {
                 // nome;e-mail;ddd;telefone;unidade
 
-                let unidade: Unidade = {
-                    uniId: toInteger(data[4]),
-                    uniNome: null,
-                    uniAtiva: null,
-                    uniPesCadastro: null,
-                    uniDtCadastro: null,
-                    uniPesAtualizacao: null,
-                    uniDtAtualizacao: null,
-                };
-
                 let csvRecord: Pessoa = {
-                    pesId: null,
+                    pesId: 0,
                     pesNome: data[0].trim(),
                     pesEmail: data[1].trim(),
                     pesDdd: data[2].trim(),
                     pesTelefone: data[3].trim(),
-                    pesUnidade: unidade,
+                    pesUnidade: montarUnidadeComId(toInteger(data[4])),
                     pesPermissao: 'ROLE_USUARIO',
                     pesDescricaoPermissao: 'Usuario',
 
@@ -107,7 +99,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
                     pesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
                     pesDtAtualizacao: new Date(),
                     /// SOMENTE FRONT
-                    participanteObrigatorio: null
+                    participanteObrigatorio: false
                 };
 
                 dataArr.push(csvRecord);
@@ -122,9 +114,9 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
     }
 
     // GET CSV FILE HEADER COLUMNS
-    getHeaderArray(csvRecordsArr: any) {
+    getHeaderArray(csvRecordsArr: any): string[] {
         let headers = (<string>csvRecordsArr[0]).split(';');
-        let headerArray = [];
+        let headerArray = new Array<string>();
         for (let j = 0; j < headers.length; j++) {
             headerArray.push(headers[j]);
         }
