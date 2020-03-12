@@ -3,9 +3,8 @@ import { Router } from '@angular/router';
 import { routerTransition } from 'src/app/router.animations';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { OrganizeRoomsService, SessionStorageService, } from 'src/app/shared/_services';
-import { SalaController, UnidadeController } from 'src/app/shared/_controllers';
-import { Sala, Unidade, Pessoa, LocalUser } from 'src/app/shared/_models';
+import { OrganizeRoomsService, SessionStorageService, UnidadeService, SalaService, } from 'src/app/shared/_services';
+import { Sala, Unidade, LocalUser, montarUnidadeComId } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-salas-adicionar',
@@ -29,8 +28,8 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private organizeRoomsService: OrganizeRoomsService<Sala>,
         private sessionStorageService: SessionStorageService,
-        private salaController: SalaController,
-        private unidadeController: UnidadeController
+        private salaService: SalaService,
+        private unidadeService: UnidadeService
     ) { }
 
     ngOnInit() {
@@ -46,8 +45,10 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         this.organizeRoomsService.setValue(null)
     }
 
-    async carregarUnidades() {
-        this.listUnidades = await this.unidadeController.buscarAtivas();
+    carregarUnidades() {
+        this.unidadeService.buscarAtivas().subscribe(ret => {
+            this.listUnidades = ret.data;
+        });
     }
 
     criarFormulario() {
@@ -76,12 +77,16 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
         );
     }
 
-    async adicionarSala() {
+    adicionarSala() {
 
         const sala = this.montarSala();
 
-        let retorno = await this.salaController.adicionar(sala);
-        if (retorno != null) {
+        let retorno: Sala;
+        this.salaService.adicionar(sala).subscribe(ret => {
+            retorno = ret.data;
+        });
+
+        if (retorno) {
             if (this.selSala != null) {
                 alert(`Sala ${retorno.salaNome} Atualizada com Sucesso!`);
 
@@ -104,14 +109,17 @@ export class SalasAdicionarComponent implements OnInit, OnDestroy {
             salaAtiva: this.formAddSala.value.salaAtiva,
             salaPesAtualizacao: this.localUser.pessoa.pesId,
             salaDtAtualizacao: new Date(),
-            salaUnidade: this.unidadeController.montarUnidadeComId(this.selUnidade.value),
+            salaUnidade: montarUnidadeComId(this.selUnidade.value),
             salaPesCadastro: salaPesCadastro,
             salaDtCadastro: new Date(),
         };
     }
 
-    async excluir() {
-        let retorno = await this.salaController.deletar(this.selSala.salaId)
+    excluir() {
+        let retorno: boolean;
+        this.salaService.deletar(this.selSala.salaId).subscribe(ret => {
+            retorno = ret.data;
+        });
 
         if (retorno) {
             alert(`${this.selSala.salaNome} Deletada com Sucesso!`);

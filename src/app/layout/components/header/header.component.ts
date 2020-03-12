@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-import { SessionStorageService } from '../../../shared/_services';
+import { SessionStorageService, PessoaService, NotificacaoService, AuthenticationService } from '../../../shared/_services';
 import { Notificacao, LocalUser } from 'src/app/shared/_models';
-import { NotificacaoController, PessoaController, AuthenticationController } from 'src/app/shared/_controllers';
 
 @Component({
     selector: 'app-header',
@@ -21,9 +20,9 @@ export class HeaderComponent implements OnInit {
     constructor(
         private router: Router,
         private sessionStorageService: SessionStorageService,
-        private authenticationController: AuthenticationController,
-        private notificacaoController: NotificacaoController,
-        private pessoaController: PessoaController
+        private authenticationService: AuthenticationService,
+        private notificacaoService: NotificacaoService,
+        private pessoaService: PessoaService
     ) {
 
         this.router.events.subscribe(val => {
@@ -43,9 +42,11 @@ export class HeaderComponent implements OnInit {
         this.carregarNotificacoes()
     }
 
-    async carregarNotificacoes() {
-        this.listNotificacoes = await this.notificacaoController.buscarTodosPorIdPessoa(this.localUser.pessoa.pesId);
-        this.contNotificacoes = this.listNotificacoes.length;
+    carregarNotificacoes() {
+        this.notificacaoService.buscarPorIdPessoa(this.localUser.pessoa.pesId).subscribe(ret => {
+            this.listNotificacoes = ret.data;
+            this.contNotificacoes = this.listNotificacoes.length;
+        });
     }
 
     desativarNotificacao(registro: Notificacao) {
@@ -63,19 +64,28 @@ export class HeaderComponent implements OnInit {
             enviaEmail: null,
         };
 
-        this.notificacaoController.atualizar(not);
+        this.notificacaoService.atualizar(not).subscribe(ret => {
+            location.reload();
+        });
         //location.reload() // recarrega o component para atualizar o contador
     }
 
     resetarSenha() {
 
-        let retorno = this.pessoaController.resetarSenha(this.localUser.pessoa);
-
-        if (retorno) {
-            alert("Senha Resetada com Sucesso!")
-        } else {
-            alert("Erro ao Resetar Senha!")
-        }
+        let retorno: boolean;
+        this.pessoaService.resetarSenha(this.localUser.pessoa).subscribe(ret => {
+            retorno = ret.data;
+        }, err => { },
+            () => {
+                if (retorno) {
+                    alert("Senha Resetada com Sucesso!")
+                    this.deslogar();
+                    
+                } else {
+                    alert("Erro ao Resetar Senha!")
+                }
+            }
+        );
     }
 
     isToggled(): boolean {
@@ -94,7 +104,7 @@ export class HeaderComponent implements OnInit {
     }
 
     deslogar() {
-        this.authenticationController.deslogar();
+        this.authenticationService.deslogar();
     }
 
 }

@@ -2,9 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { routerTransition } from '../../../router.animations';
 
 import { toInteger } from 'src/app/shared/utils/util';
-import { SessionStorageService } from 'src/app/shared/_services';
-import { Pessoa, Unidade } from 'src/app/shared/_models';
-import { PessoaController, UnidadeController } from 'src/app/shared/_controllers';
+import { SessionStorageService, PessoaService } from 'src/app/shared/_services';
+import { Pessoa, Unidade, montarUnidadeComId } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-pessoas-importar',
@@ -14,10 +13,10 @@ import { PessoaController, UnidadeController } from 'src/app/shared/_controllers
 })
 export class PessoasImportarComponent implements OnInit, OnDestroy {
 
+
     constructor(
         private sessionStorageService: SessionStorageService,
-        private pessoaController: PessoaController,
-        private unidadeController: UnidadeController
+        private pessoaService: PessoaService
     ) { }
 
     csvRecords: Pessoa[] = [];
@@ -63,8 +62,10 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
         }
     }
 
-    async importarPessoas() {
-        this.inconsistencias = await this.pessoaController.adicionarLista(this.csvRecords);
+    importarPessoas() {
+        this.pessoaService.adicionarLista(this.csvRecords).subscribe(ret => {
+            this.inconsistencias = ret.data;
+        });
     }
 
     getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: any): Pessoa[] {
@@ -84,7 +85,7 @@ export class PessoasImportarComponent implements OnInit, OnDestroy {
                     pesEmail: data[1].trim(),
                     pesDdd: data[2].trim(),
                     pesTelefone: data[3].trim(),
-                    pesUnidade: this.unidadeController.montarUnidadeComId(toInteger(data[4])),
+                    pesUnidade: montarUnidadeComId(toInteger(data[4])),
                     pesPermissao: 'ROLE_USUARIO',
                     pesDescricaoPermissao: 'Usuario',
 

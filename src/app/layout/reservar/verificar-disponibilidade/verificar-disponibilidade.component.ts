@@ -4,8 +4,7 @@ import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { MatStepper } from '@angular/material';
 
 import { Pessoa, Unidade, Sala, AgendamentoContext, Hora, Agendamento } from 'src/app/shared/_models';
-import { UnidadeController, SalaController } from 'src/app/shared/_controllers';
-import { SessionStorageService, UnidadeService } from 'src/app/shared/_services';
+import { SessionStorageService, UnidadeService, SalaService } from 'src/app/shared/_services';
 import { DateHelper } from 'src/app/shared/_helpers';
 
 @Component({
@@ -39,8 +38,8 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     private calendar: NgbCalendar,
     private router: Router,
     private sessionStorageService: SessionStorageService,
-    private unidadeController: UnidadeController,
-    private salaController: SalaController
+    private unidadeService: UnidadeService,
+    private salaService: SalaService
   ) { }
 
   ngOnInit() {
@@ -55,8 +54,10 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     this.carregarUnidades();
   }
 
-  async carregarUnidades() {
-    this.listUnidades = await this.unidadeController.buscarAtivas();
+  carregarUnidades() {
+    this.unidadeService.buscarAtivas().subscribe(ret => {
+      this.listUnidades = ret.data;
+    });
   }
 
   // Verificação dos Campos OBRIGATÓRIOS da Verificação de Disponibilidade das Salas
@@ -78,11 +79,14 @@ export class VerificarDisponibilidadeComponent implements OnInit {
     }
   }
 
-  async filtrarSalas() {
+  filtrarSalas() {
 
     if (this.filtrarValido) {
 
-      this.listSalas = await this.salaController.buscarDisponiveis(this.montarAgendamentoContext());
+      this.salaService.buscarDisponiveis(this.montarAgendamentoContext()).subscribe(ret => {
+        this.listSalas = ret.data;
+      });
+
       this.apareceFiltrar = false;
     }
   }
@@ -121,7 +125,7 @@ export class VerificarDisponibilidadeComponent implements OnInit {
       ageDtAtualizacao: new Date(),
       ageEquipamentos: null,
       ageParticipantes: null
-    }
+    };
   }
 
   montarNovaSala(): Sala {
@@ -144,7 +148,7 @@ export class VerificarDisponibilidadeComponent implements OnInit {
   buscarUnidade() {
 
     let unidade = this.listUnidades.find(uni => uni.uniId == this.selNumeroUnidade);
-    this.selUnidade = unidade != null ? unidade : this.unidadeController.montarUnidadeComId(0);
+    this.selUnidade = unidade != null ? unidade : null;
   }
 
   // Reload na tela para recarregar os campos

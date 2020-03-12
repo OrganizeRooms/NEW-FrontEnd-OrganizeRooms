@@ -2,9 +2,8 @@ import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
-import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
+import { OrganizeRoomsService, SessionStorageService, UnidadeService } from 'src/app/shared/_services';
 import { Unidade } from 'src/app/shared/_models';
-import { UnidadeController } from 'src/app/shared/_controllers';
 import { configurarPaginador } from 'src/app/shared/utils/table-data';
 
 
@@ -26,7 +25,7 @@ export class UnidadesComponent implements OnInit {
     constructor(
         private OrganizeRoomsService: OrganizeRoomsService<Unidade>,
         private sessionStorageService: SessionStorageService,
-        private unidadeController: UnidadeController
+        private unidadeService: UnidadeService
     ) { }
 
     ngOnInit() {
@@ -36,8 +35,10 @@ export class UnidadesComponent implements OnInit {
         this.configurarPaginador();
     }
 
-    async carregarDados() {
-        this.tableData.data = await this.unidadeController.buscarTodos();
+    carregarDados() {
+        this.unidadeService.buscarTodos().subscribe(ret => {
+            this.tableData.data = ret.data;
+        });
     }
 
     editar(registro: Unidade) {
@@ -45,7 +46,11 @@ export class UnidadesComponent implements OnInit {
     }
 
     excluir(unidade: Unidade) {
-        let retorno = this.unidadeController.deletar(unidade.uniId);
+
+        let retorno: boolean;
+        this.unidadeService.deletar(unidade.uniId).subscribe(ret => {
+            retorno = ret.data;
+        });
 
         if (retorno) {
             alert(`Unidade ${unidade.uniNome} Deletada com Sucesso!`);
@@ -61,7 +66,7 @@ export class UnidadesComponent implements OnInit {
 
     configurarPaginador() {
         this.paginator = configurarPaginador(this.paginator);
-        
+
         this.tableData.paginator = this.paginator;
         this.tableData.sort = this.sort;
     }

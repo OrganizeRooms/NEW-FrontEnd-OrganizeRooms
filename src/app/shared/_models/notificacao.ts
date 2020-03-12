@@ -6,11 +6,11 @@ export interface Notificacao {
     notId: number,
     notDescricao: string,
     notAtiva: boolean,
-    notPessoa: Pessoa | null,
+    notPessoa: Pessoa,
     notPesCadastro: number,
     notDtCadastro: Date,
     notPesAtualizacao: number,
     notDtAtualizacao: Date,
     notEnviado: boolean,
-    enviaEmail: EnviaEmail | null,
+    enviaEmail: EnviaEmail,
 }

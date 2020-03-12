@@ -2,7 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SalasAdicionarRoutingModule } from './salas-adicionar-routing.module';
 import { SalasAdicionarComponent } from './salas-adicionar.component';
-import { PageHeaderModule } from '../../../shared';
+import { PageHeaderModule } from 'src/app/shared/_components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Component Material Angular
 import {

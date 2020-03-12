@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { PessoasImportarRoutingModule } from './pessoas-importar-routing.module';
 import { PessoasImportarComponent } from './pessoas-importar.component';
-import { PageHeaderModule } from '../../../shared';
+import { PageHeaderModule } from 'src/app/shared/_components';
 
 @NgModule({
     imports: [

@@ -9,7 +9,7 @@ import {
     AgendamentoService, NotificacaoService, OrganizeRoomsService
 } from 'src/app/shared/_services';
 import {
-    Agendamento, Pessoa, Equipamento, Participante, AgendamentoContext, Notificacao, EnviaEmail
+    Agendamento, Pessoa, Equipamento, Participante, AgendamentoContext, Notificacao, EnviaEmail, montarAgendamentoComId
 } from 'src/app/shared/_models';
 import { ReservaEquipamento } from 'src/app/shared/_models/reservaEquipamento';
 import { ReservaEquipamentoService } from 'src/app/shared/_services/reservaEquipamento.service';
@@ -143,9 +143,9 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         return retorno
     }
 
-    corStatus(status: string) {
+    corStatus(status: string): string {
 
-        var retorno
+        var retorno: string;
         if (status == 'AGENDADO') {
             retorno = 'blue'
             return retorno
@@ -159,36 +159,30 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
             retorno = 'green'
             return retorno
         }
+
+        return '';
     }
 
     atualizarReserva(status: string) {
-
-        var nAgeStatus;
-
-        if (status == '') {
-            nAgeStatus = this.selAgeStatus
-        } else {
-            nAgeStatus = status
-        }
 
         const agendamento: Agendamento = {
             ageId: this.selAgendamento.ageId,
             ageAssunto: this.formAgendamento.value.ageAssunto,
             ageDescricao: this.formAgendamento.value.ageDescricao,
-            ageStatus: nAgeStatus,
-            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
-            ageDtAtualizacao: new Date(),
-            // Atributos que não são alterados e possuem trava no BackEnd
-            ageDtCadastro: this.selAgendamento.ageDtCadastro,
             ageSala: this.selAgendamento.ageSala,
             agePesResponsavel: this.selAgendamento.agePesResponsavel,
+            ageStatus: status == '' ? this.selAgeStatus : status,
             ageData: this.selAgendamento.ageData,
             ageHoraInicio: this.selAgendamento.ageHoraInicio,
             ageHoraFim: this.selAgendamento.ageHoraFim,
             agePesCadastro: this.selAgendamento.agePesCadastro,
+            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
+            ageDtCadastro: this.selAgendamento.ageDtCadastro,
+            ageDtAtualizacao: new Date(),
+            // Atributos que não são alterados e possuem trava no BackEnd
             ageEquipamentos: this.selAgendamento.ageEquipamentos,
             ageParticipantes: this.selAgendamento.ageParticipantes
-        }
+        };
 
         this.agendamentoService.atualizar(agendamento).subscribe(ret => {
             if (ret.data != null) {
@@ -215,45 +209,15 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
         var participantes = new Array<Participante>()
 
-        var agendamento: Agendamento = {
-            ageId: this.selAgendamento.ageId,
-            ageAssunto: null,
-            ageDescricao: null,
-            ageSala: null,
-            agePesResponsavel: null,
-            ageStatus: null,
-            ageData: null,
-            ageHoraInicio: null,
-            ageHoraFim: null,
-            agePesCadastro: null,
-            agePesAtualizacao: null,
-            ageDtCadastro: null,
-            ageDtAtualizacao: null,
-            ageEquipamentos: null,
-            ageParticipantes: null
-        }
         this.pessoasSelecionadas.selected.forEach(pessoa => {
 
-            var nParTipo;
-            if (pessoa.participanteObrigatorio) {
-                nParTipo = 2
-            } else {
-                nParTipo = 1
-            }
-
-            var nParConfirmado;
-            if (pessoa.pesId == this.selAgendamento.agePesResponsavel.pesId) {
-                nParConfirmado = true
-            } else {
-                nParConfirmado = null
-            }
-
+            var nParTipo = pessoa.participanteObrigatorio ? 2 : 1;
             var part: Participante = {
                 parId: null,
                 parTipo: nParTipo,
-                parConfirmado: nParConfirmado,
+                parConfirmado: false,
                 parPessoa: pessoa,
-                parAgendamento: agendamento
+                parAgendamento: montarAgendamentoComId(this.selAgendamento.ageId)
             }
             participantes.push(part)
         });
@@ -261,7 +225,8 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         return participantes
     }
 
-    inserirNovosParticipantes(participantes) {
+    inserirNovosParticipantes(participantes: Participante[]) {
+
         this.participanteService.adicionarLista(participantes).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 this.notificarParticipantes(participantes)
@@ -274,40 +239,23 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
 
     montaArrayReservaEquipamento(): Array<ReservaEquipamento> {
 
-        var reservas = new Array<ReservaEquipamento>()
+        var reservas = new Array<ReservaEquipamento>();
 
-        var agendamento: Agendamento = {
-            ageId: this.selAgendamento.ageId,
-            ageAssunto: null,
-            ageDescricao: null,
-            ageSala: null,
-            agePesResponsavel: null,
-            ageStatus: null,
-            ageData: null,
-            ageHoraInicio: null,
-            ageHoraFim: null,
-            agePesCadastro: null,
-            agePesAtualizacao: null,
-            ageDtCadastro: null,
-            ageDtAtualizacao: null,
-            ageEquipamentos: null,
-            ageParticipantes: null
-        }
         this.equipamentosSelecionados.selected.forEach(equip => {
 
             var reserva: ReservaEquipamento = {
                 resId: null,
                 equipamento: equip,
-                agendamento: agendamento,
+                agendamento: montarAgendamentoComId(this.selAgendamento.ageId),
             }
             reservas.push(reserva)
         });
 
-        return reservas
+        return reservas;
     }
 
-    inserirNovasReservasEquipamento(equipametos) {
-        this.reservaEquipamentoService.adicionarLista(equipametos).subscribe(ret => {
+    inserirNovasReservasEquipamento(equipamentos: ReservaEquipamento[]) {
+        this.reservaEquipamentoService.adicionarLista(equipamentos).subscribe(ret => {
             if (ret.data != null && ret.data != '') {
                 //
             } else {
@@ -316,7 +264,7 @@ export class AgendamentosDetalhesComponent implements OnInit, OnDestroy {
         });
     }
 
-    notificarParticipantes(participantes) {
+    notificarParticipantes(participantes: Participante[]) {
         var notificacoes = new Array<Notificacao>()
 
         var nMensagemPadrão = 'Você possui uma nova reunião na data '

@@ -3,9 +3,8 @@ import { Router } from '@angular/router';
 import { routerTransition } from 'src/app/router.animations';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { OrganizeRoomsService, SessionStorageService } from 'src/app/shared/_services';
+import { OrganizeRoomsService, SessionStorageService, UnidadeService } from 'src/app/shared/_services';
 import { Unidade, LocalUser } from 'src/app/shared/_models';
-import { UnidadeController } from 'src/app/shared/_controllers/';
 
 @Component({
     selector: 'app-unidades-adicionar',
@@ -27,7 +26,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private organizeRoomsService: OrganizeRoomsService<Unidade>,
         private sessionStorageService: SessionStorageService,
-        private unidadeController: UnidadeController
+        private unidadeService: UnidadeService
     ) { }
 
     ngOnInit() {
@@ -39,7 +38,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.organizeRoomsService.setValue(this.unidadeController.montarUnidadeComId(0));
+        this.organizeRoomsService.setValue(null);
     }
 
     criarFormulario() {
@@ -61,11 +60,15 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         }
     }
 
-    async adicionar() {
+    adicionar() {
 
         const unidade = this.montarUnidade();
 
-        let retorno = await this.unidadeController.adicionar(unidade);
+        let retorno: Unidade;
+        this.unidadeService.adicionar(unidade).subscribe(ret => {
+            retorno = ret.data;
+        });
+
         if (retorno) {
 
             if (this.selUnidade == null) {
@@ -93,7 +96,12 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
     }
 
     async excluir() {
-        let retorno = await this.unidadeController.deletar(this.selUnidade.uniId);
+
+        let retorno: boolean;
+        this.unidadeService.deletar(this.selUnidade.uniId).subscribe(ret => {
+            retorno = ret.data;
+        });
+
         if (retorno) {
             alert(`Unidade ${this.selUnidade.uniNome} Deletada com Sucesso!`);
             this.router.navigate(['/unidades']);

@@ -9,9 +9,9 @@ import {
   Pessoa, Unidade, Sala, AgendamentoContext, Equipamento, Agendamento,
   Participante, ReservaEquipamento, EnviaEmail, Notificacao
 } from 'src/app/shared/_models';
-import { AgendamentoController, NotificacaoController } from 'src/app/shared/_controllers';
 import { DateHelper } from 'src/app/shared/_helpers';
 import { SelecionarEquipamentosComponent, SelecionarPessoasComponent } from '../../components/agendamento';
+import { AgendamentoService, NotificacaoService } from 'src/app/shared';
 
 @Component({
   selector: 'app-agendar',
@@ -24,7 +24,6 @@ export class AgendarComponent implements OnInit {
   @Input() stepper: MatStepper;
   @Input() agendamento: Agendamento;
 
-  listUnidades: Unidade[];
   selUnidade: Unidade;
   lotacao: number;
   data: Date;
@@ -44,8 +43,8 @@ export class AgendarComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private modalService: NgbModal,
-    private agendamentoController: AgendamentoController,
-    private notificacaoController: NotificacaoController
+    private notificacaoService: NotificacaoService,
+    private agendamentoService: AgendamentoService
   ) { }
 
   ngOnInit() {
@@ -54,7 +53,7 @@ export class AgendarComponent implements OnInit {
     this.horaInicio = this.agendamento.ageHoraInicio;
     this.horaFim = this.agendamento.ageHoraFim;
     this.selSala = this.agendamento.ageSala;
- 
+
     this.lotacao = this.selSala.salaLotacao;
     this.responsavel = this.agendamento.agePesResponsavel.pesNome;
     this.selUnidade = this.agendamento.ageSala.salaUnidade;
@@ -113,10 +112,14 @@ export class AgendarComponent implements OnInit {
     }
   }
 
-  async agendar() {
+  agendar() {
 
     this.montarAgendamento();
-    let retAgendamento = await this.agendamentoController.adicionar(this.agendamento);
+
+    let retAgendamento: Agendamento;
+    this.agendamentoService.adicionar(this.agendamento).subscribe(ret => {
+      retAgendamento = ret.data;
+    });
 
     if (retAgendamento != null) {
       this.agendado = true;
@@ -176,7 +179,7 @@ export class AgendarComponent implements OnInit {
     return reservas;
   }
 
-  async notificarParticipantes(participantes: Participante[]) {
+  notificarParticipantes(participantes: Participante[]) {
 
     let notificacoes: Notificacao[];
 
@@ -185,7 +188,10 @@ export class AgendarComponent implements OnInit {
       notificacoes.push(this.montarNotificacao(part));
     });
 
-    let retorno = await this.notificacaoController.enviarEmail(notificacoes);
+    let retorno: boolean;
+    this.notificacaoService.enviarEmail(notificacoes).subscribe(ret => {
+      retorno = ret.data;
+    });
   }
 
   montarNotificacao(participante: Participante): Notificacao {
@@ -210,7 +216,7 @@ export class AgendarComponent implements OnInit {
 
     return {
       destinatario: email,
-      assunto: this.agendamentoController.assuntoPadrao(this.agendamento.agePesResponsavel.pesNome),
+      assunto: this.agendamento.assuntoEmailPadrao,
       mensagem: this.verificarMensagemParticipante(tipoParticipante)
     }
   }
@@ -219,21 +225,11 @@ export class AgendarComponent implements OnInit {
 
     if (tipoParticipante == 1) { // tipo 1 Normal
 
-      return this.agendamentoController.msgNotificacaoPadrao(
-        this.data,
-        this.horaInicio,
-        this.horaFim,
-        this.agendamento.agePesResponsavel.pesNome
-      );
+      return this.agendamento.msgEmailPadrao;
 
     } else { // tipo 2 obrigatorio
 
-      return this.agendamentoController.msgNotificacaoPartObrigatorio(
-        this.data,
-        this.horaInicio,
-        this.horaFim,
-        this.agendamento.agePesResponsavel.pesNome
-      )
+      return this.agendamento.msgEmailPartObrigatorio;
     }
   }
 

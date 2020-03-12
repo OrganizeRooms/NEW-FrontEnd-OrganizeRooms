@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import {  NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { EquipamentoController, ConfSelectionModel, Equipamento, AgendamentoContext, Unidade, Agendamento, DateHelper } from 'src/app/shared';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfSelectionModel, Equipamento, AgendamentoContext, Agendamento, DateHelper, EquipamentoService } from 'src/app/shared';
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormGroup } from '@angular/forms';
@@ -22,7 +22,7 @@ export class SelecionarEquipamentosComponent implements OnInit, OnDestroy {
 
     constructor(
         private activeModal: NgbActiveModal,
-        private equipamentoController: EquipamentoController
+        private equipamentoService: EquipamentoService
     ) { }
 
     ngOnInit() {
@@ -33,14 +33,13 @@ export class SelecionarEquipamentosComponent implements OnInit, OnDestroy {
         this.fechar();
     }
 
-    async carregarEquipamentos() {
-        this.listEquipamentos.data = await this.equipamentoController.buscarDisponiveis(this.montarAgendamentoContext());
+    carregarEquipamentos() {
+        this.equipamentoService.buscarDisponiveis(this.montarAgendamentoContext()).subscribe(ret => {
+            this.listEquipamentos.data = ret.data;
+        });
     }
 
     montarAgendamentoContext(): AgendamentoContext {
-        console.log('equipamentos = montarAgendamentoContext');
-
-        console.log(this.agendamento);
 
         return {
             idUnidade: this.agendamento.ageSala.salaUnidade.uniId,
@@ -48,8 +47,8 @@ export class SelecionarEquipamentosComponent implements OnInit, OnDestroy {
             dataAgendamento: DateHelper.montarStringDataEng(this.agendamento.ageData),
             dataInicial: DateHelper.montarStringDataHoraEng(this.agendamento.ageHoraInicio),
             dataFinal: DateHelper.montarStringDataHoraEng(this.agendamento.ageHoraFim),
-            idParticipante: null,
-            idSala: null
+            idParticipante: 0,
+            idSala: 0
         }
     }
 

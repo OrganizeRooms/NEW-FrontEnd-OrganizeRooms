@@ -25,7 +25,7 @@
                             </h4>
                         </div>
                     </div>
-                    <div *ngIf="inconsistencias != '' || inconsistencias != null"
+                    <div *ngIf="inconsistencias.length > 0 || inconsistencias != null"
                         class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <ul class="list-group">
                             <li class="list-group-item" *ngFor="let inc of inconsistencias">
@@ -33,10 +33,10 @@
                             </li>
                         </ul>
                     </div>
-                    <div *ngIf="inconsistencias == ''" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div *ngIf="inconsistencias.length == 0" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
                         <ul class="list-group">
                             <li class="list-group-item">
-                                Todos os registros importados com sucesso!
+                                Registros importados com sucesso!
                             </li>
                         </ul>
                     </div>

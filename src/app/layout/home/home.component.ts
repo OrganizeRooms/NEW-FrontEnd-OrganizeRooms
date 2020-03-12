@@ -3,9 +3,8 @@ import { routerTransition } from '../../router.animations';
 // Date Picker
 import { NgbDateStruct, NgbDatepickerI18n, NgbModal, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
-import { AgendamentoService, SessionStorageService, ParticipanteService } from 'src/app/shared/_services';
-import { NotificacaoController, AgendamentoController } from 'src/app/shared/_controllers';
-import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail, Pessoa } from 'src/app/shared/_models';
+import { AgendamentoService, SessionStorageService, ParticipanteService, NotificacaoService } from 'src/app/shared/_services';
+import { Agendamento, Participante, AgendamentoContext, Notificacao, EnviaEmail, Pessoa, montarAgendamentoComId } from 'src/app/shared/_models';
 import { DateHelper } from 'src/app/shared';
 
 @Component({
@@ -34,8 +33,7 @@ export class HomeComponent implements OnInit {
         private sessionStorageService: SessionStorageService,
         private agendamentoService: AgendamentoService,
         private participanteService: ParticipanteService,
-        private notificacaoController: NotificacaoController,
-        private agendamentoController: AgendamentoController
+        private notificacaoService: NotificacaoService
     ) { }
 
     ngOnInit() {
@@ -89,12 +87,12 @@ export class HomeComponent implements OnInit {
 
     verificarConfirmacao(agend: Agendamento) {
 
-        var retorno = false
-        agend.ageParticipantes.forEach(part => {
+        var retorno: boolean
+        agend.ageParticipantes.forEach((part): void => {
             if (part.parPessoa.pesId == this.pessoaLogada.pesId) {
                 if (part.parConfirmado == null) {
                     this.participante = part
-                    return retorno = true
+                    retorno = true;
                 }
             }
         });
@@ -108,7 +106,7 @@ export class HomeComponent implements OnInit {
             parTipo: 1,
             parConfirmado: true,
             parPessoa: this.pessoaLogada,
-            parAgendamento: this.agendamentoController.montarAgendamentoComId(agend.ageId)
+            parAgendamento: montarAgendamentoComId(agend.ageId)
         }
 
         var msg = "Aceito"
@@ -123,7 +121,7 @@ export class HomeComponent implements OnInit {
             parTipo: 1,
             parConfirmado: false,
             parPessoa: this.pessoaLogada,
-            parAgendamento: this.agendamentoController.montarAgendamentoComId(agend.ageId)
+            parAgendamento: montarAgendamentoComId(agend.ageId)
         }
 
         var msg = "Recusado"
@@ -143,20 +141,20 @@ export class HomeComponent implements OnInit {
             ageId: agend.ageId,
             ageAssunto: agend.ageAssunto,
             ageDescricao: agend.ageDescricao,
-            ageStatus: 'CONCLUIDO',
-            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
-            ageDtAtualizacao: new Date(),
-            ageEquipamentos: agend.ageEquipamentos,
-            // Atributos que não são alterados e possuem trava no BackEnd
-            ageDtCadastro: agend.ageDtCadastro,
-            ageSala: null,
+            ageSala: agend.ageSala,
             agePesResponsavel: agend.agePesResponsavel,
+            ageStatus: 'CONCLUIDO',
             ageData: agend.ageData,
             ageHoraInicio: agend.ageHoraInicio,
             ageHoraFim: agend.ageHoraFim,
             agePesCadastro: agend.agePesCadastro,
+            agePesAtualizacao: this.sessionStorageService.getValue().pessoa.pesId,
+            ageDtCadastro: agend.ageDtCadastro,
+            ageDtAtualizacao: new Date(),
+            ageEquipamentos: null,
+            // Atributos que não são alterados e possuem trava no BackEnd
             ageParticipantes: null
-        }
+        };
 
         this.agendamentoService.atualizar(agendamento).subscribe(ret => {
             if (ret.data != null) {
@@ -198,7 +196,7 @@ export class HomeComponent implements OnInit {
         }
         notificacoes.push(notificacao);
 
-        this.notificacaoController.enviarEmail(notificacoes);
+        this.notificacaoService.enviarEmail(notificacoes);
     }
 
     atualizar(participante: Participante, msg: string) {

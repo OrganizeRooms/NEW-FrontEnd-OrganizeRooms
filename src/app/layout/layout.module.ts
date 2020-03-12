@@ -7,6 +7,11 @@ import { LayoutComponent } from './layout.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
 
+import {
+    AgendamentoService, AuthenticationService, EquipamentoService, NotificacaoService,
+    ParticipanteService, PessoaService, SalaService, UnidadeService
+} from 'src/app/shared/_services';
+
 @NgModule({
     imports: [
         CommonModule,
@@ -20,6 +25,14 @@ import { HeaderComponent } from './components/header/header.component';
         HeaderComponent
     ],
     providers: [
+        AgendamentoService,
+        AuthenticationService,
+        EquipamentoService,
+        NotificacaoService,
+        ParticipanteService,
+        PessoaService,
+        SalaService,
+        UnidadeService
     ]
 })
 export class LayoutModule { }

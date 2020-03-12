@@ -3,7 +3,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { ReservarRoutingModule } from './reservar-routing.module';
 import { ReservarComponent } from './reservar.component';
-import { PageHeaderModule } from '../../shared';
+import { PageHeaderModule } from 'src/app/shared/_components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Component Material Angular
 import {

@@ -1,11 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { routerTransition } from '../router.animations';
 
-import { JwtAuthentication } from '../shared/_models';
-import { AuthenticationController } from '../shared/_controllers';
+import { JwtAuthentication, Response, Pessoa, montarNovoAuthentication } from '../shared/_models';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LoginModalComponent } from './login-modal/login-modal.component';
+import { AuthenticationService } from '../shared';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -15,18 +16,19 @@ import { LoginModalComponent } from './login-modal/login-modal.component';
 })
 export class LoginComponent implements OnInit {
 
-    protected loading = false;
-    protected loginForm: FormGroup;
-    private creds: JwtAuthentication;
-    
+    loading = false;
+    loginForm: FormGroup;
+    creds: JwtAuthentication;
+
     constructor(
         private formBuilder: FormBuilder,
-        private authenticationController: AuthenticationController,
-        private modalService: NgbModal
+        private modalService: NgbModal,
+        private authenticationService: AuthenticationService,
+        private router: Router
     ) { }
 
     ngOnInit() {
-        this.creds = this.authenticationController.montarNovoAuthentication();
+        this.creds = montarNovoAuthentication()
         this.criarFormulario()
     }
 
@@ -50,33 +52,45 @@ export class LoginComponent implements OnInit {
                     pesEmail: [this.loginForm.value.pesEmail, { updateOn: 'submit' }],
                     pesSenha: [null, { updateOn: 'submit' }]
                 });
+                
             } else {
                 this.creds.pesEmail = this.loginForm.value.pesEmail;
                 this.creds.pesSenha = this.loginForm.value.pesSenha;
-                this.logar();
+                this.autenticar();
             }
         }
     }
 
-    async logar() {
+    autenticar() {
         this.loading = true;
-        let retorno = await this.authenticationController.autenticar(this.creds)
+        let aux: Response;
 
-        if (!retorno) {
-            this.showError()
-        }
+        this.authenticationService.authenticate(this.creds).subscribe(ret => {
+            if (ret.body) {
+                aux = JSON.parse(ret.body);
+                this.authenticationService.loginComSucesso(aux);
+            }
+
+        }, error => {
+            this.authenticationService.loginSemSucesso();
+            alert(`${error}`)
+
+        }, () => {
+            if (aux.pessoa.pesPermissao == 'ROLE_TABLET') {
+                this.router.navigate(['/tablet']);
+            } else {
+                this.router.navigate(['/home']);
+            }
+        });
     }
 
     deslogar() {
-        this.authenticationController.deslogar();
-    }
-
-    showError() {
-        alert('Credenciais Incorretas! Informe Novamente.');
+        this.authenticationService.deslogar();
     }
 
     open() {
         const modalRef = this.modalService.open(LoginModalComponent);
         modalRef.componentInstance.email = this.loginForm.value.pesEmail;
     }
+
 }

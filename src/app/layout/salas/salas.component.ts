@@ -3,8 +3,7 @@ import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 
 import { configurarPaginador } from 'src/app/shared/utils/table-data';
-import { OrganizeRoomsService, SessionStorageService } from '../../shared/_services';
-import { SalaController } from 'src/app/shared/_controllers';
+import { OrganizeRoomsService, SessionStorageService, SalaService } from '../../shared/_services';
 import { Sala } from 'src/app/shared/_models';
 
 @Component({
@@ -26,7 +25,7 @@ export class SalasComponent implements OnInit {
     constructor(
         private organizeRoomsService: OrganizeRoomsService<Sala>,
         private sessionStorageService: SessionStorageService,
-        private salaController: SalaController
+        private salaService: SalaService
     ) { }
 
     ngOnInit() {
@@ -36,16 +35,23 @@ export class SalasComponent implements OnInit {
         this.configurarPaginador();
     }
 
-    async carregarDados() {
-        this.tableData.data = await this.salaController.buscarTodos();
+    carregarDados() {
+
+        this.salaService.buscarTodos().subscribe(ret => {
+            this.tableData.data = ret.data;
+        });
     }
 
     editar(registro: Sala) {
         this.organizeRoomsService.setValue(registro);
     }
 
-    async excluir(sala: Sala) {
-        let retorno = await this.salaController.deletar(sala.salaId)
+    excluir(sala: Sala) {
+
+        let retorno: boolean;
+        this.salaService.deletar(sala.salaId).subscribe(ret => {
+            retorno = ret.data;
+        });
 
         if (retorno) {
             alert(`${sala.salaNome} Deletada com Sucesso!`);

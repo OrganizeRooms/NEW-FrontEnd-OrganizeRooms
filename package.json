@@ -27,7 +27,8 @@
     "@angular/compiler-cli": "9.0.5",
     "@angular/core": "9.0.5",
     "@angular/forms": "9.0.5",
-    "@angular/material": "^9.1.1",
+    "@angular/localize": "^9.0.5",
+    "@angular/material": "^8.2.3",
     "@angular/material-moment-adapter": "^9.1.1",
     "@angular/platform-browser": "9.0.5",
     "@angular/platform-browser-dynamic": "9.0.5",
@@ -36,7 +37,7 @@
     "@ng-bootstrap/ng-bootstrap": "^5.1.2",
     "@types/jasmine": "2.8.9",
     "@types/jasminewd2": "2.0.5",
-    "@types/node": "10.12.2",
+    "@types/node": "^10.14.21",
     "bootstrap": "^4.3.1",
     "chart.js": "2.7.3",
     "core-js": "^2.6.10",
@@ -58,14 +59,14 @@
     "rxjs": "6.5.4",
     "ts-node": "7.0.1",
     "tslib": "^1.11.1",
-    "tslint": "5.11.0",
+    "tslint": "5.12.0",
     "typescript": "3.7.5",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@types/jasmine": "2.8.9",
     "@types/jasminewd2": "2.0.5",
-    "@types/node": "10.12.2",
+    "@types/node": "^10.14.21",
     "codelyzer": "^5.2.0",
     "jasmine-core": "3.3.0",
     "jasmine-spec-reporter": "4.2.1",
@@ -77,6 +78,6 @@
     "karma-jasmine-html-reporter": "1.4.0",
     "protractor": "5.4.1",
     "ts-node": "7.0.1",
-    "tslint": "5.11.0"
+    "tslint": "5.12.0"
   }
 }

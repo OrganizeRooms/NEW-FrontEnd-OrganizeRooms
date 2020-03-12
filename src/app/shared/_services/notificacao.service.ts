@@ -1,10 +1,12 @@
 ﻿import { Injectable } from '@angular/core';
-import { API_CONFIG } from '../../shared/_config';
-import { Notificacao, Response, ServiceWS } from '../_models';
+import { API_CONFIG } from '../_config';
 import { Observable } from 'rxjs';
+import { retry, catchError } from 'rxjs/operators';
+import { ServiceHelper } from '../_helpers';
+import { Notificacao, Response, ServiceWS } from '../_models';
 
 @Injectable({ providedIn: 'root' })
-export class NotificacaoService extends ServiceWS<Notificacao> {
+export class NotificacaoService extends ServiceHelper implements ServiceWS<Notificacao> {
 
     buscarTodos(): Observable<Response> {
         throw new Error("Este metodo não é utilizado!.");
@@ -19,18 +21,27 @@ export class NotificacaoService extends ServiceWS<Notificacao> {
             .post<Response>(
                 `${API_CONFIG.baseUrl}/notificacao`,
                 objeto,
-                { headers: this.httpOptionsForBackEnd() }
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
             );
     }
 
-    deletar(id: string): Observable<Response> {
+    deletar(id: number): Observable<Response> {
         throw new Error("Este metodo não é utilizado!.");
     }
 
     // Traz somente as ativas
-    buscarPorPessoa(idPessoa: String): Observable<Response> {
+    buscarPorIdPessoa(idPessoa: number): Observable<Response> {
         return this.http
-            .get<Response>(`${API_CONFIG.baseUrl}/notificacao/pessoa/` + idPessoa);
+            .get<Response>(
+                `${API_CONFIG.baseUrl}/notificacao/pessoa/${idPessoa}`,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
     }
 
     enviarEmail(notificacao: Array<Notificacao>): Observable<Response> {
@@ -38,7 +49,10 @@ export class NotificacaoService extends ServiceWS<Notificacao> {
             .post<Response>(
                 `${API_CONFIG.baseUrl}/notificacao/enviaEmail`,
                 notificacao,
-                { headers: this.httpOptionsForBackEnd() }
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
             );
     }
 
@@ -47,7 +61,10 @@ export class NotificacaoService extends ServiceWS<Notificacao> {
             .post<Response>(
                 `${API_CONFIG.baseUrl}/notificacao/enviaEmailAvulso`,
                 notificacao,
-                { headers: this.httpOptionsForBackEnd() }
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
             );
     }
 }

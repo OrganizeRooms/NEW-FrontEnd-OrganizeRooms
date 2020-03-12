@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import { AgendamentosRoutingModule } from './agendamentos-routing.module';
 import { AgendamentosComponent } from './agendamentos.component';
-import { PageHeaderModule } from '../../shared';
+import { PageHeaderModule } from 'src/app/shared/_components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Component Material Angular
 import {
