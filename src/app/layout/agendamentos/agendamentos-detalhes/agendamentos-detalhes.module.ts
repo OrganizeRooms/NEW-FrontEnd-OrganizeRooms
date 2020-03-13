@@ -9,12 +9,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
     MatFormFieldModule, MatCheckboxModule, MatInputModule, MatSelectModule, MatTableModule, MatPaginatorModule,
 } from '@angular/material';
+import { SelecionarEquipamentosComponent, SelecionarPessoasComponent, SelecionarPessoasModule, SelecionarEquipamentosModule 
+} from '../../components/agendamento';
 
 @NgModule({
     imports: [
         CommonModule,
         AgendamentosDetalhesRoutingModule,
         PageHeaderModule,
+        SelecionarEquipamentosModule,
+        SelecionarPessoasModule,
         MatFormFieldModule,
         MatInputModule,
         MatCheckboxModule,
@@ -29,6 +33,10 @@ import {
     ],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
+    ],
+    entryComponents: [
+        SelecionarEquipamentosComponent,
+        SelecionarPessoasComponent
     ]
 })
 export class AgendamentosDetalhesModule { }

@@ -13,7 +13,7 @@ export class NotificacaoService extends ServiceHelper implements ServiceWS<Notif
     }
 
     adicionar(objeto: Notificacao): Observable<Response> {
-        return this.enviarEmailAvulso(objeto);
+        throw new Error("Este metodo não é utilizado!.");
     }
 
     atualizar(objeto: Notificacao): Observable<Response> {
@@ -48,18 +48,6 @@ export class NotificacaoService extends ServiceHelper implements ServiceWS<Notif
         return this.http
             .post<Response>(
                 `${API_CONFIG.baseUrl}/notificacao/enviaEmail`,
-                notificacao,
-                { headers: this.httpOptions() }
-            ).pipe(
-                retry(2),
-                catchError(this.handleError)
-            );
-    }
-
-    enviarEmailAvulso(notificacao: Notificacao): Observable<Response> {
-        return this.http
-            .post<Response>(
-                `${API_CONFIG.baseUrl}/notificacao/enviaEmailAvulso`,
                 notificacao,
                 { headers: this.httpOptions() }
             ).pipe(

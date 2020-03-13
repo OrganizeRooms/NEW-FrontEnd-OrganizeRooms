@@ -1,6 +1,7 @@
 ﻿export * from './authentication.service';
 export * from './pessoa.service';
 export * from './equipamento.service';
+export * from './reservaEquipamento.service';
 export * from './agendamento.service';
 export * from './sala.service';
 export * from './unidade.service';
@@ -9,3 +10,4 @@ export * from './storage.service';
 export * from './sessionStorage.service';
 export * from './organizerooms.service';
 export * from './participante.service';
+export * from './mensagem.service';

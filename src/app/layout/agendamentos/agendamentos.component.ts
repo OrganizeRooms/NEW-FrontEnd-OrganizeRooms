@@ -1,12 +1,12 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-
-import { AgendamentoService, OrganizeRoomsService, SessionStorageService, UnidadeService } from '../../shared/_services';
-import { NgbDateStruct, NgbDatepickerI18n, NgbDateParserFormatter, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDateStruct, NgbDatepickerI18n, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
+import { AgendamentoContext, Unidade, Pessoa } from 'src/app/shared/_models';
+import { DateHelper,  } from 'src/app/shared/_helpers';
+import { AgendamentoController  } from 'src/app/shared/_controllers';
 import { configurarPaginador } from 'src/app/shared/utils/table-data';
-import { AgendamentoContext, Agendamento, Unidade } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-agendamentos',
@@ -19,11 +19,13 @@ import { AgendamentoContext, Agendamento, Unidade } from 'src/app/shared/_models
         { provide: NgbDateParserFormatter, useClass: NgbDateCustomParserFormatter } // define custom Date Format provider
     ]
 })
-export class AgendamentosComponent implements OnInit, OnDestroy {
+export class AgendamentosComponent extends AgendamentoController implements OnInit, OnDestroy {
 
+    pessoaLogada: Pessoa;
     permissao: string;
     listUnidades: Unidade[];
     selUnidade: Unidade;
+    selNumeroUnidade: number;
     selAgeStatus = 'AGENDADO';
     dataInicial: NgbDateStruct;
     dataFinal: NgbDateStruct;
@@ -40,18 +42,11 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    constructor(
-        private agendamentoService: AgendamentoService,
-        private calendar: NgbCalendar,
-        private unidadeService: UnidadeService,
-        private organizeRoomsService: OrganizeRoomsService<Agendamento>,
-        private sessionStorageService: SessionStorageService
-    ) { }
-
     ngOnInit() {
         // this.carregarAgendamentos();
-        this.permissao = this.sessionStorageService.getValue().pessoa.pesPermissao;
-        this.selUnidade = this.sessionStorageService.getValue().pessoa.pesUnidade;
+        this.pessoaLogada = this.sessionStorageService.getValue().pessoa;
+        this.permissao = this.pessoaLogada.pesPermissao;
+        this.selUnidade = this.pessoaLogada.pesUnidade;
 
         var today = this.calendar.getToday()
         this.dataFinal = today
@@ -71,46 +66,57 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
     carregarUnidades() {
         this.unidadeService.buscarAtivas().subscribe(ret => {
             this.listUnidades = ret.data;
-            this.tableData.paginator = this.paginator;
         });
     }
 
-    filtrarSalas() {
-        this.filtrarValido = this.verificarCampos();
+    validarCampos(): void {
 
-        if (this.filtrarValido) {
+        this.filtrarValido = false;
+        if (!this.dataInicial) {
+            alert('Informe uma Data Inicial!')
 
-            var idResponsavel = this.sessionStorageService.getValue().pessoa.pesId
+        } else if (!this.dataFinal) {
+            alert('Informe uma Data Final!')
 
-            var nDataInicial = this.montarStringData(this.dataInicial)
-            var nDataFinal = this.montarStringData(this.dataFinal)
-
-            var agendamentoContext: AgendamentoContext = {
-                idUnidade: this.selUnidade.uniId,
-                lotacao: 0,
-                dataInicial: nDataInicial,
-                dataFinal: nDataFinal,
-                idParticipante: idResponsavel,
-                // Não utiliza
-                dataAgendamento: null,
-                idSala: null
-            }
-            this.agendamentoService.buscarPorResponsavel(agendamentoContext).subscribe(ret => {
-                if (ret.data != null || ret.data != '') {
-                    this.tableData.data = ret.data;
-                    this.tableData.paginator = this.paginator;
-                    this.tableData.sort = this.sort;
-                } else {
-                    alert('Não foram encontrados registros para os filtros informados!')
-                }
-            });
-            this.configurarPaginador();
+        } else {
+            this.filtrarValido = true
+            this.filtrarSalas();
         }
     }
 
-    montarStringData(data) {
-        var stringData = data.year + '/' + data.month + '/' + data.day
-        return stringData
+    filtrarSalas() {
+
+        if (this.filtrarValido) {
+
+            this.salaService.buscarDisponiveis(this.montarAgendamentoContext()).subscribe(ret => {
+                this.tableData.data = ret.data;
+
+            }, err => { },
+                () => {
+                    if (this.tableData.data.length = 0) {
+                        alert('Não foram encontrados registros para os filtros informados!')
+                    }
+                }
+            );
+            this.configurarPaginador();
+            this.apareceFiltrar = false;
+        }
+    }
+
+    montarAgendamentoContext(): AgendamentoContext {
+
+        var nDataInicial = new Date(this.dataInicial.year, this.dataInicial.month, this.dataInicial.day);
+        var nDataFinal = new Date(this.dataFinal.year, this.dataFinal.month, this.dataFinal.day);
+
+        return {
+            idUnidade: this.selNumeroUnidade,
+            lotacao: 0,
+            dataAgendamento: null,
+            dataInicial: DateHelper.montarStringData(nDataInicial),
+            dataFinal: DateHelper.montarStringData(nDataFinal),
+            idParticipante: this.pessoaLogada.pesId,
+            idSala: 0
+        }
     }
 
     limpar() {
@@ -123,28 +129,14 @@ export class AgendamentosComponent implements OnInit, OnDestroy {
         this.organizeRoomsService.setValue(registro);
     }
 
-    // Verificação dos Campos OBRIGATÓRIOS da Verificação de Disponibilidade das Salas
-    verificarCampos(): Boolean {
-
-        var mfiltrarValido = false;
-        if (!this.dataInicial) {
-            alert('Informe uma Data Inicial!')
-
-        } else if (!this.dataFinal) {
-            alert('Informe uma Data Final!')
-
-        }
-        else {
-            mfiltrarValido = true
-        }
-        return mfiltrarValido
-    }
-
     aplicarFiltro(valor: string) {
         this.tableData.filter = valor.trim().toLowerCase();
     }
 
     configurarPaginador() {
         this.paginator = configurarPaginador(this.paginator);
+
+        this.tableData.paginator = this.paginator;
+        this.tableData.sort = this.sort;
     }
 }
