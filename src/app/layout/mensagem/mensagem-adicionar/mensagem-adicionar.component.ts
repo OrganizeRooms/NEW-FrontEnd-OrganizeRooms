@@ -7,13 +7,13 @@ import { OrganizeRoomsService, SessionStorageService, UnidadeService } from 'src
 import { Unidade, LocalUser } from 'src/app/shared/_models';
 
 @Component({
-    selector: 'app-unidades-adicionar',
-    templateUrl: './unidades-adicionar.component.html',
-    styleUrls: ['./unidades-adicionar.component.scss'],
+    selector: 'app-mensagem-adicionar',
+    templateUrl: './mensagem-adicionar.component.html',
+    styleUrls: ['./mensagem-adicionar.component.scss'],
     animations: [routerTransition()],
 })
 
-export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
+export class MensagemAdicionarComponent implements OnInit, OnDestroy {
 
     labelPosition = 'before';
     localUser: LocalUser;
@@ -26,7 +26,6 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private organizeRoomsService: OrganizeRoomsService<Unidade>,
         private sessionStorageService: SessionStorageService,
-        private unidadeService: UnidadeService
     ) { }
 
     ngOnInit() {
@@ -65,7 +64,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
         const unidade = this.montarUnidade();
 
         let retorno: Unidade;
-        this.unidadeService.adicionar(unidade).subscribe(ret => {
+        /*this.unidadeService.adicionar(unidade).subscribe(ret => {
             retorno = ret.data;
         });
 
@@ -79,7 +78,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
             }
 
             this.router.navigate(['/unidades']);
-        }
+        }*/
     }
 
     montarUnidade(): Unidade {
@@ -97,7 +96,7 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
     excluir() {
 
-        let retorno: boolean;
+        /*let retorno: boolean;
         this.unidadeService.deletar(this.selUnidade.uniId).subscribe(ret => {
             retorno = ret.data;
         });
@@ -108,6 +107,6 @@ export class UnidadesAdicionarComponent implements OnInit, OnDestroy {
 
         } else {
             alert(`Não foi possível Deletar a Unidade ${this.selUnidade.uniNome}!`);
-        }
+        }*/
     }
 }

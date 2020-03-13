@@ -105,7 +105,7 @@
                     </div>
                     <div class="col-5 col-sm-4 col-md-4 col-lg-4 col-xl-1">
                         <a *ngIf="verificarStatus()" class="btn btn-padrao btn-selecionar"
-                            (click)="abrirModal(modalParticipantes)">
+                            (click)="abrirModalPessoas()">
                             Selecionar
                         </a>
                     </div>
@@ -157,10 +157,10 @@
                             </li>
                         </ul>
                         <!-- NOVOS PARTICIPANTES -->
-                        <div class="divNews" *ngIf="pessoasSelecionadas.hasValue()">
+                        <div class="divNews" *ngIf="pessoasSelecionadas.length > 0">
                             <span class="color-blue">Novos Participantes:</span>
                             <ul class="list-group">
-                                <li class="list-group-item" *ngFor="let pessoaSel of pessoasSelecionadas.selected">
+                                <li class="list-group-item" *ngFor="let pessoaSel of pessoasSelecionadas">
                                     <div class="row">
                                         <div class="col-6 col-sm-3 col-md-3 col-lg-10 col-xl-10">
                                             {{pessoaSel.pesNome}}
@@ -187,7 +187,7 @@
                     </div>
                     <div class="col-4 col-sm-3 col-md-4 col-lg-4 col-xl-1">
                         <a *ngIf="verificarStatus()" class="btn btn-padrao btn-selecionar"
-                            (click)="abrirModal(modalEquipamentos)">
+                            (click)="abrirModalEquipamentos()">
                             Selecionar
                         </a>
                     </div>
@@ -211,11 +211,11 @@
                                 </div>
                             </li>
                         </ul>
-                        <div class="divNews" *ngIf="equipamentosSelecionados.hasValue()">
+                        <div class="divNews" *ngIf="equipamentosSelecionados.length > 0">
                             <span class="color-blue">Novos Equipamentos:</span>
                             <ul class="list-group">
                                 <li class="list-group-item"
-                                    *ngFor="let equipamentoSel of equipamentosSelecionados.selected">
+                                    *ngFor="let equipamentoSel of equipamentosSelecionados">
                                     {{equipamentoSel.equNome}}
                                 </li>
                             </ul>
@@ -256,150 +256,3 @@
         </div>
     </div>
 </div>
-
-
-<!-- INICIO MODAL PARTICIPANTES (PESSOAS) -->
-<ng-template #modalParticipantes let-modal>
-    <div class="modal-header">
-        <h4 class="color-blue">
-            Selecione os Novos Participantes
-        </h4>
-        <a class="close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">&times;</span>
-        </a>
-    </div>
-
-    <div class="modal-body">
-        <div class="page-text">
-            <div class="row justify-content-center">
-                <div class="col-7 col-sm-9 col-md-6 col-lg-5 col-xl-6">
-                    <input class="form-control text-center" matInput (keyup)="aplicarFiltroPart($event.target.value)"
-                        placeholder="Pesquisar">
-                </div>
-            </div>
-            <br />
-            <table mat-table [dataSource]="listPessoas" class="mat-elevation-z8">
-
-                <!-- Checkbox -->
-                <ng-container matColumnDef="selecionar">
-                    <th mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)="$event ? masterTogglePart() : null"
-                            [checked]="pessoasSelecionadas.hasValue() && isAllSelectedPart()"
-                            [indeterminate]="pessoasSelecionadas.hasValue() && !isAllSelectedPart()"
-                            [aria-label]="checkboxLabelPart()">
-                        </mat-checkbox>
-
-                    </th>
-                    <td mat-cell *matCellDef="let rowPart: number">
-                        <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? pessoasSelecionadas.toggle(rowPart) : null"
-                            [checked]="pessoasSelecionadas.isSelected(rowPart)"
-                            [aria-label]="checkboxLabelPart(rowPart)">
-                        </mat-checkbox>
-                    </td>
-                </ng-container>
-
-                <!-- Nome -->
-                <ng-container matColumnDef="pesNome">
-                    <th mat-header-cell *matHeaderCellDef>Nome</th>
-                    <td mat-cell *matCellDef="let pessoa">{{pessoa.pesNome}}</td>
-                </ng-container>
-
-                <!-- Unidade -->
-                <ng-container matColumnDef="pesUnidade">
-                    <th mat-header-cell *matHeaderCellDef>Unidade</th>
-                    <td mat-cell *matCellDef="let pessoa">{{pessoa.pesUnidade.uniNome}}</td>
-                </ng-container>
-
-                <!-- Obrigatorio -->
-                <ng-container matColumnDef="obrigatorio">
-                    <th mat-header-cell *matHeaderCellDef>Obrigatório?</th>
-                    <td mat-cell *matCellDef="let pessoa">
-                        <mat-checkbox [(ngModel)]="pessoa.participanteObrigatorio"
-                            checked="pessoa.participanteObrigatorio">
-                        </mat-checkbox>
-                    </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsParticipantes"></tr>
-                <tr mat-row *matRowDef="let rowPart; columns: displayedColumnsParticipantes;">
-                    <!--(click)="pessoasSelecionadas.toggle(rowPart)">-->
-                </tr>
-            </table>
-            <div>
-            </div>
-        </div>
-        <br />
-        <div class="row ml-auto">
-            <a class="btn btn-padrao" (click)="modal.dismiss()">Fechar</a>
-        </div>
-    </div>
-</ng-template>
-<!-- FIM MODAL PARTICIPANTES (PESSOAS) -->
-
-<!-- INICIO MODAL EQUIPAMENTOS -->
-<ng-template #modalEquipamentos let-modal>
-    <div class="modal-header">
-        <h4 class="color-blue">
-            Selecione os Equipamentos
-        </h4>
-        <a class="close" aria-label="Close" (click)="modal.dismiss()">
-            <span aria-hidden="true">&times;</span>
-        </a>
-    </div>
-
-    <div class="modal-body">
-        <div class="page-text">
-            <div class="row justify-content-center">
-                <div class="col-7 col-sm-9 col-md-6 col-lg-5 col-xl-6">
-                    <input class="form-control text-center" matInput (keyup)="aplicarFiltroEquip($event.target.value)"
-                        placeholder="Pesquisar">
-                </div>
-            </div>
-            <br />
-            <table mat-table [dataSource]="listEquipamentos" class="mat-elevation-z8">
-
-                <!-- Checkbox -->
-                <ng-container matColumnDef="selecionar">
-                    <th mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)="$event ? masterToggleEquip() : null"
-                            [checked]="equipamentosSelecionados.hasValue() && isAllSelectedEquip()"
-                            [indeterminate]="equipamentosSelecionados.hasValue() && !isAllSelectedEquip()"
-                            [aria-label]="checkboxLabelEquip()">
-                        </mat-checkbox>
-
-                    </th>
-                    <td mat-cell *matCellDef="let rowEquip: number">
-                        <mat-checkbox (click)="$event.stopPropagation()"
-                            (change)="$event ? equipamentosSelecionados.toggle(rowEquip) : null"
-                            [checked]="equipamentosSelecionados.isSelected(rowEquip)"
-                            [aria-label]="checkboxLabelEquip(rowEquip)">
-                        </mat-checkbox>
-                    </td>
-                </ng-container>
-
-                <!-- Nome -->
-                <ng-container matColumnDef="equNome">
-                    <th mat-header-cell *matHeaderCellDef>Nome</th>
-                    <td mat-cell *matCellDef="let equipamento">{{equipamento.equNome}}</td>
-                </ng-container>
-
-                <!-- Descrição -->
-                <ng-container matColumnDef="equDescricao">
-                    <th mat-header-cell *matHeaderCellDef>Descrição</th>
-                    <td mat-cell *matCellDef="let equipamento">{{equipamento.equDescricao}}</td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumnsEquipamentos"></tr>
-                <tr mat-row *matRowDef="let rowEquip; columns: displayedColumnsEquipamentos;"
-                    (click)="equipamentosSelecionados.toggle(rowEquip)">
-                </tr>
-            </table>
-        </div>
-        <br />
-        <div class="row ml-auto">
-            <a class="btn btn-padrao" (click)="modal.dismiss()">Fechar</a>
-        </div>
-    </div>
-</ng-template>
-<!-- FIM MODAL EQUIPAMENTOS -->

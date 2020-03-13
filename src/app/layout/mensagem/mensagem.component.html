@@ -1,0 +1,44 @@
+<div>
+    <app-page-header [heading]="'Unidades'"></app-page-header>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-11 col-md-10 col-lg-10 col-xl-7">
+            <form>
+                <div class="row justify-content-center">
+                    <div class="col-7 col-sm-9 col-md-6 col-lg-5 col-xl-5">
+                        <input class="form-control" matInput (keyup)="aplicarFiltro($event.target.value)"
+                            placeholder="Pesquisar">
+                    </div>
+                    <div class="col-4 col-sm-2 col-md-5 col-lg-6 col-xl-7">
+                        <div class="row justify-content-end">
+                            <div class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3">
+                                <a *ngIf="permissao == 'ROLE_ADMIN'" class="btn btn-padrao"
+                                    [routerLink]="['/unidades-adicionar']" [routerLinkActive]="['router-link-active']">
+                                    Adicionar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row justify-content-center table-content">
+        <div class="col-10 col-sm-8 col-md-8 col-lg-8 col-xl-5">
+            <div *ngFor="let mensagem of listaMensagens">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-10 col-lg-9 col-xl-8">
+                        <span>Descrição <span style="color: red;">*</span></span>
+                        <span class="text-area">{{mensagem.menDescricao}}</span>
+                    </div>
+                </div>
+                <div class="row ml-auto">
+                    <div class="col-12 col-sm-6 col-md-11 col-lg-11 col-xl-9">
+                        <span>Mensagem</span>
+                        <span class="text-area">{{mensagem.menMensagem}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

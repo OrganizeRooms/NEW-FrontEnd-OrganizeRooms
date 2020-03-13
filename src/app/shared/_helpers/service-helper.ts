@@ -11,7 +11,7 @@ export class ServiceHelper {
         protected http: HttpClient
     ) { }
 
-    httpOptions(): HttpHeaders {
+    protected httpOptions(): HttpHeaders {
 
         const localUser = this.sessionStorageService.getValue();
 
@@ -19,7 +19,7 @@ export class ServiceHelper {
         return new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
     }
 
-    handleError(error?: HttpErrorResponse) {
+    protected handleError(error?: HttpErrorResponse) {
 
         let errorMessage = '';
         if (error.error instanceof ErrorEvent) {

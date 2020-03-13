@@ -1,17 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { FormGroup, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material';
 
-import {
-  Pessoa, Unidade, Sala, AgendamentoContext, Equipamento, Agendamento,
-  Participante, ReservaEquipamento, EnviaEmail, Notificacao
-} from 'src/app/shared/_models';
+import { Pessoa, Unidade, Sala, AgendamentoContext, Equipamento, Agendamento } from 'src/app/shared/_models';
 import { DateHelper } from 'src/app/shared/_helpers';
 import { SelecionarEquipamentosComponent, SelecionarPessoasComponent } from '../../components/agendamento';
-import { AgendamentoService, NotificacaoService } from 'src/app/shared';
+import { AgendamentoController } from 'src/app/shared';
 
 @Component({
   selector: 'app-agendar',
@@ -19,7 +13,7 @@ import { AgendamentoService, NotificacaoService } from 'src/app/shared';
   styleUrls: ['./agendar.component.scss']
 })
 
-export class AgendarComponent implements OnInit {
+export class AgendarComponent extends AgendamentoController implements OnInit {
 
   @Input() stepper: MatStepper;
   @Input() agendamento: Agendamento;
@@ -39,16 +33,8 @@ export class AgendarComponent implements OnInit {
   pessoasSelecionadas: Pessoa[];
   equipamentosSelecionados: Equipamento[];
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private modalService: NgbModal,
-    private notificacaoService: NotificacaoService,
-    private agendamentoService: AgendamentoService
-  ) { }
-
   ngOnInit() {
-
+    
     this.data = this.agendamento.ageData;
     this.horaInicio = this.agendamento.ageHoraInicio;
     this.horaFim = this.agendamento.ageHoraFim;
@@ -66,6 +52,11 @@ export class AgendarComponent implements OnInit {
       ageAssunto: [null, Validators.required],
       ageDescricao: [null],
     });
+  }
+
+  abrirModal(component: string) {
+
+    this.equipamentosSelecionados = <Equipamento[]>this.abrirModalSelecao(component);
   }
 
   abrirModalEquipamentos() {
@@ -91,14 +82,6 @@ export class AgendarComponent implements OnInit {
     });
   }
 
-  getEquipamentos($event: Equipamento[]) {
-    this.equipamentosSelecionados = $event;
-  }
-
-  getPessoas($event: Pessoa[]) {
-    this.pessoasSelecionadas = $event;
-  }
-
   montarAgendamentoContext(): AgendamentoContext {
 
     return {
@@ -119,118 +102,29 @@ export class AgendarComponent implements OnInit {
     let retAgendamento: Agendamento;
     this.agendamentoService.adicionar(this.agendamento).subscribe(ret => {
       retAgendamento = ret.data;
-    });
 
-    if (retAgendamento != null) {
-      this.agendado = true;
+    }, err => { },
+      () => {
 
-      this.notificarParticipantes(this.agendamento.ageParticipantes);
-      this.next();
+        if (retAgendamento != null) {
+          this.agendado = true;
 
-    } else {
-      alert('Não foi possível Finalizar o Agendamento! Tente novamente.');
-    }
+          this.notificarParticipantes(this.agendamento);
+          this.next();
+
+        } else {
+          alert('Não foi possível Finalizar o Agendamento! Tente novamente.');
+
+        }
+      });
   }
 
   montarAgendamento(): void {
 
     this.agendamento.ageAssunto = this.formAgendar.value.ageAssunto;
     this.agendamento.ageDescricao = this.formAgendar.value.ageDescricao;
-    this.agendamento.ageParticipantes = this.montaArrayParticipantes();
-    this.agendamento.ageEquipamentos = this.montaArrayReservaEquipamento();
-  }
-
-  montaArrayParticipantes(): Participante[] {
-
-    var participantes = new Array<Participante>();
-    if (this.pessoasSelecionadas.length == 0) return participantes;
-
-    this.pessoasSelecionadas.forEach(pessoa => {
-
-      var nParTipo = pessoa.participanteObrigatorio ? 2 : 1;
-      var part: Participante = {
-        parId: 0,
-        parTipo: nParTipo,
-        parConfirmado: null,
-        parPessoa: pessoa,
-        parAgendamento: null,
-      }
-      participantes.push(part);
-    });
-
-    return participantes;
-  }
-
-  montaArrayReservaEquipamento(): ReservaEquipamento[] {
-
-    var reservas = new Array<ReservaEquipamento>();
-    if (this.equipamentosSelecionados.length == 0) return reservas;
-
-    this.equipamentosSelecionados.forEach(equip => {
-
-      var reserva: ReservaEquipamento = {
-        resId: 0,
-        equipamento: equip,
-        agendamento: null,
-      }
-      reservas.push(reserva);
-    });
-
-    return reservas;
-  }
-
-  notificarParticipantes(participantes: Participante[]) {
-
-    let notificacoes: Notificacao[];
-
-    participantes.forEach(part => {
-
-      notificacoes.push(this.montarNotificacao(part));
-    });
-
-    let retorno: boolean;
-    this.notificacaoService.enviarEmail(notificacoes).subscribe(ret => {
-      retorno = ret.data;
-    });
-  }
-
-  montarNotificacao(participante: Participante): Notificacao {
-
-    var enviaEmail = this.montarEnviarEmail(participante.parPessoa.pesEmail, participante.parTipo);
-
-    return {
-      notId: 0,
-      notDescricao: enviaEmail.mensagem,
-      notAtiva: true,
-      notPessoa: participante.parPessoa,
-      notPesCadastro: this.agendamento.agePesResponsavel.pesId,
-      notDtCadastro: new Date(),
-      notPesAtualizacao: this.agendamento.agePesResponsavel.pesId,
-      notDtAtualizacao: new Date(),
-      notEnviado: false,
-      enviaEmail: enviaEmail
-    }
-  }
-
-  montarEnviarEmail(email: string, tipoParticipante: number): EnviaEmail {
-
-    return {
-      destinatario: email,
-      assunto: this.agendamento.assuntoEmailPadrao,
-      mensagem: this.verificarMensagemParticipante(tipoParticipante)
-    }
-  }
-
-  verificarMensagemParticipante(tipoParticipante: number): string {
-
-    if (tipoParticipante == 1) { // tipo 1 Normal
-
-      return this.agendamento.msgEmailPadrao;
-
-    } else { // tipo 2 obrigatorio
-
-      return this.agendamento.msgEmailPartObrigatorio;
-    }
+    this.agendamento.ageParticipantes = this.montaArrayParticipantes(this.pessoasSelecionadas);
+    this.agendamento.ageEquipamentos = this.montaArrayReservaEquipamento(this.equipamentosSelecionados);
   }
 
   chamarMontarStringData(data: Date): string {
