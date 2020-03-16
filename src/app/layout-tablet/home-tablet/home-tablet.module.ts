@@ -6,7 +6,7 @@ import { HomeTabletRoutingModule } from './home-tablet-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Components
 import { HomeTabletComponent } from './home-tablet.component';
-import { MatSelectModule } from '@angular/material';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
     imports: [

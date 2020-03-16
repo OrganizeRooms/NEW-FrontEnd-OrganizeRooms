@@ -16,7 +16,7 @@ export class LoginModalComponent implements OnInit {
   @Input() email: string;
 
   constructor(
-    protected activeModal: NgbActiveModal,
+    public activeModal: NgbActiveModal,
     private formBuilder: FormBuilder,
     private authenticationService: AuthenticationService
   ) { }

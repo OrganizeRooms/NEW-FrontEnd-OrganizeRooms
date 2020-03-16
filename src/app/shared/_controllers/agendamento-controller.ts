@@ -10,8 +10,10 @@ import {
     MensagemService, AgendamentoService, NotificacaoService, UnidadeService, OrganizeRoomsService,
     SalaService, ParticipanteService, ReservaEquipamentoService, SessionStorageService
 } from '../_services';
-import { substituirTagsAgendamento } from 'src/app/shared/_helpers/substituir-tags-agendamento';
+import { SubstituirTags } from 'src/app/shared/_helpers';
+import { Directive } from '@angular/core';
 
+@Directive()
 export class AgendamentoController {
 
     protected listaMensagens: Mensagem[];
@@ -49,9 +51,9 @@ export class AgendamentoController {
 
                 this.listaMensagens.forEach(msg => {
                     this.assuntoEmail = msg.menTipo == 1 ? msg.menMensagem : '';
-                    this.msgPartComum = msg.menTipo == 2 ? msg.menMensagem : '';
-                    this.msgPartObrigatorio = msg.menTipo == 3 ? msg.menMensagem : '';
-                    this.assuntoRetiradoReuniao = msg.menTipo == 4 ? msg.menMensagem : '';
+                    this.assuntoRetiradoReuniao = msg.menTipo == 2 ? msg.menMensagem : '';
+                    this.msgPartComum = msg.menTipo == 3 ? msg.menMensagem : '';
+                    this.msgPartObrigatorio = msg.menTipo == 4 ? msg.menMensagem : '';
                     this.msgRetiradoReuniao = msg.menTipo == 5 ? msg.menMensagem : '';
                 });
 
@@ -173,7 +175,7 @@ export class AgendamentoController {
 
     montarNotificacao(participante: Participante, retiradoPart = false): Notificacao {
 
-        var enviaEmail = this.montarEnviarEmail(participante.parPessoa.pesEmail, participante.parTipo, retiradoPart);
+        var enviaEmail = this.montarEnviarEmail(participante, retiradoPart);
 
         return {
             notId: 0,
@@ -189,15 +191,15 @@ export class AgendamentoController {
         }
     }
 
-    montarEnviarEmail(email: string, tipoParticipante: number, retiradoPart = false): EnviaEmail {
+    montarEnviarEmail(participante: Participante, retiradoPart = false): EnviaEmail {
 
         let assunto = retiradoPart ? this.assuntoRetiradoReuniao : this.assuntoEmail;
-        let mensagem = retiradoPart ? this.msgRetiradoReuniao : this.mensagemParticipante(tipoParticipante);
+        let mensagem = retiradoPart ? this.msgRetiradoReuniao : this.mensagemParticipante(participante.parTipo);
 
         return {
-            destinatario: email,
-            assunto: substituirTagsAgendamento(assunto, this.agendamentoHelper),
-            mensagem: substituirTagsAgendamento(mensagem, this.agendamentoHelper)
+            destinatario: participante.parPessoa.pesEmail,
+            assunto: SubstituirTags.agendamento(assunto, this.agendamentoHelper, participante),
+            mensagem: SubstituirTags.agendamento(mensagem, this.agendamentoHelper, participante)
         }
     }
 

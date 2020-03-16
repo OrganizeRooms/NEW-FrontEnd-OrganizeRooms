@@ -1,4 +1,4 @@
-import { MatPaginator } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
 import { rangeLabel } from './range-label';
 
 export function configurarPaginador(paginator: MatPaginator): MatPaginator {

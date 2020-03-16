@@ -4,8 +4,14 @@ import { RouterModule } from '@angular/router';
 
 import { SelecionarEquipamentosComponent } from './selecionar-equipamentos.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule, MatSelectModule, MatTableModule, MatPaginatorModule, MatFormFieldModule } from '@angular/material';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+
 
 @NgModule({
     imports: [

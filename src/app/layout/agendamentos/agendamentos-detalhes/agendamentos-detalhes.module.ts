@@ -6,10 +6,17 @@ import { PageHeaderModule } from 'src/app/shared/_components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Component Material Angular
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+
 import {
-    MatFormFieldModule, MatCheckboxModule, MatInputModule, MatSelectModule, MatTableModule, MatPaginatorModule,
-} from '@angular/material';
-import { SelecionarEquipamentosComponent, SelecionarPessoasComponent, SelecionarPessoasModule, SelecionarEquipamentosModule 
+    SelecionarEquipamentosComponent, SelecionarPessoasComponent, SelecionarPessoasModule, SelecionarEquipamentosModule
 } from '../../components/agendamento';
 
 @NgModule({

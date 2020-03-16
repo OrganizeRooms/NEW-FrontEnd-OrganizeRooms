@@ -16,7 +16,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         return next.handle(request).pipe(catchError(err => {
             if (err.status === 401) {
                 // auto deslogar if 401 response returned from api
-                //  this.AuthenticationService.deslogar();
+                this.AuthenticationService.deslogar();
                 location.reload(true);
             }
 

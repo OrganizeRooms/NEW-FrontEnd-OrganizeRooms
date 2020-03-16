@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormGroup } from '@angular/forms';
 import { ConfSelectionModel } from 'src/app/shared/utils';
-import { PessoaService } from 'src/app/shared';
+import { PessoaService } from 'src/app/shared/_services';
 import { Pessoa } from 'src/app/shared/_models';
 
 @Component({

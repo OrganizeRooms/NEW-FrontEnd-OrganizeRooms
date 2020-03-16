@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbDateStruct, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 
 import { Pessoa, Unidade, Sala, AgendamentoContext, Hora, Agendamento } from 'src/app/shared/_models';
 import { SessionStorageService, UnidadeService, SalaService } from 'src/app/shared/_services';

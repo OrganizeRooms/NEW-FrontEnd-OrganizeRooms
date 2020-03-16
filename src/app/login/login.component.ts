@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
 
         }, error => {
             this.authenticationService.loginSemSucesso();
-            alert(`${error}`)
+            alert(`Falha no Login. Contate o administrador!`)
 
         }, () => {
             if (aux.pessoa.pesPermissao == 'ROLE_TABLET') {

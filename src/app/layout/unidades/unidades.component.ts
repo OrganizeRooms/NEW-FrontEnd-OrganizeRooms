@@ -1,6 +1,8 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import { OrganizeRoomsService, SessionStorageService, UnidadeService } from 'src/app/shared/_services';
 import { Unidade } from 'src/app/shared/_models';

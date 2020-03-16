@@ -34,6 +34,11 @@
             <i class="fa fa-fw fa-map-marker"></i>&nbsp;
             <span>Unidades</span>
         </a>
+        <a *ngIf="permissao == 'ROLE_ADMIN'" [routerLink]="['/mensagens']"
+            [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-map-marker"></i>&nbsp;
+            <span>Mensagens</span>
+        </a>
         <div class="header-fields">
             <div class="nested-menu">
                 <a class="list-group-item" (click)="addExpandClass('profile')">

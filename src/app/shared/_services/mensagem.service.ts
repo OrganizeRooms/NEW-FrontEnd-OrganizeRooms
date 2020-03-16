@@ -19,6 +19,17 @@ export class MensagemService extends ServiceHelper implements ServiceWS<Mensagem
             );
     }
 
+    buscarMensagensPadrao(): Observable<Response> {
+        return this.http
+            .get<Response>(
+                `${API_CONFIG.baseUrl}/mensagem/msgsPadrao`,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
+    }
+
     adicionar(objeto: Mensagem): Observable<Response> {
         return this.http
             .post<Response>(
@@ -42,7 +53,7 @@ export class MensagemService extends ServiceHelper implements ServiceWS<Mensagem
     buscarPorTipo(tipo: number): Observable<Response> {
         return this.http
             .get<Response>(
-                `${API_CONFIG.baseUrl}/unidades/porId/${tipo}`,
+                `${API_CONFIG.baseUrl}/mensagem/${tipo}`,
                 { headers: this.httpOptions() }
             ).pipe(
                 retry(2),

@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 
 export class ConfSelectionModel<T> {
 
