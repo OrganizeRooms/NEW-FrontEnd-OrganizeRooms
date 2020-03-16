@@ -1,9 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfSelectionModel, Equipamento, AgendamentoContext, Agendamento, DateHelper, EquipamentoService } from 'src/app/shared';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormGroup } from '@angular/forms';
+import { ConfSelectionModel } from 'src/app/shared/utils/table-data';
+import { DateHelper } from 'src/app/shared/_helpers';
+import { EquipamentoService } from 'src/app/shared/_services';
+import { Equipamento, AgendamentoContext, Agendamento } from 'src/app/shared/_models';
 
 @Component({
     selector: 'app-selecionar-equipamentos',

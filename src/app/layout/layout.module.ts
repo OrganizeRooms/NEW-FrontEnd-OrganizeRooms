@@ -9,7 +9,7 @@ import { HeaderComponent } from './components/header/header.component';
 
 import {
     AgendamentoService, AuthenticationService, EquipamentoService, NotificacaoService,
-    ParticipanteService, PessoaService, SalaService, UnidadeService
+    ParticipanteService, PessoaService, SalaService, UnidadeService, MensagemService, ReservaEquipamentoService
 } from 'src/app/shared/_services';
 
 @NgModule({
@@ -32,7 +32,9 @@ import {
         ParticipanteService,
         PessoaService,
         SalaService,
-        UnidadeService
+        UnidadeService,
+        MensagemService,
+        ReservaEquipamentoService
     ]
 })
 export class LayoutModule { }

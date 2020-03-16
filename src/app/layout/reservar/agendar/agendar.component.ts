@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, Validators } from '@angular/forms';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 
 import { Pessoa, Unidade, Sala, AgendamentoContext, Equipamento, Agendamento } from 'src/app/shared/_models';
 import { DateHelper } from 'src/app/shared/_helpers';

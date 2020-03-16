@@ -4,7 +4,12 @@ import { PessoasRoutingModule } from './pessoas-routing.module';
 import { PessoasComponent } from './pessoas.component';
 import { PageHeaderModule } from 'src/app/shared/_components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatTableModule, MatPaginatorModule, MatSortModule, MatCheckboxModule } from '@angular/material';
+
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+
 
 @NgModule({
     imports: [

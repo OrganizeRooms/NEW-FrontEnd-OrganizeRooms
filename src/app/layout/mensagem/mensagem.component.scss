@@ -1,9 +1,21 @@
  
 
   .text-area{
-    border: 1px solid;
-    padding: 8px;
-    text-align: justify;
+    text-align: justify !important;
     margin: 0 auto;
+    font-size: 15px;
+  }
+
+  .div-mensagem{
+    margin-bottom: 20px;
   }
   
+  #tags-disp{
+    float: right;
+  }
+
+  .fa-pencil, .fa-floppy-o{
+    padding: 6px;
+    padding-left: 30px;
+    font-size: larger;
+  }

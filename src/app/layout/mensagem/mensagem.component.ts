@@ -1,11 +1,8 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-
-import { OrganizeRoomsService, SessionStorageService, MensagemService } from 'src/app/shared/_services';
+import { OrganizeRoomsService, SessionStorageService, MensagemService, EquipamentoService } from 'src/app/shared/_services';
 import { Unidade, Mensagem } from 'src/app/shared/_models';
-import { configurarPaginador } from 'src/app/shared/utils/table-data';
-
+import { SubstituirTags } from 'src/app/shared';
 
 @Component({
     selector: 'app-mensagem',
@@ -16,22 +13,20 @@ import { configurarPaginador } from 'src/app/shared/utils/table-data';
 export class MensagemComponent implements OnInit {
 
     permissao: string;
-    displayedColumns: string[] = ['uniId', 'uniNome', 'uniAtiva', 'detalhes'];
-    tableData = new MatTableDataSource<Unidade>();
-
-    listaMensagens: Mensagem[];
-
-    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) sort: MatSort;
+    listaMensagens = new Array<Mensagem>();
 
     constructor(
         private OrganizeRoomsService: OrganizeRoomsService<Unidade>,
         private sessionStorageService: SessionStorageService,
-        private mensagemService: MensagemService
+        private mensagemService: MensagemService,
     ) { }
 
     ngOnInit() {
         this.carregarDados();
+
+        if (this.listaMensagens) {
+            this.carregarMensagensPadrao();
+        }
     }
 
     carregarDados() {
@@ -40,18 +35,40 @@ export class MensagemComponent implements OnInit {
         })
     }
 
+    carregarMensagensPadrao() {
+        this.mensagemService.buscarMensagensPadrao().subscribe(ret => {
+            this.listaMensagens = ret.data;
+        });
+    }
+
     editar(registro: Unidade) {
 
     }
 
-    aplicarFiltro(valor: string) {
-        this.tableData.filter = valor.trim().toLowerCase();
+    modalTagsDisp() {
+
+
     }
 
-    configurarPaginador() {
-        this.paginator = configurarPaginador(this.paginator);
+    validarTamanho(msg: string): number {
 
-        this.tableData.paginator = this.paginator;
-        this.tableData.sort = this.sort;
+        let length = msg.length;
+
+        if (length <= 85) return 1;
+        if (length > 85 && length < 165) return 2;
+        return 3;
+    }
+
+    removerEspacosTextArea() {
+        let textarea = document.querySelectorAll('#menMensagem');
+
+        if (textarea.length > 0) {
+            textarea.forEach(msg => {
+                if (msg.textContent) {
+
+                    msg.textContent = msg.textContent.trim();
+                }
+            })
+        }
     }
 }

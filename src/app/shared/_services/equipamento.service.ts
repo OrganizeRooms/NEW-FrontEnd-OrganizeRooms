@@ -20,6 +20,17 @@ export class EquipamentoService extends ServiceHelper implements ServiceWS<Equip
             );
     }
 
+    buscarAtivos(): Observable<Response> {
+        return this.http
+            .get<Response>(
+                `${API_CONFIG.baseUrl}/equipamentos/ativo`,
+                { headers: this.httpOptions() }
+            ).pipe(
+                retry(2),
+                catchError(this.handleError)
+            );
+    }
+
     adicionar(objeto: Equipamento): Observable<Response> {
         return this.http
             .post<Response>(

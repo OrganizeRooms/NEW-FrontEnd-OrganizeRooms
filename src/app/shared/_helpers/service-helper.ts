@@ -16,7 +16,13 @@ export class ServiceHelper {
         const localUser = this.sessionStorageService.getValue();
 
         let token = localUser.token ? localUser.token : '';
-        return new HttpHeaders({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` })
+
+        const headers = new HttpHeaders();
+        headers.set('Content-Type', 'application/text')
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${token}`);
+
+        return headers;
     }
 
     protected handleError(error?: HttpErrorResponse) {

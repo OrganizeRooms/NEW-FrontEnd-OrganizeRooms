@@ -7,9 +7,14 @@ import { AgendamentosComponent } from './agendamentos.component';
 import { PageHeaderModule } from 'src/app/shared/_components';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // Component Material Angular
-import {
-    MatCheckboxModule, MatInputModule, MatDatepickerModule, MatSelectModule, MatTableModule, MatPaginatorModule, MatSortModule
-} from '@angular/material';
+
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
     imports: [
@@ -19,10 +24,10 @@ import {
         PageHeaderModule,
         MatTableModule,
         MatPaginatorModule,
+        MatSortModule,
         MatCheckboxModule,
         FormsModule,
         ReactiveFormsModule,
-        MatSortModule,
         MatDatepickerModule,
         MatSelectModule,
         MatInputModule

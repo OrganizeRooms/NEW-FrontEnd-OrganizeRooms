@@ -1,11 +1,13 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { routerTransition } from '../../router.animations';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { NgbDateStruct, NgbDatepickerI18n, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateCustomParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/shared/utils/datepicker';
 import { AgendamentoContext, Unidade, Pessoa } from 'src/app/shared/_models';
-import { DateHelper,  } from 'src/app/shared/_helpers';
-import { AgendamentoController  } from 'src/app/shared/_controllers';
+import { DateHelper, } from 'src/app/shared/_helpers';
+import { AgendamentoController } from 'src/app/shared/_controllers';
 import { configurarPaginador } from 'src/app/shared/utils/table-data';
 
 @Component({
